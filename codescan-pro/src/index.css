@@ -879,3 +879,136 @@ code, pre {
 .clerk-auth-wrapper [class*="cl-formFieldInputShowPasswordButton"]:hover {
   color: #e2e8f0 !important;
 }
+
+/* Hide Google/Social login buttons */
+.clerk-auth-wrapper [class*="cl-socialButtons"],
+.clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"],
+.clerk-auth-wrapper [class*="cl-socialButtonsIconButton"],
+.clerk-auth-wrapper [class*="cl-dividerRow"] {
+  display: none !important;
+}
+
+/* ============================================ */
+/* User Menu Dropdown Styling (UserButton)     */
+/* ============================================ */
+
+/* User button popover card - Dark mode */
+[class*="cl-userButtonPopoverCard"] {
+  background-color: #0f172a !important;
+  border: 2px solid #475569 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* User preview section */
+[class*="cl-userPreview"] {
+  background-color: rgba(51, 65, 85, 0.5) !important;
+  padding: 16px !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+[class*="cl-userPreviewMainIdentifier"] {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+}
+
+[class*="cl-userPreviewSecondaryIdentifier"] {
+  color: #cbd5e1 !important;
+  font-size: 0.875rem !important;
+}
+
+/* Avatar in dropdown */
+[class*="cl-userPreviewAvatarBox"] {
+  border: 2px solid #8b5cf6 !important;
+}
+
+/* Action buttons */
+[class*="cl-userButtonPopoverActionButton"] {
+  color: #ffffff !important;
+  padding: 10px 16px !important;
+  margin: 4px 8px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+[class*="cl-userButtonPopoverActionButton"]:hover {
+  background-color: #334155 !important;
+}
+
+[class*="cl-userButtonPopoverActionButtonText"] {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+[class*="cl-userButtonPopoverActionButtonIcon"] {
+  color: #94a3b8 !important;
+}
+
+[class*="cl-userButtonPopoverActionButton"]:hover [class*="cl-userButtonPopoverActionButtonIcon"] {
+  color: #e2e8f0 !important;
+}
+
+/* Actions container */
+[class*="cl-userButtonPopoverActions"] {
+  background-color: #0f172a !important;
+  padding: 8px 0 !important;
+}
+
+/* Hide footer/branding in user menu */
+[class*="cl-userButtonPopoverFooter"],
+[class*="cl-userButtonPopover"] [class*="cl-footer"],
+[class*="cl-userButtonPopover"] [class*="cl-badge"],
+[class*="cl-userButtonPopover"] a[href*="clerk.com"],
+[class*="cl-userButtonPopover"] a[href*="clerk.dev"] {
+  display: none !important;
+}
+
+/* Light mode overrides for user menu */
+.light [class*="cl-userButtonPopoverCard"],
+:root:not(.dark) [class*="cl-userButtonPopoverCard"] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.light [class*="cl-userPreview"],
+:root:not(.dark) [class*="cl-userPreview"] {
+  background-color: #f8fafc !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+.light [class*="cl-userPreviewMainIdentifier"],
+:root:not(.dark) [class*="cl-userPreviewMainIdentifier"] {
+  color: #1e293b !important;
+}
+
+.light [class*="cl-userPreviewSecondaryIdentifier"],
+:root:not(.dark) [class*="cl-userPreviewSecondaryIdentifier"] {
+  color: #64748b !important;
+}
+
+.light [class*="cl-userButtonPopoverActionButton"],
+:root:not(.dark) [class*="cl-userButtonPopoverActionButton"] {
+  color: #1e293b !important;
+}
+
+.light [class*="cl-userButtonPopoverActionButton"]:hover,
+:root:not(.dark) [class*="cl-userButtonPopoverActionButton"]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.light [class*="cl-userButtonPopoverActionButtonText"],
+:root:not(.dark) [class*="cl-userButtonPopoverActionButtonText"] {
+  color: #1e293b !important;
+}
+
+.light [class*="cl-userButtonPopoverActionButtonIcon"],
+:root:not(.dark) [class*="cl-userButtonPopoverActionButtonIcon"] {
+  color: #64748b !important;
+}
+
+.light [class*="cl-userButtonPopoverActions"],
+:root:not(.dark) [class*="cl-userButtonPopoverActions"] {
+  background-color: #ffffff !important;
+}

@@ -1,6 +1,5 @@
 import { UserButton, useUser } from '@clerk/clerk-react';
 import { motion } from 'framer-motion';
-import { LogOut, Settings, User, Crown } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { cn } from '../../utils/cn';
 
@@ -43,31 +42,61 @@ export function UserMenu() {
         </span>
       </div>
 
-      {/* Clerk User Button */}
+      {/* Clerk User Button with enhanced styling for dark/light mode */}
       <UserButton 
         afterSignOutUrl="/"
         appearance={{
           elements: {
+            // Avatar styling
             avatarBox: 'w-9 h-9 ring-2 ring-purple-500/50',
+            
+            // Popover card - the main dropdown container
             userButtonPopoverCard: cn(
-              'border shadow-xl',
+              'border-2 shadow-2xl rounded-xl overflow-hidden',
               isDark 
-                ? 'bg-slate-900 border-slate-700' 
-                : 'bg-white border-gray-200'
+                ? '!bg-slate-900 !border-slate-600' 
+                : '!bg-white !border-gray-200'
             ),
+            
+            // User preview section at top of dropdown
+            userPreview: cn(
+              'p-4',
+              isDark ? '!bg-slate-800/50' : '!bg-gray-50'
+            ),
+            userPreviewMainIdentifier: cn(
+              'font-semibold text-base',
+              isDark ? '!text-white' : '!text-gray-900'
+            ),
+            userPreviewSecondaryIdentifier: cn(
+              'text-sm',
+              isDark ? '!text-slate-300' : '!text-gray-600'
+            ),
+            
+            // Action buttons (Manage account, Sign out)
             userButtonPopoverActionButton: cn(
-              'transition-colors',
+              'transition-all rounded-lg mx-2 my-1',
               isDark 
-                ? 'text-slate-300 hover:bg-slate-800' 
-                : 'text-gray-700 hover:bg-gray-100'
+                ? '!text-white hover:!bg-slate-700' 
+                : '!text-gray-800 hover:!bg-gray-100'
             ),
             userButtonPopoverActionButtonText: cn(
-              isDark ? 'text-slate-300' : 'text-gray-700'
+              'font-medium',
+              isDark ? '!text-white' : '!text-gray-800'
             ),
             userButtonPopoverActionButtonIcon: cn(
-              isDark ? 'text-slate-400' : 'text-gray-500'
+              isDark ? '!text-slate-300' : '!text-gray-600'
             ),
-            userButtonPopoverFooter: 'hidden',
+            
+            // Footer with Clerk branding - hide it
+            userButtonPopoverFooter: '!hidden',
+            footer: '!hidden',
+            badge: '!hidden',
+            
+            // Menu items
+            userButtonPopoverActions: cn(
+              'py-2',
+              isDark ? '!bg-slate-900' : '!bg-white'
+            ),
           },
         }}
       />

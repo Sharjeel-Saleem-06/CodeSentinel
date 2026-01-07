@@ -106,6 +106,7 @@ export function AuthPage() {
   }, [mode]);
 
   // Enhanced Clerk appearance with better contrast and readability
+  // Google login removed - email/password only
   const clerkAppearance = {
     elements: {
       rootBox: 'w-full',
@@ -123,16 +124,12 @@ export function AuthPage() {
         'text-base',
         isDark ? 'text-slate-300' : 'text-gray-600'
       ),
-      socialButtonsBlockButton: cn(
-        'border-2 transition-all font-medium text-base py-3',
-        isDark 
-          ? 'bg-slate-800/80 border-slate-600 text-white hover:bg-slate-700 hover:border-purple-500' 
-          : 'bg-gray-50 border-gray-200 text-gray-900 hover:bg-gray-100 hover:border-purple-400'
-      ),
-      socialButtonsBlockButtonText: cn(
-        'font-medium text-base',
-        isDark ? 'text-white' : 'text-gray-900'
-      ),
+      // Hide social buttons completely (removes Google login)
+      socialButtonsBlockButton: '!hidden',
+      socialButtonsProviderIcon: '!hidden',
+      socialButtons: '!hidden',
+      socialButtonsIconButton: '!hidden',
+      dividerRow: '!hidden',
       formFieldLabel: cn(
         'font-medium text-sm',
         isDark ? 'text-slate-200' : 'text-gray-700'
@@ -154,13 +151,8 @@ export function AuthPage() {
         isDark ? 'text-white' : 'text-gray-900'
       ),
       identityPreviewEditButton: 'text-purple-400 hover:text-purple-300',
-      dividerLine: cn(
-        isDark ? 'bg-slate-600' : 'bg-gray-300'
-      ),
-      dividerText: cn(
-        'text-sm font-medium',
-        isDark ? 'text-slate-300' : 'text-gray-500'
-      ),
+      dividerLine: '!hidden',
+      dividerText: '!hidden',
       formFieldInputShowPasswordButton: cn(
         isDark ? 'text-slate-300 hover:text-white' : 'text-gray-500 hover:text-gray-700'
       ),
@@ -190,7 +182,7 @@ export function AuthPage() {
       clerkBadge: '!hidden',
     },
     layout: {
-      socialButtonsPlacement: 'top' as const,
+      socialButtonsPlacement: 'bottom' as const,
       showOptionalFields: false,
       logoPlacement: 'none' as const,
     },
