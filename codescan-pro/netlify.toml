@@ -1,15 +1,13 @@
 # Netlify Configuration for CodeSentinel
-# Copy this folder to your Netlify site for manual deployment
+# NOTE: For deployment from the full repo, use the netlify.toml at the repo root
+# This file is for direct deployment of this folder only
 
 [build]
   # Build command
-  command = "npm run build"
+  command = "npm ci && npm run build"
   
   # Directory to deploy (Vite outputs to dist)
   publish = "dist"
-  
-  # Base directory (if deploying from subdirectory)
-  # base = "codescan-pro"
 
 [build.environment]
   # Node version
@@ -20,18 +18,18 @@
 
 # Production context
 [context.production]
-  command = "npm run build"
+  command = "npm ci && npm run build"
   
 [context.production.environment]
   NODE_ENV = "production"
 
 # Deploy preview context
 [context.deploy-preview]
-  command = "npm run build"
+  command = "npm ci && npm run build"
 
 # Branch deploy context
 [context.branch-deploy]
-  command = "npm run build"
+  command = "npm ci && npm run build"
 
 # Redirects for SPA (Single Page Application)
 [[redirects]]
@@ -47,6 +45,7 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 [[headers]]
   for = "/assets/*"
@@ -62,10 +61,6 @@
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-# Functions configuration (if using Netlify Functions)
-[functions]
-  directory = "netlify/functions"
 
 # Dev server configuration
 [dev]

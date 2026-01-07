@@ -1,8 +1,45 @@
-# 🚀 Netlify Manual Deployment Guide
+# 🚀 Netlify Deployment Guide for CodeSentinel
+
+## ⚠️ Important: Repository Structure
+
+This project has `package.json` inside the `codescan-pro` subdirectory, NOT at the repo root.
+
+The `netlify.toml` at the **repo root** is configured with `base = "codescan-pro"` to handle this automatically.
+
+---
 
 ## Quick Deployment Steps
 
-### Option 1: Drag & Drop (Easiest)
+### Option 1: Git Integration (Recommended) ✅
+
+1. **Push to GitHub:**
+   ```bash
+   git add .
+   git commit -m "Deploy to Netlify"
+   git push origin main
+   ```
+
+2. **Connect on Netlify:**
+   - Go to [app.netlify.com](https://app.netlify.com)
+   - Click "Add new site" → "Import an existing project"
+   - Select your GitHub repository
+   - **Netlify will automatically detect the `netlify.toml` at repo root**
+   - Just click "Deploy site"!
+
+   The `netlify.toml` already configures:
+   - ✅ Base directory: `codescan-pro`
+   - ✅ Build command: `npm ci && npm run build`
+   - ✅ Publish directory: `dist`
+   - ✅ Node version: 18
+
+3. **Add Environment Variables:**
+   - Go to Site Settings → Environment Variables
+   - Add the required variables (see below)
+   - Trigger a redeploy
+
+---
+
+### Option 2: Drag & Drop (Manual)
 
 1. **Build the project locally:**
    ```bash
@@ -21,7 +58,7 @@
 
 ---
 
-### Option 2: Netlify CLI
+### Option 3: Netlify CLI
 
 1. **Install Netlify CLI:**
    ```bash
@@ -42,42 +79,22 @@
 
 ---
 
-### Option 3: Git Integration
-
-1. **Push to GitHub:**
-   ```bash
-   git add .
-   git commit -m "Deploy to Netlify"
-   git push origin main
-   ```
-
-2. **Connect on Netlify:**
-   - Go to Netlify Dashboard
-   - Click "New site from Git"
-   - Select your repository
-   - Configure build settings:
-     - **Build command:** `npm run build`
-     - **Publish directory:** `dist`
-     - **Base directory:** `codescan-pro` (if in subdirectory)
-
----
-
-## 📁 Project Structure for Deployment
-
-We have configured the project for automatic file handling:
+## 📁 Project Structure
 
 ```
-/
-├── netlify.toml         (Moved to root for Netlify Bot)
-├── public/
-│   ├── _redirects       (Moved here to be auto-copied to dist/)
-│   └── _headers         (Moved here to be auto-copied to dist/)
-└── netlify/
-    └── DEPLOYMENT.md    (This guide)
+AI_Code_Checker/           (Repository Root)
+├── netlify.toml           ← Main config (base = "codescan-pro")
+├── codescan-pro/          ← Project directory
+│   ├── package.json
+│   ├── netlify.toml       ← Backup config (for direct folder deploy)
+│   ├── public/
+│   │   ├── _redirects     (Auto-copied to dist/)
+│   │   └── _headers       (Auto-copied to dist/)
+│   ├── netlify/
+│   │   └── DEPLOYMENT.md  (This guide)
+│   └── dist/              (Build output)
+└── ...
 ```
-
-**You do NOT need to manually copy files anymore.**
-Just run `npm run build` and the `dist` folder will automatically contain `_redirects` and `_headers`.
 
 ---
 
@@ -88,27 +105,29 @@ Set these in Netlify Dashboard → Site Settings → Environment Variables:
 | Variable | Description | Required |
 |----------|-------------|----------|
 | `VITE_CLERK_PUBLISHABLE_KEY` | Clerk public key | ✅ Yes |
-| `VITE_GROQ_API_KEY` | Groq API key for AI | ✅ Yes |
+| `VITE_GROQ_API_KEYS` | Groq API keys (comma-separated) | ✅ Yes |
 
 ### Setting Environment Variables
 
 1. Go to your site on Netlify
 2. Navigate to **Site Settings** → **Environment Variables**
 3. Add each variable with its value
-4. Trigger a new deploy
+4. Trigger a new deploy (Deploys → Trigger deploy)
 
 ---
 
-## 🔧 Build Settings
+## 🔧 Build Settings (Auto-configured)
 
-If using Git integration, configure these settings:
+The `netlify.toml` at repo root automatically sets:
 
 | Setting | Value |
 |---------|-------|
 | Base directory | `codescan-pro` |
-| Build command | `npm run build` |
-| Publish directory | `codescan-pro/dist` |
+| Build command | `npm ci && npm run build` |
+| Publish directory | `dist` (relative to base) |
 | Node version | `18` |
+
+**You don't need to configure these manually!**
 
 ---
 
