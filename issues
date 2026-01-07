@@ -1,0 +1,102 @@
+npm %                                                                                             
+(base) muhammadsharjeel@Muhammads-MacBook-Air-2 AI_Code_Checker % npm run de
+npm error code ENOENT
+npm error syscall open
+npm error path /Users/muhammadsharjeel/Documents/AI_Code_Checker/package.json
+npm error errno -2
+npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/Users/muhammadsharjeel/Documents/AI_Code_Checker/package.json'
+npm error enoent This is related to npm not being able to find a file.
+npm error enoent
+npm error A complete log of this run can be found in: /Users/muhammadsharjeel/.npm/_logs/2026-01-07T08_02_29_427Z-debug-0.log
+(base) muhammadsharjeel@Muhammads-MacBook-Air-2 AI_Code_Checker % npm run dev
+npm error code ENOENT
+npm error syscall open
+npm error path /Users/muhammadsharjeel/Documents/AI_Code_Checker/package.json
+npm error errno -2
+npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/Users/muhammadsharjeel/Documents/AI_Code_Checker/package.json'
+npm error enoent This is related to npm not being able to find a file.
+npm error enoent
+npm error A complete log of this run can be found in: /Users/muhammadsharjeel/.npm/_logs/2026-01-07T08_02_34_285Z-debug-0.log
+(base) muhammadsharjeel@Muhammads-MacBook-Air-2 AI_Code_Checker % cd codescan-pro
+(base) muhammadsharjeel@Muhammads-MacBook-Air-2 codescan-pro % npm run dev
+
+> codescan-pro@0.0.0 dev
+> vite
+
+
+  VITE v5.4.21  ready in 315 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+2297|    }
+2298|  }
+2299|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2300|  html {
+2301|    scroll-behavior: smooth;
+1:05:14 PM [vite] hmr update /src/App.tsx, /src/index.css
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+2303|    }
+2304|  }
+2305|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2306|  html {
+2307|    scroll-behavior: smooth;
+1:05:34 PM [vite] hmr update /src/components/analysis/CustomRulesPanel.tsx, /src/index.css
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+2306|    }
+2307|  }
+2308|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2309|  html {
+2310|    scroll-behavior: smooth;
+1:06:10 PM [vite] hmr update /src/components/analysis/CustomRulesPanel.tsx, /src/index.css
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+2306|    }
+2307|  }
+2308|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2309|  html {
+2310|    scroll-behavior: smooth;
+1:06:42 PM [vite] hmr update /src/components/analysis/CustomRulesPanel.tsx, /src/index.css
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+2463|    }
+2464|  }
+2465|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2466|  html {
+2467|    scroll-behavior: smooth;
+1:16:38 PM [vite] hmr update /src/App.tsx, /src/index.css
+1:16:38 PM [vite] hmr update /src/components/analysis/CustomRulesPanel.tsx, /src/index.css
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+2463|    }
+2464|  }
+2465|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2466|  html {
+2467|    scroll-behavior: smooth;
+1:17:13 PM [vite] hmr update /src/index.css
+[vite:css] @import must precede all other statements (besides @charset or empty @layer)
+2464|    }
+2465|  }
+2466|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2467|  html {
+2468|    scroll-behavior: smooth;
+1:17:20 PM [vite] hmr update /src/index.css
+1:18:05 PM [vite] page reload index.html
+1:18:12 PM [vite] hmr update /src/index.css
+1:19:55 PM [vite] page reload index.html
+1:19:55 PM [vite] hmr update /src/index.css
+(base) muhammadsharjeel@Muhammads-MacBook-Air-2 codescan-pro % 
+
+
+
+
+
+
+
+
+

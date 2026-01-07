@@ -1,0 +1,703 @@
+/* Google Fonts are loaded via <link> tag in index.html to avoid CSS @import order issues */
+@import "tailwindcss";
+
+@theme {
+  /* Custom color palette - distinctive, not generic */
+  --color-obsidian-50: #f6f7f9;
+  --color-obsidian-100: #eceef2;
+  --color-obsidian-200: #d5d9e2;
+  --color-obsidian-300: #b0b8c9;
+  --color-obsidian-400: #8592ab;
+  --color-obsidian-500: #667391;
+  --color-obsidian-600: #515c78;
+  --color-obsidian-700: #434b62;
+  --color-obsidian-800: #3a4153;
+  --color-obsidian-900: #1a1d27;
+  --color-obsidian-950: #0d0f14;
+
+  --color-cyber-50: #f0fdfa;
+  --color-cyber-100: #ccfbf1;
+  --color-cyber-200: #99f6e4;
+  --color-cyber-300: #5eead4;
+  --color-cyber-400: #2dd4bf;
+  --color-cyber-500: #00ffd5;
+  --color-cyber-600: #0891b2;
+  --color-cyber-700: #0e7490;
+  --color-cyber-800: #155e75;
+  --color-cyber-900: #164e63;
+
+  --color-neon-pink: #ff2d92;
+  --color-neon-purple: #bf5af2;
+  --color-neon-blue: #0a84ff;
+  --color-neon-orange: #ff9f0a;
+  --color-neon-red: #ff453a;
+  --color-neon-green: #32d74b;
+  --color-neon-yellow: #ffd60a;
+
+  /* Light theme colors */
+  --color-light-bg: #f8fafc;
+  --color-light-surface: #ffffff;
+  --color-light-surface-elevated: #f1f5f9;
+  --color-light-border: #e2e8f0;
+  --color-light-border-hover: #cbd5e1;
+  --color-light-text-primary: #0f172a;
+  --color-light-text-secondary: #475569;
+  --color-light-text-muted: #94a3b8;
+  --color-light-accent: #0891b2;
+  --color-light-accent-hover: #0e7490;
+
+  /* Typography - JetBrains Mono for code, Space Grotesk alternatives */
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  /* Spacing */
+  --spacing-18: 4.5rem;
+  --spacing-88: 22rem;
+  --spacing-128: 32rem;
+
+  /* Border radius */
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+
+  /* Animations */
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-scan: scan 2s linear infinite;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px var(--color-cyber-500), 0 0 40px var(--color-cyber-500);
+  }
+  to {
+    box-shadow: 0 0 30px var(--color-neon-purple), 0 0 60px var(--color-neon-purple);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes scan {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+}
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-obsidian-950);
+  color: var(--color-obsidian-100);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ==================== LIGHT THEME ==================== */
+.light-theme body,
+.light-theme {
+  background-color: var(--color-light-bg) !important;
+  color: var(--color-light-text-primary) !important;
+}
+
+/* Light theme - Override obsidian colors */
+.light-theme .bg-obsidian-950 { background-color: var(--color-light-bg) !important; }
+.light-theme .bg-obsidian-900 { background-color: var(--color-light-surface) !important; }
+.light-theme .bg-obsidian-900\/80 { background-color: rgba(255, 255, 255, 0.95) !important; }
+.light-theme .bg-obsidian-900\/60 { background-color: rgba(255, 255, 255, 0.85) !important; }
+.light-theme .bg-obsidian-900\/50 { background-color: rgba(255, 255, 255, 0.8) !important; }
+.light-theme .bg-obsidian-900\/30 { background-color: rgba(255, 255, 255, 0.6) !important; }
+.light-theme .bg-obsidian-800 { background-color: var(--color-light-surface-elevated) !important; }
+.light-theme .bg-obsidian-800\/80 { background-color: rgba(241, 245, 249, 0.9) !important; }
+.light-theme .bg-obsidian-800\/50 { background-color: rgba(241, 245, 249, 0.7) !important; }
+.light-theme .bg-obsidian-800\/30 { background-color: rgba(241, 245, 249, 0.5) !important; }
+.light-theme .bg-obsidian-700 { background-color: #e2e8f0 !important; }
+.light-theme .bg-obsidian-700\/50 { background-color: rgba(226, 232, 240, 0.7) !important; }
+
+/* Light theme - Text colors */
+.light-theme .text-obsidian-100 { color: var(--color-light-text-primary) !important; }
+.light-theme .text-obsidian-200 { color: var(--color-light-text-primary) !important; }
+.light-theme .text-obsidian-300 { color: var(--color-light-text-secondary) !important; }
+.light-theme .text-obsidian-400 { color: var(--color-light-text-secondary) !important; }
+.light-theme .text-obsidian-500 { color: var(--color-light-text-muted) !important; }
+.light-theme .text-white { color: var(--color-light-text-primary) !important; }
+
+/* Light theme - Border colors */
+.light-theme .border-obsidian-800 { border-color: var(--color-light-border) !important; }
+.light-theme .border-obsidian-800\/50 { border-color: rgba(226, 232, 240, 0.7) !important; }
+.light-theme .border-obsidian-700 { border-color: var(--color-light-border) !important; }
+.light-theme .border-obsidian-700\/50 { border-color: rgba(226, 232, 240, 0.7) !important; }
+.light-theme .border-obsidian-600 { border-color: var(--color-light-border-hover) !important; }
+
+/* Light theme - Glass effect */
+.light-theme .glass {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(20px);
+  border-color: var(--color-light-border) !important;
+}
+
+.light-theme .glass-dark {
+  background: rgba(248, 250, 252, 0.9) !important;
+  backdrop-filter: blur(20px);
+  border-color: var(--color-light-border) !important;
+}
+
+/* Light theme - Grid pattern */
+.light-theme .grid-pattern {
+  background-image: 
+    linear-gradient(rgba(8, 145, 178, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(8, 145, 178, 0.05) 1px, transparent 1px) !important;
+  background-size: 50px 50px;
+}
+
+/* Light theme - Cards and containers */
+.light-theme .rounded-xl.border.border-obsidian-800\/50,
+.light-theme .rounded-xl.border.border-obsidian-700\/50,
+.light-theme .rounded-2xl {
+  background-color: var(--color-light-surface) !important;
+  border-color: var(--color-light-border) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light theme - Card component specific */
+.light-theme .rounded-2xl.bg-obsidian-900\/80 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Light theme - Buttons */
+.light-theme button.bg-obsidian-800,
+.light-theme .bg-obsidian-800 {
+  background-color: var(--color-light-surface-elevated) !important;
+  color: var(--color-light-text-secondary) !important;
+}
+
+.light-theme button:hover.bg-obsidian-800,
+.light-theme .hover\:bg-obsidian-800:hover {
+  background-color: #e2e8f0 !important;
+}
+
+/* Light theme - Button SVG icons */
+.light-theme button svg,
+.light-theme .bg-obsidian-800 svg {
+  color: var(--color-light-text-secondary) !important;
+}
+
+/* Light theme - Inputs */
+.light-theme input,
+.light-theme textarea,
+.light-theme select {
+  background-color: var(--color-light-surface) !important;
+  border-color: var(--color-light-border) !important;
+  color: var(--color-light-text-primary) !important;
+}
+
+.light-theme input::placeholder,
+.light-theme textarea::placeholder {
+  color: var(--color-light-text-muted) !important;
+}
+
+.light-theme input:focus,
+.light-theme textarea:focus,
+.light-theme select:focus {
+  border-color: var(--color-light-accent) !important;
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1) !important;
+}
+
+/* Light theme - Scrollbar */
+.light-theme ::-webkit-scrollbar-track {
+  background: var(--color-light-surface-elevated) !important;
+}
+
+.light-theme ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-light-accent), #0e7490) !important;
+}
+
+/* Light theme - Selection */
+.light-theme ::selection {
+  background-color: rgba(8, 145, 178, 0.2) !important;
+  color: var(--color-light-text-primary) !important;
+}
+
+/* Light theme - Code blocks */
+.light-theme pre,
+.light-theme code {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+.light-theme .prose code {
+  background-color: #f1f5f9 !important;
+  color: #0891b2 !important;
+}
+
+/* Light theme - Specific component overrides */
+.light-theme .bg-slate-800\/50,
+.light-theme .bg-slate-800\/30,
+.light-theme .bg-slate-800 {
+  background-color: var(--color-light-surface) !important;
+}
+
+.light-theme .bg-slate-900,
+.light-theme .bg-slate-900\/50 {
+  background-color: var(--color-light-surface-elevated) !important;
+}
+
+.light-theme .border-slate-700\/50,
+.light-theme .border-slate-700,
+.light-theme .border-slate-600\/50 {
+  border-color: var(--color-light-border) !important;
+}
+
+.light-theme .text-slate-300,
+.light-theme .text-slate-400 {
+  color: var(--color-light-text-secondary) !important;
+}
+
+.light-theme .text-slate-500 {
+  color: var(--color-light-text-muted) !important;
+}
+
+/* Light theme - Gradient text */
+.light-theme .gradient-text {
+  background: linear-gradient(135deg, #0891b2, #7c3aed, #db2777) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Light theme - Severity colors (keep vibrant) */
+.light-theme .severity-critical { color: #dc2626 !important; }
+.light-theme .severity-high { color: #ea580c !important; }
+.light-theme .severity-medium { color: #ca8a04 !important; }
+.light-theme .severity-low { color: #2563eb !important; }
+.light-theme .severity-info { color: #0891b2 !important; }
+
+/* Light theme - Neon colors adjustments for better visibility */
+.light-theme .text-neon-green { color: #16a34a !important; }
+.light-theme .text-neon-red { color: #dc2626 !important; }
+.light-theme .text-neon-yellow { color: #ca8a04 !important; }
+.light-theme .text-neon-orange { color: #ea580c !important; }
+.light-theme .text-neon-blue { color: #2563eb !important; }
+.light-theme .text-neon-purple { color: #7c3aed !important; }
+.light-theme .text-neon-pink { color: #db2777 !important; }
+.light-theme .text-cyber-500 { color: #0891b2 !important; }
+
+/* Light theme - Background color adjustments */
+.light-theme .bg-neon-green\/10 { background-color: rgba(22, 163, 74, 0.1) !important; }
+.light-theme .bg-neon-green\/20 { background-color: rgba(22, 163, 74, 0.15) !important; }
+.light-theme .bg-neon-red\/10 { background-color: rgba(220, 38, 38, 0.1) !important; }
+.light-theme .bg-neon-red\/20 { background-color: rgba(220, 38, 38, 0.15) !important; }
+.light-theme .bg-neon-yellow\/10 { background-color: rgba(202, 138, 4, 0.1) !important; }
+.light-theme .bg-neon-yellow\/20 { background-color: rgba(202, 138, 4, 0.15) !important; }
+.light-theme .bg-cyber-500\/10 { background-color: rgba(8, 145, 178, 0.1) !important; }
+.light-theme .bg-cyber-500\/20 { background-color: rgba(8, 145, 178, 0.15) !important; }
+.light-theme .bg-neon-purple\/10 { background-color: rgba(124, 58, 237, 0.1) !important; }
+.light-theme .bg-neon-purple\/20 { background-color: rgba(124, 58, 237, 0.15) !important; }
+
+/* Light theme - Monaco editor override */
+.light-theme .monaco-editor {
+  background-color: var(--color-light-surface) !important;
+}
+
+.light-theme .monaco-editor .margin {
+  background-color: var(--color-light-surface-elevated) !important;
+}
+
+/* Light theme - Prose/Markdown */
+.light-theme .prose {
+  color: var(--color-light-text-primary) !important;
+}
+
+.light-theme .prose h1,
+.light-theme .prose h2,
+.light-theme .prose h3,
+.light-theme .prose h4,
+.light-theme .prose h5,
+.light-theme .prose h6 {
+  color: var(--color-light-text-primary) !important;
+}
+
+.light-theme .prose p,
+.light-theme .prose li {
+  color: var(--color-light-text-secondary) !important;
+}
+
+.light-theme .prose strong {
+  color: var(--color-light-text-primary) !important;
+}
+
+.light-theme .prose a {
+  color: var(--color-light-accent) !important;
+}
+
+/* Light theme - Syntax highlighter override */
+.light-theme pre[class*="language-"],
+.light-theme code[class*="language-"] {
+  background-color: #f8fafc !important;
+  color: #334155 !important;
+}
+
+/* Light theme - Chat messages */
+.light-theme .bg-cyber-500 {
+  background-color: #0891b2 !important;
+  color: white !important;
+}
+
+.light-theme .bg-cyber-500 .text-obsidian-950 {
+  color: white !important;
+}
+
+/* Light theme - Gradient backgrounds */
+.light-theme .bg-gradient-to-br.from-obsidian-800\/80.to-obsidian-900\/80 {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.95)) !important;
+}
+
+.light-theme .from-obsidian-900\/50 {
+  --tw-gradient-from: rgba(255, 255, 255, 0.8) !important;
+}
+
+.light-theme .to-obsidian-900\/50 {
+  --tw-gradient-to: rgba(248, 250, 252, 0.8) !important;
+}
+
+/* Light theme - Charts and metrics */
+.light-theme .recharts-surface {
+  background-color: transparent !important;
+}
+
+.light-theme .recharts-wrapper {
+  background-color: transparent !important;
+}
+
+.light-theme .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border-color: var(--color-light-border) !important;
+  color: var(--color-light-text-primary) !important;
+}
+
+/* Light theme - Score ring and gauges */
+.light-theme svg circle[stroke="#1a1d27"] {
+  stroke: #e2e8f0 !important;
+}
+
+/* Light theme - Metric cards */
+.light-theme .bg-obsidian-900\/50 {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+}
+
+.light-theme .bg-obsidian-900\/30 {
+  background-color: rgba(248, 250, 252, 0.7) !important;
+}
+
+/* Light theme - Expandable sections */
+.light-theme .hover\:bg-obsidian-700\/30:hover {
+  background-color: rgba(226, 232, 240, 0.5) !important;
+}
+
+/* Light theme - Tab buttons */
+.light-theme button[class*="bg-obsidian-800\/50"] {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+  color: var(--color-light-text-secondary) !important;
+}
+
+.light-theme button[class*="bg-obsidian-800\/50"]:hover {
+  background-color: rgba(226, 232, 240, 0.9) !important;
+}
+
+/* Light theme - Active tabs */
+.light-theme [data-state="active"],
+.light-theme .bg-cyber-500\/20 {
+  background-color: rgba(8, 145, 178, 0.15) !important;
+}
+
+/* Light theme - React Flow / CFG */
+.light-theme .react-flow__background {
+  background-color: var(--color-light-surface) !important;
+}
+
+.light-theme .react-flow__node {
+  background-color: var(--color-light-surface) !important;
+  border-color: var(--color-light-border) !important;
+}
+
+.light-theme .react-flow__minimap {
+  background-color: var(--color-light-surface-elevated) !important;
+}
+
+/* Light theme - Dropdown/Select */
+.light-theme select option {
+  background-color: var(--color-light-surface) !important;
+  color: var(--color-light-text-primary) !important;
+}
+
+/* Light theme - Badges and pills */
+.light-theme .rounded-full[class*="bg-"] {
+  border-color: var(--color-light-border) !important;
+}
+
+/* Light theme - Dividers */
+.light-theme .border-t.border-obsidian-700\/50,
+.light-theme .border-b.border-obsidian-700\/50 {
+  border-color: var(--color-light-border) !important;
+}
+
+/* Light theme - Empty states */
+.light-theme .text-obsidian-500 {
+  color: var(--color-light-text-muted) !important;
+}
+
+/* Light theme - Hover states */
+.light-theme .hover\:bg-obsidian-800\/50:hover {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+.light-theme .hover\:bg-obsidian-700\/50:hover {
+  background-color: rgba(226, 232, 240, 0.6) !important;
+}
+
+/* Light theme - Focus states */
+.light-theme *:focus-visible {
+  outline-color: var(--color-light-accent) !important;
+}
+
+/* Light theme - Shadows for depth */
+.light-theme .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-theme .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light theme - Animated gradients */
+.light-theme .animate-glow {
+  animation: none !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light theme - AI Panel specific */
+.light-theme .prose-invert {
+  color: var(--color-light-text-primary) !important;
+}
+
+.light-theme .prose-invert h1,
+.light-theme .prose-invert h2,
+.light-theme .prose-invert h3,
+.light-theme .prose-invert h4 {
+  color: var(--color-light-text-primary) !important;
+}
+
+.light-theme .prose-invert p,
+.light-theme .prose-invert li {
+  color: var(--color-light-text-secondary) !important;
+}
+
+.light-theme .prose-invert code {
+  background-color: #f1f5f9 !important;
+  color: #0891b2 !important;
+}
+
+.light-theme .prose-invert pre {
+  background-color: #f8fafc !important;
+  border: 1px solid var(--color-light-border) !important;
+  }
+
+/* Light theme - Security Panel */
+.light-theme .bg-red-500\/10,
+.light-theme .bg-red-900\/20 {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+.light-theme .bg-orange-500\/10,
+.light-theme .bg-orange-900\/20 {
+  background-color: rgba(249, 115, 22, 0.1) !important;
+}
+
+.light-theme .bg-yellow-500\/10,
+.light-theme .bg-yellow-900\/20 {
+  background-color: rgba(234, 179, 8, 0.1) !important;
+}
+
+.light-theme .bg-green-500\/10,
+.light-theme .bg-green-900\/20 {
+  background-color: rgba(34, 197, 94, 0.1) !important;
+}
+
+.light-theme .bg-blue-500\/10,
+.light-theme .bg-blue-900\/20 {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Light theme - Custom Rules Panel */
+.light-theme .bg-purple-500\/10,
+.light-theme .bg-purple-600\/30 {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+
+/* Light theme - Issue cards */
+.light-theme .rounded-xl.border.border-obsidian-700\/30 {
+  background-color: var(--color-light-surface) !important;
+  border-color: var(--color-light-border) !important;
+}
+
+/* Light theme - Stats cards at bottom */
+.light-theme .bg-obsidian-900\/60.backdrop-blur-xl {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(20px);
+  }
+
+/* Light theme - Cyber accent backgrounds */
+.light-theme .bg-cyber-500\/10 {
+  background-color: rgba(8, 145, 178, 0.08) !important;
+}
+
+.light-theme .bg-cyber-500\/20 {
+  background-color: rgba(8, 145, 178, 0.12) !important;
+}
+
+/* Light theme - Ensure all text is readable */
+.light-theme [class*="text-obsidian-"] {
+  color: var(--color-light-text-secondary) !important;
+}
+
+.light-theme .text-obsidian-100,
+.light-theme .text-obsidian-200 {
+  color: var(--color-light-text-primary) !important;
+}
+
+/* Light theme - Fix gradient text */
+.light-theme .gradient-text {
+  background: linear-gradient(135deg, #0891b2, #7c3aed, #db2777) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-obsidian-900);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-cyber-500), var(--color-neon-purple));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--color-cyber-400), var(--color-neon-pink));
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-cyber-500);
+  color: var(--color-obsidian-950);
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--color-cyber-500);
+  outline-offset: 2px;
+}
+
+/* Code blocks */
+code, pre {
+  font-family: var(--font-mono);
+}
+
+/* Glass morphism utility */
+.glass {
+  background: rgba(26, 29, 39, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 213, 0.1);
+}
+
+.glass-dark {
+  background: rgba(13, 15, 20, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(191, 90, 242, 0.1);
+  }
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-cyber-500), var(--color-neon-purple), var(--color-neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Grid pattern background */
+.grid-pattern {
+  background-image: 
+    linear-gradient(rgba(0, 255, 213, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 213, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Noise texture overlay */
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Severity colors */
+.severity-critical {
+  color: var(--color-neon-red);
+  border-color: var(--color-neon-red);
+}
+
+.severity-high {
+  color: var(--color-neon-orange);
+  border-color: var(--color-neon-orange);
+}
+
+.severity-medium {
+  color: var(--color-neon-yellow);
+  border-color: var(--color-neon-yellow);
+}
+
+.severity-low {
+  color: var(--color-neon-blue);
+  border-color: var(--color-neon-blue);
+}
+
+.severity-info {
+  color: var(--color-cyber-500);
+  border-color: var(--color-cyber-500);
+}
