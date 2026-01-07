@@ -701,3 +701,34 @@ code, pre {
   color: var(--color-cyber-500);
   border-color: var(--color-cyber-500);
 }
+
+/* Clerk Auth Wrapper - hide footer elements */
+.clerk-auth-wrapper {
+  position: relative;
+}
+
+/* Hide Clerk branding and development mode badges */
+.clerk-auth-wrapper a[href*="clerk.com"],
+.clerk-auth-wrapper a[href*="clerk.dev"],
+.clerk-auth-wrapper [class*="cl-footerPages"],
+.clerk-auth-wrapper [class*="cl-footerPagesLink"],
+.clerk-auth-wrapper [class*="cl-footer"]:not([class*="cl-footerAction"]) {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Target the specific Clerk footer section with branding */
+.clerk-auth-wrapper [class*="cl-card"] > div:last-child > div:last-child {
+  display: none !important;
+}
+
+/* Ensure social buttons have good contrast */
+.clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"] {
+  border-width: 2px !important;
+}
+
+.clerk-auth-wrapper [class*="cl-socialButtonsBlockButtonText"] {
+  font-weight: 600 !important;
+}

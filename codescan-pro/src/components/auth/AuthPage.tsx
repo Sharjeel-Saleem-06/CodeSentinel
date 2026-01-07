@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SignIn, SignUp } from '@clerk/clerk-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -59,6 +59,37 @@ const benefits = [
 export function AuthPage() {
   const [mode, setMode] = useState<AuthMode>('signin');
   const { isDark } = useTheme();
+
+  // Hide Clerk branding elements after render
+  useEffect(() => {
+    const hideClerkBranding = () => {
+      // Target specific elements by their name attribute
+      document.querySelectorAll('[name="Secured by"], [name="Development mode"]').forEach(el => {
+        if (el instanceof HTMLElement && el.parentElement && el.parentElement.parentElement) {
+          // Hide the grandparent container that holds both the badge and text
+          el.parentElement.parentElement.style.display = 'none';
+        }
+      });
+      
+      // Also hide links to clerk.com
+      document.querySelectorAll('a[href*="clerk.com"], a[href*="clerk.dev"]').forEach(el => {
+        if (el instanceof HTMLElement && el.parentElement) {
+          el.parentElement.style.display = 'none';
+        }
+      });
+    };
+
+    // Run after delays to catch dynamically loaded content
+    const timer1 = setTimeout(hideClerkBranding, 100);
+    const timer2 = setTimeout(hideClerkBranding, 500);
+    const timer3 = setTimeout(hideClerkBranding, 1000);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, [mode]);
 
   // Enhanced Clerk appearance with better contrast and readability
   const clerkAppearance = {
@@ -130,13 +161,24 @@ export function AuthPage() {
         isDark ? 'text-slate-200' : 'text-gray-700'
       ),
       // Hide development mode and powered by badges
-      footer: 'hidden',
-      badge: 'hidden',
-      internal: 'hidden',
+      footer: '!hidden',
+      footerAction: '!hidden',
+      badge: '!hidden',
+      internal: '!hidden',
+      logoBox: '!hidden',
+      logoImage: '!hidden',
+      // Hide the powered by footer completely
+      cardFooter: '!hidden',
+      footerPages: '!hidden',
+      footerPagesLink: '!hidden',
+      // Additional selectors for Clerk branding
+      poweredByClerk: '!hidden',
+      clerkBadge: '!hidden',
     },
     layout: {
       socialButtonsPlacement: 'top' as const,
       showOptionalFields: false,
+      logoPlacement: 'none' as const,
     },
   };
 
@@ -353,7 +395,7 @@ export function AuthPage() {
             </button>
           </div>
 
-          {/* Clerk Auth Components */}
+          {/* Clerk Auth Components - wrapped to hide footer */}
           <AnimatePresence mode="wait">
             <motion.div
               key={mode}
@@ -361,6 +403,7 @@ export function AuthPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
+              className="clerk-auth-wrapper"
             >
               {mode === 'signin' ? (
                 <SignIn 
