@@ -727,13 +727,13 @@ code, pre {
 /* Ensure social buttons have good contrast */
 .clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"] {
   border-width: 2px !important;
-  background-color: rgba(30, 41, 59, 0.8) !important;
-  border-color: rgba(100, 116, 139, 0.8) !important;
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  border-color: rgba(139, 92, 246, 0.5) !important;
 }
 
 .clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"]:hover {
-  background-color: rgba(51, 65, 85, 0.9) !important;
-  border-color: rgba(168, 85, 247, 0.6) !important;
+  background-color: rgba(51, 65, 85, 1) !important;
+  border-color: rgba(168, 85, 247, 0.8) !important;
 }
 
 .clerk-auth-wrapper [class*="cl-socialButtonsBlockButtonText"],
@@ -745,4 +745,137 @@ code, pre {
 /* Force all text in Clerk social buttons to be white */
 .clerk-auth-wrapper button[class*="cl-socialButtonsBlockButton"] * {
   color: #ffffff !important;
+}
+
+/* ============================================ */
+/* Clerk OTP/Verification Code Input Styling   */
+/* ============================================ */
+
+/* OTP Code input boxes - make them visible */
+.clerk-auth-wrapper [class*="cl-otpCodeField"],
+.clerk-auth-wrapper [class*="cl-otpCodeFieldInput"],
+.clerk-auth-wrapper input[class*="cl-otpCodeFieldInput"] {
+  background-color: rgba(51, 65, 85, 0.8) !important;
+  border: 2px solid rgba(139, 92, 246, 0.5) !important;
+  color: #ffffff !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+}
+
+.clerk-auth-wrapper [class*="cl-otpCodeFieldInput"]:focus {
+  border-color: rgba(168, 85, 247, 1) !important;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.3) !important;
+  background-color: rgba(71, 85, 105, 0.9) !important;
+}
+
+/* All form inputs in Clerk */
+.clerk-auth-wrapper [class*="cl-formFieldInput"],
+.clerk-auth-wrapper input[class*="cl-formFieldInput"] {
+  background-color: rgba(51, 65, 85, 0.8) !important;
+  border: 2px solid rgba(100, 116, 139, 0.6) !important;
+  color: #ffffff !important;
+}
+
+.clerk-auth-wrapper [class*="cl-formFieldInput"]:focus {
+  border-color: rgba(168, 85, 247, 0.8) !important;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2) !important;
+  background-color: rgba(71, 85, 105, 0.9) !important;
+}
+
+.clerk-auth-wrapper [class*="cl-formFieldInput"]::placeholder {
+  color: rgba(148, 163, 184, 0.8) !important;
+}
+
+/* Form labels */
+.clerk-auth-wrapper [class*="cl-formFieldLabel"] {
+  color: #e2e8f0 !important;
+  font-weight: 500 !important;
+}
+
+/* Card background */
+.clerk-auth-wrapper [class*="cl-card"] {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+  border: 1px solid rgba(71, 85, 105, 0.5) !important;
+}
+
+/* Header text */
+.clerk-auth-wrapper [class*="cl-headerTitle"] {
+  color: #ffffff !important;
+}
+
+.clerk-auth-wrapper [class*="cl-headerSubtitle"] {
+  color: #cbd5e1 !important;
+}
+
+/* Identity preview (email display) */
+.clerk-auth-wrapper [class*="cl-identityPreview"] {
+  background-color: rgba(51, 65, 85, 0.5) !important;
+  border: 1px solid rgba(100, 116, 139, 0.4) !important;
+}
+
+.clerk-auth-wrapper [class*="cl-identityPreviewText"] {
+  color: #e2e8f0 !important;
+}
+
+.clerk-auth-wrapper [class*="cl-identityPreviewEditButton"] {
+  color: #a78bfa !important;
+}
+
+/* Divider */
+.clerk-auth-wrapper [class*="cl-dividerLine"] {
+  background-color: rgba(100, 116, 139, 0.4) !important;
+}
+
+.clerk-auth-wrapper [class*="cl-dividerText"] {
+  color: #94a3b8 !important;
+}
+
+/* Links and action text */
+.clerk-auth-wrapper [class*="cl-footerActionLink"] {
+  color: #a78bfa !important;
+}
+
+.clerk-auth-wrapper [class*="cl-footerActionLink"]:hover {
+  color: #c4b5fd !important;
+}
+
+.clerk-auth-wrapper [class*="cl-footerActionText"] {
+  color: #94a3b8 !important;
+}
+
+/* Resend code link */
+.clerk-auth-wrapper [class*="cl-formResendCodeLink"] {
+  color: #a78bfa !important;
+}
+
+/* Alert messages */
+.clerk-auth-wrapper [class*="cl-alert"] {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+.clerk-auth-wrapper [class*="cl-alertText"] {
+  color: #fca5a5 !important;
+}
+
+/* Primary button */
+.clerk-auth-wrapper [class*="cl-formButtonPrimary"] {
+  background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4) !important;
+}
+
+.clerk-auth-wrapper [class*="cl-formButtonPrimary"]:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%) !important;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5) !important;
+}
+
+/* Show password button */
+.clerk-auth-wrapper [class*="cl-formFieldInputShowPasswordButton"] {
+  color: #94a3b8 !important;
+}
+
+.clerk-auth-wrapper [class*="cl-formFieldInputShowPasswordButton"]:hover {
+  color: #e2e8f0 !important;
 }
