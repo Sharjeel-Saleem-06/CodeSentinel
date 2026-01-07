@@ -62,16 +62,22 @@
 
 ---
 
-## 📁 Files to Copy for Manual Deploy
+## 📁 Project Structure for Deployment
 
-Copy these files to the root of your deployed `dist` folder:
+We have configured the project for automatic file handling:
 
 ```
-netlify/
-├── _redirects     → Copy to dist/_redirects
-├── _headers       → Copy to dist/_headers
-└── netlify.toml   → Keep in project root
+/
+├── netlify.toml         (Moved to root for Netlify Bot)
+├── public/
+│   ├── _redirects       (Moved here to be auto-copied to dist/)
+│   └── _headers         (Moved here to be auto-copied to dist/)
+└── netlify/
+    └── DEPLOYMENT.md    (This guide)
 ```
+
+**You do NOT need to manually copy files anymore.**
+Just run `npm run build` and the `dist` folder will automatically contain `_redirects` and `_headers`.
 
 ---
 

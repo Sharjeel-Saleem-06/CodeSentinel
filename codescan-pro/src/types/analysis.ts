@@ -3,10 +3,10 @@
  */
 
 // Severity levels for issues
-export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
+export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info' | 'error' | 'warning';
 
 // Supported programming languages
-export type Language = 
+export type Language =
   | 'javascript'
   | 'typescript'
   | 'python'
@@ -26,7 +26,7 @@ export type Language =
 export type AnalysisStatus = 'idle' | 'parsing' | 'analyzing' | 'complete' | 'error';
 
 // Issue category
-export type IssueCategory = 
+export type IssueCategory =
   | 'security'
   | 'performance'
   | 'quality'
@@ -55,6 +55,7 @@ export interface SourceLocation {
   column: number;
   endLine?: number;
   endColumn?: number;
+  file?: string;
 }
 
 // Code issue/finding
@@ -71,6 +72,8 @@ export interface CodeIssue {
   owasp?: OWASPReference;
   ruleId?: string;
   fixable?: boolean;
+  autoFixable?: boolean;
+  references?: string[];
   fix?: CodeFix;
 }
 
@@ -226,22 +229,22 @@ export interface CodeMetrics {
   codeLines: number;
   commentLines: number;
   blankLines: number;
-  
+
   // Complexity metrics
   cyclomaticComplexity: number;
   cognitiveComplexity: number;
-  
+
   // Halstead metrics
   halstead: HalsteadMetrics;
-  
+
   // Maintainability
   maintainabilityIndex: number;
-  
+
   // Other metrics
   maxNestingDepth: number;
   averageFunctionLength: number;
   duplicateCodePercentage: number;
-  
+
   // Counts
   functionCount: number;
   classCount: number;
@@ -323,34 +326,34 @@ export interface AnalysisResult {
   language: Language;
   status: AnalysisStatus;
   executionTimeMs: number;
-  
+
   // Source info
   sourceCode: string;
   fileName?: string;
-  
+
   // AST analysis
   ast?: ASTNode;
   functions: FunctionInfo[];
   classes: ClassInfo[];
   imports: ImportInfo[];
   variables: VariableInfo[];
-  
+
   // Issues
   issues: CodeIssue[];
-  
+
   // Control flow
   controlFlowGraph?: ControlFlowGraph;
-  
+
   // Metrics
   metrics: CodeMetrics;
-  
+
   // Security
   security: SecurityScanResult;
   securityFindings?: SecurityFinding[];
-  
+
   // AI explanation (optional)
   aiExplanation?: string;
-  
+
   // Error if analysis failed
   error?: string;
 }

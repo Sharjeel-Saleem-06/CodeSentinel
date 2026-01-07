@@ -1,10 +1,4 @@
-/**
- * Advanced Code Detection System
- * Latest standards and best practices detection (2024)
- * Supports: JavaScript, TypeScript, Python, Java, Kotlin, Swift, Go, Rust, C++, C#, PHP, Ruby
- */
-
-import type { CodeIssue, SecurityFinding, Language } from '../../types/analysis';
+import type { CodeIssue, SecurityFinding } from '../../types/analysis';
 import { runKotlinDetection } from './kotlinDetector';
 import { runSwiftDetection } from './swiftDetector';
 
@@ -199,7 +193,7 @@ export const DETECTION_RULES: DetectionRule[] = [
     suggestion: 'Replace == with === and != with !== to avoid type coercion issues.',
     references: ['ESLint eqeqeq', 'JavaScript Equality'],
     autoFixable: true,
-    fix: (code, match) => code.replace(/([^=!<>])==([^=])/g, '$1===$2').replace(/([^=!])!=([^=])/g, '$1!==$2'),
+    fix: (code, _match) => code.replace(/([^=!<>])==([^=])/g, '$1===$2').replace(/([^=!])!=([^=])/g, '$1!==$2'),
   },
   {
     id: 'BP002',
@@ -212,7 +206,7 @@ export const DETECTION_RULES: DetectionRule[] = [
     suggestion: 'Use const for values that won\'t be reassigned, let for variables that will.',
     references: ['ESLint no-var', 'ES6 Specification'],
     autoFixable: true,
-    fix: (code, match) => code.replace(/\bvar\s+/g, 'const '),
+    fix: (code, _match) => code.replace(/\bvar\s+/g, 'const '),
   },
   {
     id: 'BP003',
@@ -492,7 +486,6 @@ export function runAdvancedDetection(
 ): { issues: CodeIssue[]; securityFindings: SecurityFinding[] } {
   const issues: CodeIssue[] = [];
   const securityFindings: SecurityFinding[] = [];
-  const lines = code.split('\n');
 
   // Run language-specific detection first
   if (language === 'kotlin') {
@@ -500,7 +493,7 @@ export function runAdvancedDetection(
     issues.push(...kotlinResults.issues);
     securityFindings.push(...kotlinResults.securityFindings);
   }
-  
+
   if (language === 'swift') {
     const swiftResults = runSwiftDetection(code);
     issues.push(...swiftResults.issues);
@@ -513,12 +506,12 @@ export function runAdvancedDetection(
     if (rule.id.startsWith('REACT') && !['javascript', 'typescript'].includes(language)) {
       continue;
     }
-    
+
     // Skip TS rules for non-TypeScript
     if (rule.id.startsWith('TS') && language !== 'typescript') {
       continue;
     }
-    
+
     // Skip JS/TS specific rules for other languages
     if (['kotlin', 'swift', 'python', 'java', 'go', 'rust'].includes(language)) {
       // Skip rules that are very JS/TS specific
@@ -530,7 +523,7 @@ export function runAdvancedDetection(
     if (rule.pattern instanceof RegExp) {
       const regex = new RegExp(rule.pattern.source, rule.pattern.flags);
       let match;
-      
+
       while ((match = regex.exec(code)) !== null) {
         // Find line number
         const beforeMatch = code.substring(0, match.index);
@@ -542,9 +535,8 @@ export function runAdvancedDetection(
           ruleId: rule.id,
           title: rule.name,
           description: rule.message,
-          severity: rule.severity === 'critical' ? 'error' : 
-                   rule.severity === 'high' ? 'error' :
-                   rule.severity === 'medium' ? 'warning' : 'info',
+          severity: rule.severity === 'critical' ? 'critical' :
+            rule.severity as any, // Cast to any to avoid type complaints with widened definitions
           location: {
             line: lineNumber,
             column,
@@ -566,12 +558,13 @@ export function runAdvancedDetection(
           securityFindings.push({
             id: issue.id,
             type: rule.name,
-            severity: rule.severity,
+            severity: issue.severity,
             vulnerability: rule.name,
             description: rule.message,
             location: {
               line: lineNumber,
               column,
+              file: 'input',
             },
             cwe: rule.references.find(r => r.startsWith('CWE-')),
             owaspCategory: rule.references.find(r => r.startsWith('OWASP')),
@@ -584,9 +577,20 @@ export function runAdvancedDetection(
   }
 
   // Sort by severity and line number
-  const severityOrder = { error: 0, warning: 1, info: 2 };
+  const severityOrder: Record<string, number> = {
+    critical: 0,
+    high: 1,
+    error: 1,
+    medium: 2,
+    warning: 2,
+    low: 3,
+    info: 4
+  };
+
   issues.sort((a, b) => {
-    const sevDiff = severityOrder[a.severity] - severityOrder[b.severity];
+    const sevA = severityOrder[a.severity] ?? 5;
+    const sevB = severityOrder[b.severity] ?? 5;
+    const sevDiff = sevA - sevB;
     return sevDiff !== 0 ? sevDiff : (a.location?.line || 0) - (b.location?.line || 0);
   });
 
@@ -605,7 +609,7 @@ export function applyAutoFixes(code: string, issues: CodeIssue[]): string {
 
   for (const issue of fixableIssues) {
     const rule = DETECTION_RULES.find(r => r.id === issue.ruleId);
-    if (rule?.fix && issue.codeSnippet) {
+    if (rule?.fix && issue.codeSnippet && rule.pattern instanceof RegExp) {
       const match = issue.codeSnippet.match(rule.pattern);
       if (match) {
         fixedCode = rule.fix(fixedCode, match);
@@ -619,8 +623,8 @@ export function applyAutoFixes(code: string, issues: CodeIssue[]): string {
 /**
  * Gets fix suggestions for an issue
  */
-export function getFixSuggestion(issue: Issue): string | null {
-  const rule = DETECTION_RULES.find(r => r.id === issue.rule);
+export function getFixSuggestion(issue: CodeIssue): string | null {
+  const rule = DETECTION_RULES.find(r => r.id === issue.ruleId);
   return rule?.suggestion || null;
 }
 
@@ -629,19 +633,19 @@ export function getFixSuggestion(issue: Issue): string | null {
  */
 export function passesSecurityAudit(code: string, language: string): {
   passed: boolean;
-  criticalIssues: Issue[];
+  criticalIssues: CodeIssue[];
   score: number;
 } {
   const { issues } = runAdvancedDetection(code, language);
   const criticalIssues = issues.filter(
-    i => i.severity === 'error' && 
-    DETECTION_RULES.find(r => r.id === i.rule)?.category === 'security'
+    i => (i.severity === 'critical' || i.severity === 'error') &&
+      DETECTION_RULES.find(r => r.id === i.ruleId)?.category === 'security'
   );
 
   // Calculate security score (100 - deductions)
   let score = 100;
   for (const issue of issues) {
-    const rule = DETECTION_RULES.find(r => r.id === issue.rule);
+    const rule = DETECTION_RULES.find(r => r.id === issue.ruleId);
     if (rule?.category === 'security') {
       switch (rule.severity) {
         case 'critical': score -= 25; break;
@@ -658,4 +662,3 @@ export function passesSecurityAudit(code: string, language: string): {
     score: Math.max(0, score),
   };
 }
-

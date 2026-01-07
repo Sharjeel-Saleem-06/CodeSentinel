@@ -1,10 +1,11 @@
-import { UserButton, useUser } from '@clerk/clerk-react';
+import { useUser, useClerk } from '@clerk/clerk-react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { cn } from '../../utils/cn';
 
 export function UserMenu() {
   const { user, isLoaded } = useUser();
+  const { openUserProfile } = useClerk();
   const { isDark } = useTheme();
 
   if (!isLoaded) {
@@ -21,7 +22,7 @@ export function UserMenu() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       className="flex items-center gap-3"
@@ -42,64 +43,22 @@ export function UserMenu() {
         </span>
       </div>
 
-      {/* Clerk User Button with enhanced styling for dark/light mode */}
-      <UserButton 
-        afterSignOutUrl="/"
-        appearance={{
-          elements: {
-            // Avatar styling
-            avatarBox: 'w-9 h-9 ring-2 ring-purple-500/50',
-            
-            // Popover card - the main dropdown container
-            userButtonPopoverCard: cn(
-              'border-2 shadow-2xl rounded-xl overflow-hidden',
-              isDark 
-                ? '!bg-slate-900 !border-slate-600' 
-                : '!bg-white !border-gray-200'
-            ),
-            
-            // User preview section at top of dropdown
-            userPreview: cn(
-              'p-4',
-              isDark ? '!bg-slate-800/50' : '!bg-gray-50'
-            ),
-            userPreviewMainIdentifier: cn(
-              'font-semibold text-base',
-              isDark ? '!text-white' : '!text-gray-900'
-            ),
-            userPreviewSecondaryIdentifier: cn(
-              'text-sm',
-              isDark ? '!text-slate-300' : '!text-gray-600'
-            ),
-            
-            // Action buttons (Manage account, Sign out)
-            userButtonPopoverActionButton: cn(
-              'transition-all rounded-lg mx-2 my-1',
-              isDark 
-                ? '!text-white hover:!bg-slate-700' 
-                : '!text-gray-800 hover:!bg-gray-100'
-            ),
-            userButtonPopoverActionButtonText: cn(
-              'font-medium',
-              isDark ? '!text-white' : '!text-gray-800'
-            ),
-            userButtonPopoverActionButtonIcon: cn(
-              isDark ? '!text-slate-300' : '!text-gray-600'
-            ),
-            
-            // Footer with Clerk branding - hide it
-            userButtonPopoverFooter: '!hidden',
-            footer: '!hidden',
-            badge: '!hidden',
-            
-            // Menu items
-            userButtonPopoverActions: cn(
-              'py-2',
-              isDark ? '!bg-slate-900' : '!bg-white'
-            ),
-          },
-        }}
-      />
+      {/* Custom Avatar Button to open Profile directly */}
+      <button
+        onClick={() => openUserProfile()}
+        className={cn(
+          "relative w-10 h-10 rounded-full overflow-hidden transition-all duration-300",
+          "ring-2 ring-purple-500/50 hover:ring-purple-500",
+          "focus:outline-none focus:ring-offset-2",
+          isDark ? "focus:ring-offset-slate-900" : "focus:ring-offset-white"
+        )}
+      >
+        <img
+          src={user.imageUrl}
+          alt="Profile"
+          className="w-full h-full object-cover"
+        />
+      </button>
     </motion.div>
   );
 }

@@ -4,7 +4,7 @@
  * Performs deep contextual analysis beyond simple pattern matching
  */
 
-import type { Language, CodeIssue, Severity, SecurityFinding } from '../../types/analysis';
+import type { Language, CodeIssue, Severity } from '../../types/analysis';
 import { queryAI } from '../ai/groqService';
 
 export interface SemanticIssue {
@@ -12,7 +12,7 @@ export interface SemanticIssue {
   type: 'lint' | 'architectural';
   title: string;
   description: string;
-  severity: 'critical' | 'high' | 'medium' | 'low';
+  severity: Severity;
   line?: number;
   whyProblem: string;
   bestPractice: string;
@@ -924,6 +924,23 @@ const HARDCODED_SECRETS_RULES = [
 /**
  * Run semantic analysis on code
  */
+// Define Semantic Rule Interface
+interface SemanticRule {
+  id: string;
+  type: 'lint' | 'architectural';
+  pattern: RegExp;
+  title: string;
+  description: string;
+  severity: Severity;
+  whyProblem: string;
+  bestPractice: string;
+  category: string;
+  framework: string;
+}
+
+/**
+ * Run semantic analysis on code
+ */
 export function runSemanticAnalysis(
   code: string,
   language: Language
@@ -932,43 +949,43 @@ export function runSemanticAnalysis(
   const codeIssues: CodeIssue[] = [];
 
   // Select rules based on language - Senior Architect approach for ALL languages
-  let rules: typeof SWIFTUI_SEMANTIC_RULES = [];
-  
+  let rules: SemanticRule[] = [];
+
   switch (language) {
     case 'swift':
-      rules = [...SWIFTUI_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...SWIFTUI_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     case 'kotlin':
-      rules = [...KOTLIN_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...KOTLIN_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     case 'javascript':
     case 'typescript':
-      rules = [...JAVASCRIPT_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...JAVASCRIPT_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     case 'python':
-      rules = [...PYTHON_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...PYTHON_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     case 'java':
-      rules = [...JAVA_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...JAVA_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     case 'go':
-      rules = [...GO_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...GO_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     case 'rust':
-      rules = [...RUST_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...RUST_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     case 'cpp':
-      rules = [...CPP_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...CPP_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     case 'php':
-      rules = [...PHP_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...PHP_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     case 'ruby':
-      rules = [...RUBY_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES];
+      rules = [...RUBY_SEMANTIC_RULES, ...HARDCODED_SECRETS_RULES] as SemanticRule[];
       break;
     default:
       // For unsupported languages, still check hardcoded secrets
-      rules = [...HARDCODED_SECRETS_RULES];
+      rules = [...HARDCODED_SECRETS_RULES] as SemanticRule[];
   }
 
   for (const rule of rules) {
@@ -1000,9 +1017,9 @@ export function runSemanticAnalysis(
           ruleId: rule.id,
           title: rule.title,
           description: `${rule.description}\n\n**Why it's a problem:** ${rule.whyProblem}\n\n**Best Practice:** ${rule.bestPractice}`,
-          severity: rule.severity === 'critical' ? 'error' : 
-                   rule.severity === 'high' ? 'error' :
-                   rule.severity === 'medium' ? 'warning' : 'info',
+          severity: rule.severity === 'critical' ? 'error' :
+            rule.severity === 'high' ? 'error' :
+              rule.severity === 'medium' ? 'warning' : 'info',
           location: {
             line: lineNumber,
             column: match.index - beforeMatch.lastIndexOf('\n'),
@@ -1023,8 +1040,8 @@ export function runSemanticAnalysis(
   }
 
   // Sort by severity
-  const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-  issues.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+  const severityOrder = { critical: 0, error: 0, high: 1, medium: 2, warning: 2, low: 3, info: 4 };
+  issues.sort((a, b) => (severityOrder[a.severity] ?? 5) - (severityOrder[b.severity] ?? 5));
   codeIssues.sort((a, b) => {
     const sevA = a.severity === 'error' ? 0 : a.severity === 'warning' ? 1 : 2;
     const sevB = b.severity === 'error' ? 0 : b.severity === 'warning' ? 1 : 2;
@@ -1245,7 +1262,7 @@ ${code}
  */
 export function parseSemanticAIResponse(response: string): SemanticIssue[] {
   const issues: SemanticIssue[] = [];
-  
+
   // Try JSON format first
   try {
     const jsonMatch = response.match(/\[[\s\S]*\]/);
@@ -1277,7 +1294,7 @@ export function parseSemanticAIResponse(response: string): SemanticIssue[] {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    
+
     // Platform detection
     if (line.match(/^Platform\s*:/i)) {
       // If we have a previous issue, save it
@@ -1302,9 +1319,9 @@ export function parseSemanticAIResponse(response: string): SemanticIssue[] {
       let whyText = line.replace(/^Why\s*(this\s+is\s+)?risky\s*:\s*/i, '').trim();
       whyText = whyText.replace(/^Why\s*it\s*is\s*a\s*problem\s*:\s*/i, '').trim();
       // Check for continuation on next lines
-      while (i + 1 < lines.length && 
-             !lines[i + 1].trim().match(/^(Platform|Severity|Issue|Why|Correct|Category|Best\s*Practice)\s*:/i) &&
-             lines[i + 1].trim() && !lines[i + 1].trim().startsWith('---')) {
+      while (i + 1 < lines.length &&
+        !lines[i + 1].trim().match(/^(Platform|Severity|Issue|Why|Correct|Category|Best\s*Practice)\s*:/i) &&
+        lines[i + 1].trim() && !lines[i + 1].trim().startsWith('---')) {
         i++;
         whyText += ' ' + lines[i].trim();
       }
@@ -1314,9 +1331,9 @@ export function parseSemanticAIResponse(response: string): SemanticIssue[] {
     else if (line.match(/^(Correct\s+)?Best\s*Practice\s*:/i)) {
       let practiceText = line.replace(/^(Correct\s+)?Best\s*Practice\s*:\s*/i, '').trim();
       // Check for continuation
-      while (i + 1 < lines.length && 
-             !lines[i + 1].trim().match(/^(Platform|Severity|Issue|Why|Correct|Category|Best\s*Practice)\s*:/i) &&
-             lines[i + 1].trim() && !lines[i + 1].trim().startsWith('---')) {
+      while (i + 1 < lines.length &&
+        !lines[i + 1].trim().match(/^(Platform|Severity|Issue|Why|Correct|Category|Best\s*Practice)\s*:/i) &&
+        lines[i + 1].trim() && !lines[i + 1].trim().startsWith('---')) {
         i++;
         practiceText += ' ' + lines[i].trim();
       }
@@ -1327,9 +1344,9 @@ export function parseSemanticAIResponse(response: string): SemanticIssue[] {
       const categoryStr = line.replace(/^Category\s*:\s*/i, '').trim();
       currentIssue.category = mapCategory(categoryStr);
       // Determine issue type based on category
-      if (categoryStr.toLowerCase().includes('architectural') || 
-          categoryStr.toLowerCase().includes('memory') ||
-          categoryStr.toLowerCase().includes('lifecycle')) {
+      if (categoryStr.toLowerCase().includes('architectural') ||
+        categoryStr.toLowerCase().includes('memory') ||
+        categoryStr.toLowerCase().includes('lifecycle')) {
         currentIssue.type = 'architectural';
       } else {
         currentIssue.type = 'lint';
@@ -1364,7 +1381,7 @@ function mapSeverity(severity: string | undefined): SemanticIssue['severity'] {
 function mapCategory(category: string | undefined): string {
   if (!category) return 'general';
   const lower = category.toLowerCase().trim();
-  
+
   // Map Senior Mobile Architect categories
   if (lower.includes('runtime') || lower.includes('crash')) return 'runtime-crash';
   if (lower.includes('memory') || lower.includes('lifecycle')) return 'memory-lifecycle';
@@ -1376,7 +1393,7 @@ function mapCategory(category: string | undefined): string {
   if (lower.includes('performance')) return 'performance';
   if (lower.includes('null')) return 'null-safety';
   if (lower.includes('coroutine')) return 'coroutines';
-  
+
   return category;
 }
 
@@ -1410,17 +1427,17 @@ export async function runAISemanticAnalysis(
 
   // Then, get AI analysis
   const prompt = generateSemanticAnalysisPrompt(code, language);
-  
+
   try {
     const aiResponse = await queryAI(prompt);
-    
+
     const aiIssues = parseSemanticAIResponse(aiResponse);
-    
+
     // Merge and deduplicate
     const allIssues = [...ruleIssues];
     for (const aiIssue of aiIssues) {
       // Check if similar issue already exists
-      const isDuplicate = ruleIssues.some(ri => 
+      const isDuplicate = ruleIssues.some(ri =>
         ri.title.toLowerCase() === aiIssue.title.toLowerCase() ||
         (ri.line === aiIssue.line && ri.category === aiIssue.category)
       );
@@ -1453,7 +1470,7 @@ export async function runAISemanticAnalysis(
     };
   } catch (e) {
     console.error('Error in AI semantic analysis:', e);
-    
+
     // Return rule-based results only
     const criticalCount = ruleIssues.filter(i => i.severity === 'critical').length;
     const highCount = ruleIssues.filter(i => i.severity === 'high').length;
