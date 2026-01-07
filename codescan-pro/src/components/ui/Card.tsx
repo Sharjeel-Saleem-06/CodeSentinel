@@ -7,14 +7,17 @@ import { forwardRef, type HTMLAttributes } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+interface CardProps {
   variant?: 'default' | 'glass' | 'bordered';
   hover?: boolean;
   animate?: boolean;
+  children?: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
 }
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant = 'default', hover = false, animate = false, children, ...props }, ref) => {
+  ({ className, variant = 'default', hover = false, animate = false, children, onClick }, ref) => {
     const baseStyles = 'rounded-2xl';
 
     const variants = {
@@ -27,22 +30,29 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       ? 'transition-all duration-300 hover:border-cyber-500/30 hover:shadow-lg hover:shadow-cyber-500/10' 
       : '';
 
-    const Component = animate ? motion.div : 'div';
-    const animateProps = animate ? {
-      initial: { opacity: 0, y: 20 },
-      animate: { opacity: 1, y: 0 },
-      transition: { duration: 0.3 },
-    } : {};
+    if (animate) {
+      return (
+        <motion.div
+          ref={ref}
+          className={cn(baseStyles, variants[variant], hoverStyles, className)}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          onClick={onClick}
+        >
+          {children}
+        </motion.div>
+      );
+    }
 
     return (
-      <Component
+      <div
         ref={ref}
         className={cn(baseStyles, variants[variant], hoverStyles, className)}
-        {...animateProps}
-        {...props}
+        onClick={onClick}
       >
         {children}
-      </Component>
+      </div>
     );
   }
 );

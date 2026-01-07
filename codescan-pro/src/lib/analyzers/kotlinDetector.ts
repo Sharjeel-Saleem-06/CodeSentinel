@@ -270,7 +270,7 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
     suggestion: 'Use val instead of var. Create new instances using copy() for modifications.',
     references: ['Kotlin Data Classes', 'Immutability'],
     autoFixable: true,
-    fix: (code, match) => code.replace(/data\s+class\s+(\w+)\s*\(([^)]*)\bvar\b/, 'data class $1($2val'),
+    fix: (code, _match) => code.replace(/data\s+class\s+(\w+)\s*\(([^)]*)\bvar\b/, 'data class $1($2val'),
   },
   {
     id: 'KT-BP003',

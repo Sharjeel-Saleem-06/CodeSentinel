@@ -19,9 +19,7 @@ import {
   Download,
   Upload,
   RefreshCw,
-  AlertTriangle,
   CheckCircle,
-  Info,
   Zap,
   Code,
   Search,
@@ -35,7 +33,6 @@ import {
   type CustomRule,
   type RulePlatform,
   loadCustomRules,
-  saveCustomRules,
   addCustomRule,
   updateCustomRule,
   deleteCustomRule,
@@ -246,9 +243,10 @@ export function CustomRulesPanel({ language, onRulesChange }: CustomRulesPanelPr
     setRules(loadCustomRules());
   }, []);
 
-  const handleRefresh = () => {
+  // Refresh handler (reserved for toolbar)
+  void (() => {
     setRules(loadCustomRules());
-  };
+  });
 
   const handleToggleRule = (id: string) => {
     const updated = toggleRule(id);
@@ -632,7 +630,9 @@ export function CustomRulesPanel({ language, onRulesChange }: CustomRulesPanelPr
                       isDark ? "text-white" : "text-gray-900"
                     )}>{rule.name}</span>
                     {rule.aiGenerated && (
-                      <Sparkles className="w-3 h-3 text-purple-500" title="AI Generated" />
+                      <span title="AI Generated">
+                        <Sparkles className="w-3 h-3 text-purple-500" />
+                      </span>
                     )}
                     <span className={`px-2 py-0.5 rounded-full text-xs ${SEVERITY_CONFIG[rule.severity]?.bg} ${SEVERITY_CONFIG[rule.severity]?.color}`}>
                       {SEVERITY_CONFIG[rule.severity]?.label || rule.severity}

@@ -380,7 +380,7 @@ export function IssuesList({ issues, onIssueClick, isLoading }: IssuesListProps)
 
       {/* Grouped Issues list */}
       <div className="space-y-3">
-        {groupedIssues.map((group, index) => {
+        {groupedIssues.map((group) => {
           const severity = severityConfig[group.severity] || severityConfig.info;
           const category = categoryConfig[group.category];
           const SeverityIcon = severity?.icon || Info;

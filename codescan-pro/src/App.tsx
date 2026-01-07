@@ -12,7 +12,6 @@ import {
   BarChart3, 
   GitBranch,
   Sparkles,
-  Settings,
   FileCode,
   AlertTriangle,
   CheckCircle,
@@ -146,7 +145,7 @@ function App() {
     options,
   } = useAnalysisStore();
 
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { toggleTheme, isDark } = useTheme();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [copied, setCopied] = useState(false);
 

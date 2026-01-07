@@ -129,7 +129,7 @@ export interface AIContext {
 /**
  * Detect the primary purpose of the code
  */
-function detectPurpose(code: string, functions: FunctionInfo[], classes: ClassInfo[], imports: ImportInfo[]): { purpose: CodePurpose; confidence: number } {
+function detectPurpose(code: string, functions: FunctionInfo[], _classes: ClassInfo[], imports: ImportInfo[]): { purpose: CodePurpose; confidence: number } {
   const patterns: { pattern: RegExp; purpose: CodePurpose; weight: number }[] = [
     // API/HTTP
     { pattern: /\b(fetch|axios|http|request|response|req|res|get|post|put|delete|patch)\b/gi, purpose: 'api-endpoint', weight: 3 },
@@ -221,7 +221,7 @@ function detectPurpose(code: string, functions: FunctionInfo[], classes: ClassIn
 /**
  * Detect design patterns in the code
  */
-function detectPatterns(code: string, classes: ClassInfo[], functions: FunctionInfo[]): DesignPattern[] {
+function detectPatterns(code: string, classes: ClassInfo[], _functions: FunctionInfo[]): DesignPattern[] {
   const patterns: DesignPattern[] = [];
 
   // Singleton

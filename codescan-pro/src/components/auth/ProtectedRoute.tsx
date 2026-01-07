@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-react';
 import { motion } from 'framer-motion';
 import { Code2 } from 'lucide-react';

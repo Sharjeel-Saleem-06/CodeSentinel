@@ -184,7 +184,7 @@ function extractFunctionCalls(line: string): string[] {
   return [...new Set(calls)];
 }
 
-function analyzeLineType(line: string, trimmedLine: string, language: string): LineAnalysis {
+function analyzeLineType(_line: string, trimmedLine: string, language: string): LineAnalysis {
   let type: CFGNode['type'] = 'statement';
   let label = trimmedLine.substring(0, 50) + (trimmedLine.length > 50 ? '...' : '');
   let isBlockStart = false;
@@ -241,7 +241,7 @@ function analyzeLineType(line: string, trimmedLine: string, language: string): L
     } else {
       // For-in / for-of
       const match = trimmedLine.match(/for\s*\(([^)]+)\)/);
-      label = `for (${match?.[1]?.substring(0, 25) || '...'}${match?.[1]?.length > 25 ? '...' : ''})`;
+      label = `for (${match?.[1]?.substring(0, 25) || '...'}${(match?.[1]?.length ?? 0) > 25 ? '...' : ''})`;
     }
     isBlockStart = true;
   }
@@ -810,7 +810,7 @@ function buildFunctionCFG(ctx: BuilderContext, func: FunctionScope): void {
       
       // Handle pending break connections
       const breakConnections = pendingConnections.filter(c => c.type === 'break');
-      breakConnections.forEach(conn => {
+      breakConnections.forEach(_conn => {
         // Will be connected to next statement after loop
       });
       
@@ -861,7 +861,7 @@ function buildFunctionCFG(ctx: BuilderContext, func: FunctionScope): void {
       prevNodeId = '';
     } else if (analysis.label === 'continue' && loopStack.length > 0) {
       const loopNode = loopStack[loopStack.length - 1];
-      addEdge(ctx, nodeId, loopNode, 'continue');
+      addEdge(ctx, nodeId, loopNode, undefined);
       prevNodeId = '';
     } else {
       prevNodeId = nodeId;
@@ -1258,7 +1258,7 @@ export interface CallGraphNode {
   parentClass?: string;
 }
 
-export function buildCallGraph(cfg: ControlFlowGraph, ctx?: BuilderContext): Map<string, CallGraphNode> {
+export function buildCallGraph(cfg: ControlFlowGraph, _ctx?: BuilderContext): Map<string, CallGraphNode> {
   const callGraph = new Map<string, CallGraphNode>();
   
   // Extract function names from entry nodes

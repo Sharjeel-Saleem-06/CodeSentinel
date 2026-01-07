@@ -10,15 +10,14 @@ import { runSemanticAnalysis } from './semanticAnalyzer';
 import { buildControlFlowGraph } from './cfgBuilder';
 import { scanSecurity } from '../security/securityScanner';
 import { calculateAllMetrics, calculateCyclomaticComplexity } from '../metrics/codeMetrics';
-import { runCustomRules, loadCustomRules } from '../rules/customRulesEngine';
+import { runCustomRules } from '../rules/customRulesEngine';
 import type { 
   AnalysisResult, 
   Language, 
   AnalysisOptions,
   CodeIssue,
-  ControlFlowGraph,
-  CFGNode,
-  CFGEdge,
+  Severity,
+  SecurityFinding,
 } from '../../types/analysis';
 
 // Simple ID generator
@@ -287,7 +286,7 @@ export async function analyzeCode(
       ...advancedDetection.securityFindings.filter(
         finding => !security.issues.some(s => 
           s.location?.line === finding.location?.line && 
-          s.vulnerability === finding.vulnerability
+          (s as unknown as SecurityFinding).vulnerability === finding.vulnerability
         )
       ),
     ];
@@ -314,8 +313,8 @@ export async function analyzeCode(
     });
 
     // Sort by severity
-    const severityOrder = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
-    allIssues.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+    const severityOrder: Record<Severity, number> = { critical: 0, high: 1, medium: 2, low: 3, info: 4, error: 0, warning: 2 };
+    allIssues.sort((a, b) => (severityOrder[a.severity] ?? 5) - (severityOrder[b.severity] ?? 5));
 
     // Apply max issues limit
     const issues = options.maxIssues 
@@ -339,8 +338,8 @@ export async function analyzeCode(
       issues,
       controlFlowGraph,
       metrics,
-      security: enhancedSecurity,
-      securityFindings: mergedSecurityFindings,
+      security: enhancedSecurity as AnalysisResult['security'],
+      securityFindings: mergedSecurityFindings as SecurityFinding[],
     };
   } catch (error) {
     const executionTimeMs = Math.round(performance.now() - startTime);
@@ -377,7 +376,10 @@ export function getAnalysisSummary(result: AnalysisResult) {
   };
 
   result.issues.forEach(issue => {
-    issueCounts[issue.severity]++;
+    const sev = issue.severity as keyof typeof issueCounts;
+    if (sev in issueCounts) {
+      issueCounts[sev]++;
+    }
   });
 
   return {

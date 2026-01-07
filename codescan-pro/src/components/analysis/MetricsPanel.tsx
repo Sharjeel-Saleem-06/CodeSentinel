@@ -6,10 +6,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
   Tooltip, 
   ResponsiveContainer,
   RadialBarChart,
@@ -17,10 +13,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
-  Area,
-  AreaChart,
 } from 'recharts';
 import { 
   Activity, 
@@ -41,9 +33,6 @@ import {
   ChevronUp,
   Gauge,
   Code,
-  Eye,
-  Zap,
-  Target,
   Award
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
@@ -605,10 +594,13 @@ export function MetricsPanel({ metrics }: MetricsPanelProps) {
                     border: '1px solid #3a4153',
                     borderRadius: '8px',
                   }}
-                  formatter={(value: number, name: string, props: any) => [
-                    `${value} lines (${Math.round((value / metrics.totalLines) * 100)}%)`,
-                    props.payload.description
-                  ]}
+                  formatter={(value, _name, props) => {
+                    const numValue = typeof value === 'number' ? value : 0;
+                    return [
+                      `${numValue} lines (${Math.round((numValue / metrics.totalLines) * 100)}%)`,
+                      (props as any).payload.description
+                    ];
+                  }}
                 />
               </PieChart>
             </ResponsiveContainer>

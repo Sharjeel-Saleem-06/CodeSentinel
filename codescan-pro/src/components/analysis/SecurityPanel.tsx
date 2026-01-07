@@ -117,7 +117,7 @@ export function SecurityPanel({ security }: SecurityPanelProps) {
   const riskColor = getRiskColor(security.riskScore);
   const riskLabel = getRiskLabel(security.riskScore);
 
-  const totalFindings = Object.values(security.owaspCoverage).reduce((a, b) => a + b, 0);
+  void Object.values(security.owaspCoverage).reduce((a, b) => a + b, 0);
 
   return (
     <div className="space-y-6">
@@ -246,7 +246,7 @@ export function SecurityPanel({ security }: SecurityPanelProps) {
         <div className="space-y-3">
           {owaspConfig.map((item, index) => {
             const count = security.owaspCoverage[item.key as keyof typeof security.owaspCoverage] || 0;
-            const Icon = item.icon;
+            void item.icon;
             const hasIssues = count > 0;
 
             return (

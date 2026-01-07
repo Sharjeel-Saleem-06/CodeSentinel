@@ -81,7 +81,7 @@ export function AIPanel({ result, sourceCode }: AIPanelProps) {
   } | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [, setCopied] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
   const [showOptimizedCode, setShowOptimizedCode] = useState(true);
   const [analysisDepth, setAnalysisDepth] = useState<'quick' | 'standard' | 'deep'>('standard');
@@ -95,8 +95,8 @@ export function AIPanel({ result, sourceCode }: AIPanelProps) {
     const changes: ParsedChange[] = [];
     const improvements: string[] = [];
     
-    // Pattern to match change descriptions
-    const patterns = [
+    // Pattern to match change descriptions (reserved for future use)
+    void [
       { regex: /(?:replaced|changed|modified|updated)\s+([^.]+)/gi, type: 'modified' as const },
       { regex: /(?:removed|deleted|eliminated)\s+([^.]+)/gi, type: 'removed' as const },
       { regex: /(?:added|introduced|included|implemented)\s+([^.]+)/gi, type: 'added' as const },
@@ -504,8 +504,8 @@ Now analyze this code as a Principal Mobile Architect. Be thorough but only flag
     }
   }, [chatInput, chatMessages, sourceCode, result, isLoading]);
 
-  // Copy code to clipboard
-  const handleCopy = useCallback(async (text: string) => {
+  // Copy code to clipboard (used internally)
+  void useCallback(async (text: string) => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

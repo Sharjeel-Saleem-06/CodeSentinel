@@ -332,9 +332,9 @@ export function scanSecurity(code: string): SecurityScanResult {
   };
 
   // Calculate risk score (0-100)
-  const severityWeights = { critical: 25, high: 15, medium: 8, low: 3, info: 1 };
+  const severityWeights: Record<string, number> = { critical: 25, high: 15, medium: 8, low: 3, info: 1, error: 25, warning: 8 };
   let riskScore = issues.reduce((score, issue) => {
-    return score + severityWeights[issue.severity];
+    return score + (severityWeights[issue.severity] ?? 1);
   }, 0);
   riskScore = Math.min(100, riskScore);
 
@@ -366,14 +366,16 @@ export function scanSecurity(code: string): SecurityScanResult {
  * Get severity color for UI
  */
 export function getSeverityColor(severity: CodeIssue['severity']): string {
-  const colors = {
+  const colors: Record<string, string> = {
     critical: '#ff453a',
     high: '#ff9f0a',
     medium: '#ffd60a',
     low: '#0a84ff',
     info: '#00ffd5',
+    error: '#ff453a',
+    warning: '#ffd60a',
   };
-  return colors[severity];
+  return colors[severity] ?? '#00ffd5';
 }
 
 /**

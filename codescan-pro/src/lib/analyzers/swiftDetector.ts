@@ -342,7 +342,7 @@ export const SWIFT_RULES: SwiftDetectionRule[] = [
     suggestion: 'Always use HTTPS for network requests.',
     references: ['App Transport Security', 'iOS Network Security'],
     autoFixable: true,
-    fix: (code, match) => code.replace(/"http:\/\//, '"https://'),
+    fix: (code, _match) => code.replace(/"http:\/\//, '"https://'),
   },
   {
     id: 'SW-SEC003',

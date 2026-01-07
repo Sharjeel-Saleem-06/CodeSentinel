@@ -1,5 +1,6 @@
 import { ClerkProvider, useAuth, useUser } from '@clerk/clerk-react';
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext } from 'react';
+import type { ReactNode } from 'react';
 
 // Get Clerk publishable key from environment
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;

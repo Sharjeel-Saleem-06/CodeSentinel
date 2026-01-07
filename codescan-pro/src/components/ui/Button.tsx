@@ -3,16 +3,22 @@
  * Styled button with variants
  */
 
-import { forwardRef, type ButtonHTMLAttributes } from 'react';
+import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../utils/cn';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
+  disabled?: boolean;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
+  title?: string;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -25,7 +31,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     rightIcon,
     children, 
     disabled,
-    ...props 
+    onClick,
+    type = 'button',
+    title,
   }, ref) => {
     const baseStyles = `
       inline-flex items-center justify-center gap-2
@@ -72,7 +80,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         whileTap={{ scale: disabled ? 1 : 0.98 }}
         className={cn(baseStyles, variants[variant], sizes[size], className)}
         disabled={disabled || isLoading}
-        {...props}
+        onClick={onClick}
+        type={type}
+        title={title}
       >
         {isLoading ? (
           <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />

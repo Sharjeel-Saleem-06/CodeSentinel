@@ -38,7 +38,6 @@ import {
   Minimize2,
   ZoomIn,
   ZoomOut,
-  RefreshCw,
   Code,
   Eye,
   EyeOff,
@@ -49,7 +48,6 @@ import {
   X,
   TreeDeciduous,
   Zap,
-  Box,
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useTheme } from '../../context/ThemeContext';
@@ -435,8 +433,8 @@ function ControlFlowGraphInner({ cfg }: ControlFlowGraphProps) {
       const isTrue = edge.condition === 'true' || edge.label === 'then' || edge.label === 'body';
       const isFalse = edge.condition === 'false' || edge.label === 'else';
       const isException = edge.condition === 'exception';
-      const isBreak = edge.condition === 'break' || edge.condition === 'continue';
-      const isLoop = edge.condition === 'loop' || edge.label === 'iterate';
+      const isBreak = edge.label === 'break' || edge.label === 'continue';
+      const isLoop = edge.label === 'loop' || edge.label === 'iterate';
       const isCall = edge.condition === 'call' || edge.edgeType === 'call';
       const isHierarchy = edge.condition === 'contains' || edge.edgeType === 'hierarchy';
       const isInheritance = edge.condition === 'inherits' || edge.edgeType === 'inheritance';
