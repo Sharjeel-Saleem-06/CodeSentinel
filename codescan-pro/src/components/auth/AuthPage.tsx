@@ -14,8 +14,11 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { cn } from '../../utils/cn';
+import { TermsOfService } from '../legal/TermsOfService';
+import { PrivacyPolicy } from '../legal/PrivacyPolicy';
 
 type AuthMode = 'signin' | 'signup';
+type PageView = 'auth' | 'terms' | 'privacy';
 
 const features = [
   {
@@ -58,7 +61,18 @@ const benefits = [
 
 export function AuthPage() {
   const [mode, setMode] = useState<AuthMode>('signin');
+  const [pageView, setPageView] = useState<PageView>('auth');
   const { isDark } = useTheme();
+
+  // Show Terms of Service page
+  if (pageView === 'terms') {
+    return <TermsOfService onBack={() => setPageView('auth')} />;
+  }
+
+  // Show Privacy Policy page
+  if (pageView === 'privacy') {
+    return <PrivacyPolicy onBack={() => setPageView('auth')} />;
+  }
 
   // Hide Clerk branding elements after render
   useEffect(() => {
@@ -433,9 +447,19 @@ export function AuthPage() {
               isDark ? "text-slate-400" : "text-gray-500"
             )}>
               By continuing, you agree to our{' '}
-              <a href="#" className="text-purple-400 hover:text-purple-300 font-medium">Terms of Service</a>
+              <button 
+                onClick={() => setPageView('terms')} 
+                className="text-purple-400 hover:text-purple-300 font-medium underline-offset-2 hover:underline"
+              >
+                Terms of Service
+              </button>
               {' '}and{' '}
-              <a href="#" className="text-purple-400 hover:text-purple-300 font-medium">Privacy Policy</a>
+              <button 
+                onClick={() => setPageView('privacy')} 
+                className="text-purple-400 hover:text-purple-300 font-medium underline-offset-2 hover:underline"
+              >
+                Privacy Policy
+              </button>
             </p>
           </motion.div>
 

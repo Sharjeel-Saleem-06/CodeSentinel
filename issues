@@ -1,102 +1,85 @@
-npm %                                                                                             
-(base) muhammadsharjeel@Muhammads-MacBook-Air-2 AI_Code_Checker % npm run de
-npm error code ENOENT
-npm error syscall open
-npm error path /Users/muhammadsharjeel/Documents/AI_Code_Checker/package.json
-npm error errno -2
-npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/Users/muhammadsharjeel/Documents/AI_Code_Checker/package.json'
-npm error enoent This is related to npm not being able to find a file.
-npm error enoent
-npm error A complete log of this run can be found in: /Users/muhammadsharjeel/.npm/_logs/2026-01-07T08_02_29_427Z-debug-0.log
-(base) muhammadsharjeel@Muhammads-MacBook-Air-2 AI_Code_Checker % npm run dev
-npm error code ENOENT
-npm error syscall open
-npm error path /Users/muhammadsharjeel/Documents/AI_Code_Checker/package.json
-npm error errno -2
-npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/Users/muhammadsharjeel/Documents/AI_Code_Checker/package.json'
-npm error enoent This is related to npm not being able to find a file.
-npm error enoent
-npm error A complete log of this run can be found in: /Users/muhammadsharjeel/.npm/_logs/2026-01-07T08_02_34_285Z-debug-0.log
-(base) muhammadsharjeel@Muhammads-MacBook-Air-2 AI_Code_Checker % cd codescan-pro
-(base) muhammadsharjeel@Muhammads-MacBook-Air-2 codescan-pro % npm run dev
-
-> codescan-pro@0.0.0 dev
-> vite
-
-
-  VITE v5.4.21  ready in 315 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose
-  ➜  press h + enter to show help
-[vite:css] @import must precede all other statements (besides @charset or empty @layer)
-2297|    }
-2298|  }
-2299|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
-   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2300|  html {
-2301|    scroll-behavior: smooth;
-1:05:14 PM [vite] hmr update /src/App.tsx, /src/index.css
-[vite:css] @import must precede all other statements (besides @charset or empty @layer)
-2303|    }
-2304|  }
-2305|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
-   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2306|  html {
-2307|    scroll-behavior: smooth;
-1:05:34 PM [vite] hmr update /src/components/analysis/CustomRulesPanel.tsx, /src/index.css
-[vite:css] @import must precede all other statements (besides @charset or empty @layer)
-2306|    }
-2307|  }
-2308|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
-   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2309|  html {
-2310|    scroll-behavior: smooth;
-1:06:10 PM [vite] hmr update /src/components/analysis/CustomRulesPanel.tsx, /src/index.css
-[vite:css] @import must precede all other statements (besides @charset or empty @layer)
-2306|    }
-2307|  }
-2308|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
-   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2309|  html {
-2310|    scroll-behavior: smooth;
-1:06:42 PM [vite] hmr update /src/components/analysis/CustomRulesPanel.tsx, /src/index.css
-[vite:css] @import must precede all other statements (besides @charset or empty @layer)
-2463|    }
-2464|  }
-2465|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
-   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2466|  html {
-2467|    scroll-behavior: smooth;
-1:16:38 PM [vite] hmr update /src/App.tsx, /src/index.css
-1:16:38 PM [vite] hmr update /src/components/analysis/CustomRulesPanel.tsx, /src/index.css
-[vite:css] @import must precede all other statements (besides @charset or empty @layer)
-2463|    }
-2464|  }
-2465|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
-   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2466|  html {
-2467|    scroll-behavior: smooth;
-1:17:13 PM [vite] hmr update /src/index.css
-[vite:css] @import must precede all other statements (besides @charset or empty @layer)
-2464|    }
-2465|  }
-2466|  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap');
-   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-2467|  html {
-2468|    scroll-behavior: smooth;
-1:17:20 PM [vite] hmr update /src/index.css
-1:18:05 PM [vite] page reload index.html
-1:18:12 PM [vite] hmr update /src/index.css
-1:19:55 PM [vite] page reload index.html
-1:19:55 PM [vite] hmr update /src/index.css
-(base) muhammadsharjeel@Muhammads-MacBook-Air-2 codescan-pro % 
-
-
-
-
-
-
-
-
-
+react-dom_client.js?v=97d7b6e7:20103 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+clerk.browser.js:19 Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+warnOnce @ clerk.browser.js:19
+load @ clerk.browser.js:5
+loadClerkJS @ @clerk_clerk-react.js?v=97d7b6e7:6578
+await in loadClerkJS
+_IsomorphicClerk2 @ @clerk_clerk-react.js?v=97d7b6e7:6447
+getOrCreateInstance @ @clerk_clerk-react.js?v=97d7b6e7:6473
+useLoadedIsomorphicClerk @ @clerk_clerk-react.js?v=97d7b6e7:6749
+ClerkContextProvider @ @clerk_clerk-react.js?v=97d7b6e7:6680
+react_stack_bottom_frame @ react-dom_client.js?v=97d7b6e7:18509
+renderWithHooks @ react-dom_client.js?v=97d7b6e7:5654
+updateFunctionComponent @ react-dom_client.js?v=97d7b6e7:7475
+beginWork @ react-dom_client.js?v=97d7b6e7:8525
+runWithFiberInDEV @ react-dom_client.js?v=97d7b6e7:997
+performUnitOfWork @ react-dom_client.js?v=97d7b6e7:12561
+workLoopSync @ react-dom_client.js?v=97d7b6e7:12424
+renderRootSync @ react-dom_client.js?v=97d7b6e7:12408
+performWorkOnRoot @ react-dom_client.js?v=97d7b6e7:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=97d7b6e7:13505
+performWorkUntilDeadline @ react-dom_client.js?v=97d7b6e7:36
+<ClerkContextProvider>
+exports.createElement @ chunk-WCSNYLSU.js?v=97d7b6e7:793
+ClerkProviderBase @ @clerk_clerk-react.js?v=97d7b6e7:6778
+react_stack_bottom_frame @ react-dom_client.js?v=97d7b6e7:18509
+renderWithHooksAgain @ react-dom_client.js?v=97d7b6e7:5729
+renderWithHooks @ react-dom_client.js?v=97d7b6e7:5665
+updateFunctionComponent @ react-dom_client.js?v=97d7b6e7:7475
+beginWork @ react-dom_client.js?v=97d7b6e7:8525
+runWithFiberInDEV @ react-dom_client.js?v=97d7b6e7:997
+performUnitOfWork @ react-dom_client.js?v=97d7b6e7:12561
+workLoopSync @ react-dom_client.js?v=97d7b6e7:12424
+renderRootSync @ react-dom_client.js?v=97d7b6e7:12408
+performWorkOnRoot @ react-dom_client.js?v=97d7b6e7:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=97d7b6e7:13505
+performWorkUntilDeadline @ react-dom_client.js?v=97d7b6e7:36
+<ClerkProviderBase>
+exports.createElement @ chunk-WCSNYLSU.js?v=97d7b6e7:793
+Hoc @ @clerk_clerk-react.js?v=97d7b6e7:3658
+react_stack_bottom_frame @ react-dom_client.js?v=97d7b6e7:18509
+renderWithHooksAgain @ react-dom_client.js?v=97d7b6e7:5729
+renderWithHooks @ react-dom_client.js?v=97d7b6e7:5665
+updateFunctionComponent @ react-dom_client.js?v=97d7b6e7:7475
+beginWork @ react-dom_client.js?v=97d7b6e7:8525
+runWithFiberInDEV @ react-dom_client.js?v=97d7b6e7:997
+performUnitOfWork @ react-dom_client.js?v=97d7b6e7:12561
+workLoopSync @ react-dom_client.js?v=97d7b6e7:12424
+renderRootSync @ react-dom_client.js?v=97d7b6e7:12408
+performWorkOnRoot @ react-dom_client.js?v=97d7b6e7:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=97d7b6e7:13505
+performWorkUntilDeadline @ react-dom_client.js?v=97d7b6e7:36
+<ClerkProvider>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=97d7b6e7:247
+AuthProvider @ AuthContext.tsx:77
+react_stack_bottom_frame @ react-dom_client.js?v=97d7b6e7:18509
+renderWithHooksAgain @ react-dom_client.js?v=97d7b6e7:5729
+renderWithHooks @ react-dom_client.js?v=97d7b6e7:5665
+updateFunctionComponent @ react-dom_client.js?v=97d7b6e7:7475
+beginWork @ react-dom_client.js?v=97d7b6e7:8525
+runWithFiberInDEV @ react-dom_client.js?v=97d7b6e7:997
+performUnitOfWork @ react-dom_client.js?v=97d7b6e7:12561
+workLoopSync @ react-dom_client.js?v=97d7b6e7:12424
+renderRootSync @ react-dom_client.js?v=97d7b6e7:12408
+performWorkOnRoot @ react-dom_client.js?v=97d7b6e7:11766
+performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=97d7b6e7:13505
+performWorkUntilDeadline @ react-dom_client.js?v=97d7b6e7:36
+<AuthProvider>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=97d7b6e7:247
+(anonymous) @ main.tsx:11
+normal?lang=en-us:1  Note that 'script-src' was not explicitly set, so 'default-src' is used as a fallback.
+NS @ normal?lang=en-us:1
+NW @ normal?lang=en-us:1
+normal?lang=en-us:1 Request for the Private Access Token challenge.
+challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1 The next request for the Private Access Token challenge may return a 401 and show a warning in console.
+challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1  GET https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/pat/9ba440bb4cc54121/1767797273497/e291c896a86a8cd303553827a161a79f4836514f35eb00c2ded1432ea612609e/JGTccONhOaiZo6j 401 (Unauthorized)
+NS @ challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1
+NW @ challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1
+NS @ challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1
+NW @ challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1
+NS @ challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1
+NW @ challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1
+NS @ challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1
+NW @ challenges.cloudflare.com/cdn-cgi/challenge-platform/h/b/turnstile/f/ov2/av0/rch/uwg5g/0x4AAAAAAAWXJGBD7bONzLBd/auto/fbE/new/normal?lang=en-us:1
+content.js:74 🎯 Swagger Helper: Detected API documentation page, initializing...
+normal?lang=en-us:1 

@@ -727,8 +727,22 @@ code, pre {
 /* Ensure social buttons have good contrast */
 .clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"] {
   border-width: 2px !important;
+  background-color: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(100, 116, 139, 0.8) !important;
 }
 
-.clerk-auth-wrapper [class*="cl-socialButtonsBlockButtonText"] {
+.clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"]:hover {
+  background-color: rgba(51, 65, 85, 0.9) !important;
+  border-color: rgba(168, 85, 247, 0.6) !important;
+}
+
+.clerk-auth-wrapper [class*="cl-socialButtonsBlockButtonText"],
+.clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"] span {
   font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+/* Force all text in Clerk social buttons to be white */
+.clerk-auth-wrapper button[class*="cl-socialButtonsBlockButton"] * {
+  color: #ffffff !important;
 }
