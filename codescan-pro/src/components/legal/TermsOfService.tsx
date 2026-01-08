@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+
 import { ArrowLeft, FileText, Shield, Scale, AlertCircle, Users, Code2 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { cn } from '../../utils/cn';
@@ -9,6 +9,7 @@ interface TermsOfServiceProps {
 
 export function TermsOfService({ onBack }: TermsOfServiceProps) {
   const { isDark } = useTheme();
+  console.log('TermsOfService Rendering, Mode:', isDark ? 'Dark' : 'Light');
 
   const sections = [
     {
@@ -128,36 +129,41 @@ Last Updated: January 2026`
 
   return (
     <div className={cn(
-      "min-h-screen",
-      isDark 
-        ? "bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950" 
-        : "bg-gradient-to-br from-slate-50 via-white to-purple-50"
+      "min-h-screen w-full relative",
+      isDark
+        ? "bg-slate-950 text-slate-200"
+        : "bg-slate-50 text-slate-800"
     )}>
+      <div className={cn(
+        "absolute inset-0 z-0 pointer-events-none",
+        isDark
+          ? "bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950"
+          : "bg-gradient-to-br from-slate-50 via-white to-purple-50"
+      )} />
+
       {/* Header */}
       <header className={cn(
         "sticky top-0 z-50 backdrop-blur-xl border-b",
-        isDark 
-          ? "bg-slate-900/80 border-slate-700/50" 
+        isDark
+          ? "bg-slate-900/80 border-slate-700/50"
           : "bg-white/80 border-gray-200"
       )}>
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <motion.button
+          <button
             onClick={onBack}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all",
-              isDark 
-                ? "text-slate-300 hover:text-white hover:bg-slate-800" 
+              isDark
+                ? "text-slate-300 hover:text-white hover:bg-slate-800"
                 : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
             )}
           >
             <ArrowLeft className="w-4 h-4" />
             Back
-          </motion.button>
-          
+          </button>
+
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-fuchsia-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-fuchsia-600 flex items-center justify-center shadow-lg">
               <Code2 className="w-5 h-5 text-white" />
             </div>
             <span className={cn(
@@ -171,15 +177,11 @@ Last Updated: January 2026`
       </header>
 
       {/* Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+      <main className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+        <div>
           {/* Title */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-fuchsia-600 mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-fuchsia-600 mb-6 shadow-lg shadow-purple-500/30">
               <Scale className="w-8 h-8 text-white" />
             </div>
             <h1 className={cn(
@@ -198,17 +200,14 @@ Last Updated: January 2026`
 
           {/* Sections */}
           <div className="space-y-8">
-            {sections.map((section, index) => (
-              <motion.div
+            {sections.map((section) => (
+              <div
                 key={section.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
                 className={cn(
-                  "rounded-2xl border p-6",
-                  isDark 
-                    ? "bg-slate-800/50 border-slate-700/50" 
-                    : "bg-white border-gray-200 shadow-sm"
+                  "rounded-2xl border p-6 transition-all hover:shadow-lg",
+                  isDark
+                    ? "bg-slate-800/50 border-slate-700/50 hover:bg-slate-800/80"
+                    : "bg-white border-gray-200 shadow-sm hover:shadow-md"
                 )}
               >
                 <div className="flex items-start gap-4">
@@ -216,7 +215,7 @@ Last Updated: January 2026`
                     "flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center",
                     isDark ? "bg-purple-500/20" : "bg-purple-100"
                   )}>
-                    <section.icon className="w-5 h-5 text-purple-500" />
+                    <section.icon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div className="flex-1">
                     <h2 className={cn(
@@ -233,7 +232,7 @@ Last Updated: January 2026`
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
 
@@ -245,21 +244,20 @@ Last Updated: January 2026`
             <p>© 2026 CodeSentinel. All rights reserved.</p>
             <p className="mt-2">
               Created by{' '}
-              <a 
-                href="https://www.linkedin.com/in/msharjeelsaleem/" 
-                target="_blank" 
+              <a
+                href="https://www.linkedin.com/in/msharjeelsaleem/"
+                target="_blank"
                 rel="noopener noreferrer"
-                className="text-purple-400 hover:text-purple-300"
+                className="text-purple-500 hover:text-purple-400 font-medium"
               >
                 Muhammad Sharjeel Saleem
               </a>
             </p>
           </div>
-        </motion.div>
+        </div>
       </main>
     </div>
   );
 }
 
 export default TermsOfService;
-

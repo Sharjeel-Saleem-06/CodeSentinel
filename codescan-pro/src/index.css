@@ -71,15 +71,19 @@
   from {
     box-shadow: 0 0 20px var(--color-cyber-500), 0 0 40px var(--color-cyber-500);
   }
+
   to {
     box-shadow: 0 0 30px var(--color-neon-purple), 0 0 60px var(--color-neon-purple);
   }
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-20px);
   }
@@ -89,6 +93,7 @@
   0% {
     background-position: 0% 0%;
   }
+
   100% {
     background-position: 100% 100%;
   }
@@ -97,7 +102,8 @@
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
-}
+  }
+
   100% {
     background-position: 200% 0;
   }
@@ -124,33 +130,99 @@ body {
 }
 
 /* Light theme - Override obsidian colors */
-.light-theme .bg-obsidian-950 { background-color: var(--color-light-bg) !important; }
-.light-theme .bg-obsidian-900 { background-color: var(--color-light-surface) !important; }
-.light-theme .bg-obsidian-900\/80 { background-color: rgba(255, 255, 255, 0.95) !important; }
-.light-theme .bg-obsidian-900\/60 { background-color: rgba(255, 255, 255, 0.85) !important; }
-.light-theme .bg-obsidian-900\/50 { background-color: rgba(255, 255, 255, 0.8) !important; }
-.light-theme .bg-obsidian-900\/30 { background-color: rgba(255, 255, 255, 0.6) !important; }
-.light-theme .bg-obsidian-800 { background-color: var(--color-light-surface-elevated) !important; }
-.light-theme .bg-obsidian-800\/80 { background-color: rgba(241, 245, 249, 0.9) !important; }
-.light-theme .bg-obsidian-800\/50 { background-color: rgba(241, 245, 249, 0.7) !important; }
-.light-theme .bg-obsidian-800\/30 { background-color: rgba(241, 245, 249, 0.5) !important; }
-.light-theme .bg-obsidian-700 { background-color: #e2e8f0 !important; }
-.light-theme .bg-obsidian-700\/50 { background-color: rgba(226, 232, 240, 0.7) !important; }
+.light-theme .bg-obsidian-950 {
+  background-color: var(--color-light-bg) !important;
+}
+
+.light-theme .bg-obsidian-900 {
+  background-color: var(--color-light-surface) !important;
+}
+
+.light-theme .bg-obsidian-900\/80 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.light-theme .bg-obsidian-900\/60 {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.light-theme .bg-obsidian-900\/50 {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.light-theme .bg-obsidian-900\/30 {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.light-theme .bg-obsidian-800 {
+  background-color: var(--color-light-surface-elevated) !important;
+}
+
+.light-theme .bg-obsidian-800\/80 {
+  background-color: rgba(241, 245, 249, 0.9) !important;
+}
+
+.light-theme .bg-obsidian-800\/50 {
+  background-color: rgba(241, 245, 249, 0.7) !important;
+}
+
+.light-theme .bg-obsidian-800\/30 {
+  background-color: rgba(241, 245, 249, 0.5) !important;
+}
+
+.light-theme .bg-obsidian-700 {
+  background-color: #e2e8f0 !important;
+}
+
+.light-theme .bg-obsidian-700\/50 {
+  background-color: rgba(226, 232, 240, 0.7) !important;
+}
 
 /* Light theme - Text colors */
-.light-theme .text-obsidian-100 { color: var(--color-light-text-primary) !important; }
-.light-theme .text-obsidian-200 { color: var(--color-light-text-primary) !important; }
-.light-theme .text-obsidian-300 { color: var(--color-light-text-secondary) !important; }
-.light-theme .text-obsidian-400 { color: var(--color-light-text-secondary) !important; }
-.light-theme .text-obsidian-500 { color: var(--color-light-text-muted) !important; }
-.light-theme .text-white { color: var(--color-light-text-primary) !important; }
+.light-theme .text-obsidian-100 {
+  color: var(--color-light-text-primary) !important;
+}
+
+.light-theme .text-obsidian-200 {
+  color: var(--color-light-text-primary) !important;
+}
+
+.light-theme .text-obsidian-300 {
+  color: var(--color-light-text-secondary) !important;
+}
+
+.light-theme .text-obsidian-400 {
+  color: var(--color-light-text-secondary) !important;
+}
+
+.light-theme .text-obsidian-500 {
+  color: var(--color-light-text-muted) !important;
+}
+
+.light-theme .text-white {
+  color: var(--color-light-text-primary) !important;
+}
 
 /* Light theme - Border colors */
-.light-theme .border-obsidian-800 { border-color: var(--color-light-border) !important; }
-.light-theme .border-obsidian-800\/50 { border-color: rgba(226, 232, 240, 0.7) !important; }
-.light-theme .border-obsidian-700 { border-color: var(--color-light-border) !important; }
-.light-theme .border-obsidian-700\/50 { border-color: rgba(226, 232, 240, 0.7) !important; }
-.light-theme .border-obsidian-600 { border-color: var(--color-light-border-hover) !important; }
+.light-theme .border-obsidian-800 {
+  border-color: var(--color-light-border) !important;
+}
+
+.light-theme .border-obsidian-800\/50 {
+  border-color: rgba(226, 232, 240, 0.7) !important;
+}
+
+.light-theme .border-obsidian-700 {
+  border-color: var(--color-light-border) !important;
+}
+
+.light-theme .border-obsidian-700\/50 {
+  border-color: rgba(226, 232, 240, 0.7) !important;
+}
+
+.light-theme .border-obsidian-600 {
+  border-color: var(--color-light-border-hover) !important;
+}
 
 /* Light theme - Glass effect */
 .light-theme .glass {
@@ -167,7 +239,7 @@ body {
 
 /* Light theme - Grid pattern */
 .light-theme .grid-pattern {
-  background-image: 
+  background-image:
     linear-gradient(rgba(8, 145, 178, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(8, 145, 178, 0.05) 1px, transparent 1px) !important;
   background-size: 50px 50px;
@@ -290,33 +362,99 @@ body {
 }
 
 /* Light theme - Severity colors (keep vibrant) */
-.light-theme .severity-critical { color: #dc2626 !important; }
-.light-theme .severity-high { color: #ea580c !important; }
-.light-theme .severity-medium { color: #ca8a04 !important; }
-.light-theme .severity-low { color: #2563eb !important; }
-.light-theme .severity-info { color: #0891b2 !important; }
+.light-theme .severity-critical {
+  color: #dc2626 !important;
+}
+
+.light-theme .severity-high {
+  color: #ea580c !important;
+}
+
+.light-theme .severity-medium {
+  color: #ca8a04 !important;
+}
+
+.light-theme .severity-low {
+  color: #2563eb !important;
+}
+
+.light-theme .severity-info {
+  color: #0891b2 !important;
+}
 
 /* Light theme - Neon colors adjustments for better visibility */
-.light-theme .text-neon-green { color: #16a34a !important; }
-.light-theme .text-neon-red { color: #dc2626 !important; }
-.light-theme .text-neon-yellow { color: #ca8a04 !important; }
-.light-theme .text-neon-orange { color: #ea580c !important; }
-.light-theme .text-neon-blue { color: #2563eb !important; }
-.light-theme .text-neon-purple { color: #7c3aed !important; }
-.light-theme .text-neon-pink { color: #db2777 !important; }
-.light-theme .text-cyber-500 { color: #0891b2 !important; }
+.light-theme .text-neon-green {
+  color: #16a34a !important;
+}
+
+.light-theme .text-neon-red {
+  color: #dc2626 !important;
+}
+
+.light-theme .text-neon-yellow {
+  color: #ca8a04 !important;
+}
+
+.light-theme .text-neon-orange {
+  color: #ea580c !important;
+}
+
+.light-theme .text-neon-blue {
+  color: #2563eb !important;
+}
+
+.light-theme .text-neon-purple {
+  color: #7c3aed !important;
+}
+
+.light-theme .text-neon-pink {
+  color: #db2777 !important;
+}
+
+.light-theme .text-cyber-500 {
+  color: #0891b2 !important;
+}
 
 /* Light theme - Background color adjustments */
-.light-theme .bg-neon-green\/10 { background-color: rgba(22, 163, 74, 0.1) !important; }
-.light-theme .bg-neon-green\/20 { background-color: rgba(22, 163, 74, 0.15) !important; }
-.light-theme .bg-neon-red\/10 { background-color: rgba(220, 38, 38, 0.1) !important; }
-.light-theme .bg-neon-red\/20 { background-color: rgba(220, 38, 38, 0.15) !important; }
-.light-theme .bg-neon-yellow\/10 { background-color: rgba(202, 138, 4, 0.1) !important; }
-.light-theme .bg-neon-yellow\/20 { background-color: rgba(202, 138, 4, 0.15) !important; }
-.light-theme .bg-cyber-500\/10 { background-color: rgba(8, 145, 178, 0.1) !important; }
-.light-theme .bg-cyber-500\/20 { background-color: rgba(8, 145, 178, 0.15) !important; }
-.light-theme .bg-neon-purple\/10 { background-color: rgba(124, 58, 237, 0.1) !important; }
-.light-theme .bg-neon-purple\/20 { background-color: rgba(124, 58, 237, 0.15) !important; }
+.light-theme .bg-neon-green\/10 {
+  background-color: rgba(22, 163, 74, 0.1) !important;
+}
+
+.light-theme .bg-neon-green\/20 {
+  background-color: rgba(22, 163, 74, 0.15) !important;
+}
+
+.light-theme .bg-neon-red\/10 {
+  background-color: rgba(220, 38, 38, 0.1) !important;
+}
+
+.light-theme .bg-neon-red\/20 {
+  background-color: rgba(220, 38, 38, 0.15) !important;
+}
+
+.light-theme .bg-neon-yellow\/10 {
+  background-color: rgba(202, 138, 4, 0.1) !important;
+}
+
+.light-theme .bg-neon-yellow\/20 {
+  background-color: rgba(202, 138, 4, 0.15) !important;
+}
+
+.light-theme .bg-cyber-500\/10 {
+  background-color: rgba(8, 145, 178, 0.1) !important;
+}
+
+.light-theme .bg-cyber-500\/20 {
+  background-color: rgba(8, 145, 178, 0.15) !important;
+}
+
+.light-theme .bg-neon-purple\/10 {
+  background-color: rgba(124, 58, 237, 0.1) !important;
+}
+
+.light-theme .bg-neon-purple\/20 {
+  background-color: rgba(124, 58, 237, 0.15) !important;
+}
 
 /* Light theme - Monaco editor override */
 .light-theme .monaco-editor {
@@ -524,7 +662,7 @@ body {
 .light-theme .prose-invert pre {
   background-color: #f8fafc !important;
   border: 1px solid var(--color-light-border) !important;
-  }
+}
 
 /* Light theme - Security Panel */
 .light-theme .bg-red-500\/10,
@@ -568,7 +706,7 @@ body {
 .light-theme .bg-obsidian-900\/60.backdrop-blur-xl {
   background-color: rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: blur(20px);
-  }
+}
 
 /* Light theme - Cyber accent backgrounds */
 .light-theme .bg-cyber-500\/10 {
@@ -630,7 +768,8 @@ body {
 }
 
 /* Code blocks */
-code, pre {
+code,
+pre {
   font-family: var(--font-mono);
 }
 
@@ -645,7 +784,7 @@ code, pre {
   background: rgba(13, 15, 20, 0.8);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(191, 90, 242, 0.1);
-  }
+}
 
 /* Gradient text */
 .gradient-text {
@@ -657,7 +796,7 @@ code, pre {
 
 /* Grid pattern background */
 .grid-pattern {
-  background-image: 
+  background-image:
     linear-gradient(rgba(0, 255, 213, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 255, 213, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
@@ -720,82 +859,28 @@ code, pre {
 }
 
 /* Target the specific Clerk footer section with branding */
-.clerk-auth-wrapper [class*="cl-card"] > div:last-child > div:last-child {
+.clerk-auth-wrapper [class*="cl-card"]>div:last-child>div:last-child {
   display: none !important;
 }
 
-/* Ensure social buttons have good contrast */
+/* Ensure social buttons have good contrast - Dark Mode Default (will be overridden by component props if needed, but safe defaults) */
 .clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"] {
-  border-width: 2px !important;
-  background-color: rgba(30, 41, 59, 0.9) !important;
-  border-color: rgba(139, 92, 246, 0.5) !important;
+  border-width: 1px !important;
+  border-color: var(--color-obsidian-700) !important;
+  background-color: transparent !important;
+  transition: all 0.2s ease !important;
 }
 
 .clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"]:hover {
-  background-color: rgba(51, 65, 85, 1) !important;
-  border-color: rgba(168, 85, 247, 0.8) !important;
+  background-color: var(--color-obsidian-800) !important;
+  border-color: var(--color-neon-purple) !important;
+  transform: translateY(-1px);
 }
 
-.clerk-auth-wrapper [class*="cl-socialButtonsBlockButtonText"],
-.clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"] span {
-  font-weight: 600 !important;
-  color: #ffffff !important;
-}
-
-/* Force all text in Clerk social buttons to be white */
-.clerk-auth-wrapper button[class*="cl-socialButtonsBlockButton"] * {
-  color: #ffffff !important;
-}
-
-/* ============================================ */
-/* Clerk OTP/Verification Code Input Styling   */
-/* ============================================ */
-
-/* OTP Code input boxes - make them visible */
-.clerk-auth-wrapper [class*="cl-otpCodeField"],
-.clerk-auth-wrapper [class*="cl-otpCodeFieldInput"],
-.clerk-auth-wrapper input[class*="cl-otpCodeFieldInput"] {
-  background-color: rgba(51, 65, 85, 0.8) !important;
-  border: 2px solid rgba(139, 92, 246, 0.5) !important;
-  color: #ffffff !important;
-  font-size: 1.5rem !important;
-  font-weight: 700 !important;
-}
-
-.clerk-auth-wrapper [class*="cl-otpCodeFieldInput"]:focus {
-  border-color: rgba(168, 85, 247, 1) !important;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.3) !important;
-  background-color: rgba(71, 85, 105, 0.9) !important;
-}
-
-/* All form inputs in Clerk */
-.clerk-auth-wrapper [class*="cl-formFieldInput"],
-.clerk-auth-wrapper input[class*="cl-formFieldInput"] {
-  background-color: rgba(51, 65, 85, 0.8) !important;
-  border: 2px solid rgba(100, 116, 139, 0.6) !important;
-  color: #ffffff !important;
-}
-
-.clerk-auth-wrapper [class*="cl-formFieldInput"]:focus {
-  border-color: rgba(168, 85, 247, 0.8) !important;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2) !important;
-  background-color: rgba(71, 85, 105, 0.9) !important;
-}
-
-.clerk-auth-wrapper [class*="cl-formFieldInput"]::placeholder {
-  color: rgba(148, 163, 184, 0.8) !important;
-}
-
-/* Form labels */
-.clerk-auth-wrapper [class*="cl-formFieldLabel"] {
-  color: #e2e8f0 !important;
-  font-weight: 500 !important;
-}
-
-/* Card background */
-.clerk-auth-wrapper [class*="cl-card"] {
-  background-color: rgba(15, 23, 42, 0.95) !important;
-  border: 1px solid rgba(71, 85, 105, 0.5) !important;
+/* OTP Code input boxes */
+.clerk-auth-wrapper [class*="cl-otpCodeFieldInput"] {
+  min-height: 50px !important;
+  min-width: 40px !important;
 }
 
 /* Header text */

@@ -11,7 +11,7 @@ createRoot(document.getElementById('root')!).render(
     <AuthProvider>
       <ThemeProvider>
         <ProtectedRoute>
-        <App />
+          <App />
         </ProtectedRoute>
       </ThemeProvider>
     </AuthProvider>

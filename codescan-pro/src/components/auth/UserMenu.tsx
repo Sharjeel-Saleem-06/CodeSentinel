@@ -1,4 +1,5 @@
 import { useUser, useClerk } from '@clerk/clerk-react';
+import { dark } from '@clerk/themes';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext';
 import { cn } from '../../utils/cn';
@@ -20,6 +21,86 @@ export function UserMenu() {
   if (!user) {
     return null;
   }
+
+  // Configure appearance for Clerk's built-in modal
+  const handleOpenProfile = () => {
+    openUserProfile({
+      appearance: {
+        baseTheme: isDark ? dark : undefined,
+        variables: isDark ? {
+          colorPrimary: '#8b5cf6',
+          colorBackground: '#0f172a',
+          colorInputBackground: '#1e293b',
+          colorInputText: '#ffffff',
+          colorText: '#e2e8f0',
+          colorTextSecondary: '#cbd5e1',
+          colorNeutral: '#94a3b8',
+        } : {
+          colorPrimary: '#7c3aed',
+          colorBackground: '#ffffff',
+          colorInputBackground: '#ffffff',
+          colorInputText: '#0f172a',
+          colorText: '#0f172a',
+          colorTextSecondary: '#475569',
+          colorNeutral: '#64748b',
+        },
+        elements: {
+          rootBox: 'w-full',
+          card: 'shadow-2xl rounded-2xl',
+          modalBackdrop: 'backdrop-blur-sm',
+
+          // Navbar/Sidebar
+          navbar: isDark ? '' : 'bg-slate-50',
+          navbarButton: cn(
+            'transition-all',
+            isDark
+              ? 'text-slate-300 hover:text-white data-[active]:bg-slate-700 data-[active]:text-white'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100 data-[active]:bg-purple-50 data-[active]:text-purple-600'
+          ),
+          navbarButtonIcon: isDark ? 'text-slate-400' : 'text-slate-600',
+
+          // Headers and labels - CRITICAL FOR READABILITY
+          formFieldLabel: isDark
+            ? 'text-slate-300 font-medium'
+            : 'text-slate-700 font-medium',
+          formFieldLabelRow: isDark ? 'text-slate-300' : 'text-slate-700',
+
+          // Profile section titles
+          profileSectionTitle: isDark
+            ? 'text-white font-semibold'
+            : 'text-slate-900 font-semibold',
+          profileSectionPrimaryButton: isDark
+            ? 'text-purple-400'
+            : 'text-purple-600',
+
+          // General text
+          text: isDark ? 'text-slate-200' : 'text-slate-900',
+          headerTitle: isDark ? 'text-white' : 'text-slate-900',
+          headerSubtitle: isDark ? 'text-slate-400' : 'text-slate-600',
+
+          // Input fields
+          formFieldInput: cn(
+            isDark
+              ? 'bg-slate-800 border-slate-600 text-white'
+              : 'bg-white border-slate-200 text-slate-900'
+          ),
+
+          // Buttons
+          formButtonPrimary:
+            'bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white font-semibold shadow-lg shadow-purple-500/25',
+
+          // Hide branding
+          footer: '!hidden',
+          footerAction: '!hidden',
+          logoBox: '!hidden',
+          logoImage: '!hidden',
+        },
+        layout: {
+          logoPlacement: 'none' as const,
+        },
+      }
+    });
+  };
 
   return (
     <motion.div
@@ -43,9 +124,9 @@ export function UserMenu() {
         </span>
       </div>
 
-      {/* Custom Avatar Button to open Profile directly */}
+      {/* Avatar Button */}
       <button
-        onClick={() => openUserProfile()}
+        onClick={handleOpenProfile}
         className={cn(
           "relative w-10 h-10 rounded-full overflow-hidden transition-all duration-300",
           "ring-2 ring-purple-500/50 hover:ring-purple-500",
@@ -64,4 +145,3 @@ export function UserMenu() {
 }
 
 export default UserMenu;
-
