@@ -155,7 +155,7 @@ export function AuthPage() {
     elements: {
       rootBox: 'w-full',
       card: cn(
-        'w-full shadow-2xl rounded-3xl p-8 transition-all',
+        'w-full shadow-2xl rounded-3xl p-8 transition-all space-y-6',
         isDark
           ? 'bg-slate-900/80 backdrop-blur-xl border border-slate-700/50'
           : 'bg-white border border-slate-200 shadow-xl'
@@ -192,20 +192,10 @@ export function AuthPage() {
           ? 'bg-slate-800 text-white border-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30'
           : 'bg-white text-slate-900 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30'
       ),
-      // Email badge / identity preview - NO container styling, only text
-      identityPreview: 'bg-transparent border-none shadow-none p-0 flex items-center gap-3',
-      identityPreviewText: cn(
-        'text-base font-semibold px-5 py-3 rounded-xl border-2',
-        isDark
-          ? 'bg-slate-800 border-slate-600 text-white'
-          : 'bg-slate-50 border-slate-200 text-slate-900'
-      ),
-      identityPreviewEditButton: cn(
-        'font-semibold p-2 rounded-lg transition-colors',
-        isDark 
-          ? 'text-purple-400 hover:text-purple-300 hover:bg-purple-500/10' 
-          : 'text-purple-600 hover:text-purple-700 hover:bg-purple-100'
-      ),
+      // Email badge / identity preview - HIDE completely
+      identityPreview: '!hidden',
+      identityPreviewText: '!hidden',
+      identityPreviewEditButton: '!hidden',
       // Alert (verification message)
       alert: cn(
         'rounded-xl p-4 border mb-6 flex items-start gap-3',
