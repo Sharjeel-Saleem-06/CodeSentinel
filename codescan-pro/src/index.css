@@ -1205,4 +1205,222 @@ pre {
   color: inherit !important;
 }
 
+/* ==================== FIX: OTP CODE FIELD CONTAINER ==================== */
+
+/* Remove the outer container border/background for OTP fields */
+.clerk-auth-wrapper [class*="cl-otpCodeField"],
+.clerk-auth-wrapper [class*="cl-otpCodeBox"],
+.clerk-auth-wrapper [class*="cl-otpCode"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Style individual OTP inputs properly */
+.clerk-auth-wrapper [class*="cl-otpCodeFieldInput"] {
+  width: 48px !important;
+  height: 56px !important;
+  border-radius: 12px !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  margin: 0 4px !important;
+}
+
+/* Light mode OTP inputs */
+.light-theme .clerk-auth-wrapper [class*="cl-otpCodeFieldInput"] {
+  background-color: #ffffff !important;
+  border: 2px solid #cbd5e1 !important;
+  color: #1e293b !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-otpCodeFieldInput"]:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
+  outline: none !important;
+}
+
+/* Dark mode OTP inputs */
+.clerk-auth-wrapper [class*="cl-otpCodeFieldInput"] {
+  background-color: #1e293b !important;
+  border: 2px solid #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+.clerk-auth-wrapper [class*="cl-otpCodeFieldInput"]:focus {
+  border-color: #a78bfa !important;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3) !important;
+  outline: none !important;
+}
+
+/* Remove any container wrapping OTP fields */
+.clerk-auth-wrapper [class*="cl-otpCodeFieldInputs"],
+.clerk-auth-wrapper [class*="cl-otpCodeFieldRoot"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* ==================== FIX: IDENTITY PREVIEW (EMAIL BADGE) ==================== */
+
+/* Clean styling for identity preview container */
+.clerk-auth-wrapper [class*="cl-identityPreview"] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px 20px !important;
+  border-radius: 16px !important;
+  gap: 12px !important;
+}
+
+/* Light mode identity preview */
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreview"] {
+  background-color: #f8fafc !important;
+  border: 2px solid #e2e8f0 !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewText"] {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewEditButton"] {
+  color: #6366f1 !important;
+  padding: 6px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewEditButton"]:hover {
+  color: #4f46e5 !important;
+  background-color: rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Dark mode identity preview */
+.clerk-auth-wrapper [class*="cl-identityPreview"] {
+  background-color: rgba(30, 41, 59, 0.8) !important;
+  border: 2px solid rgba(71, 85, 105, 0.5) !important;
+}
+
+.clerk-auth-wrapper [class*="cl-identityPreviewText"] {
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
+}
+
+.clerk-auth-wrapper [class*="cl-identityPreviewEditButton"] {
+  color: #a78bfa !important;
+}
+
+/* ==================== FIX: FORM FIELD ROWS ==================== */
+
+/* Form field row container */
+.clerk-auth-wrapper [class*="cl-formFieldRow"] {
+  margin-bottom: 16px !important;
+}
+
+/* Form field label row */
+.clerk-auth-wrapper [class*="cl-formFieldLabelRow"] {
+  margin-bottom: 8px !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldLabel"] {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+}
+
+/* Form field action (Forgot password link) */
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldAction"] {
+  color: #6366f1 !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldAction"]:hover {
+  color: #4f46e5 !important;
+}
+
+/* ==================== FIX: INPUT GROUPS ==================== */
+
+/* Input group wrapper */
+.clerk-auth-wrapper [class*="cl-formFieldInputGroup"] {
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Make sure inputs have proper styling */
+.light-theme .clerk-auth-wrapper input[type="text"],
+.light-theme .clerk-auth-wrapper input[type="email"],
+.light-theme .clerk-auth-wrapper input[type="password"] {
+  background-color: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+  color: #1e293b !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  font-size: 1rem !important;
+}
+
+.light-theme .clerk-auth-wrapper input[type="text"]:focus,
+.light-theme .clerk-auth-wrapper input[type="email"]:focus,
+.light-theme .clerk-auth-wrapper input[type="password"]:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+  outline: none !important;
+}
+
+.light-theme .clerk-auth-wrapper input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* ==================== FIX: ERROR STATE FOR OTP ==================== */
+
+/* Incorrect code error styling */
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldError"] {
+  color: #dc2626 !important;
+  font-weight: 500 !important;
+  margin-top: 8px !important;
+}
+
+.clerk-auth-wrapper [class*="cl-formFieldError"] {
+  color: #f87171 !important;
+}
+
+/* Error icon */
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldErrorIcon"] {
+  color: #dc2626 !important;
+}
+
+/* ==================== FIX: RESEND CODE LINK ==================== */
+
+.light-theme .clerk-auth-wrapper [class*="cl-formResendCodeLink"] {
+  color: #7c3aed !important;
+  font-weight: 600 !important;
+}
+
+.clerk-auth-wrapper [class*="cl-formResendCodeLink"] {
+  color: #c4b5fd !important;
+}
+
+/* ==================== FIX: PASSWORD INPUT WITH SHOW BUTTON ==================== */
+
+/* Password input wrapper */
+.clerk-auth-wrapper [class*="cl-formFieldInputShowPasswordButton"] {
+  position: absolute !important;
+  right: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  padding: 8px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldInputShowPasswordButton"] {
+  color: #64748b !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldInputShowPasswordButton"]:hover {
+  color: #1e293b !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
 /* End of Clerk Styling */

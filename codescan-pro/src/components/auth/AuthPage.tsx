@@ -139,13 +139,13 @@ export function AuthPage() {
   // Enhanced Clerk appearance with better contrast and readability for BOTH themes
   const clerkAppearance = {
     variables: {
-      // Light mode friendly colors
+      // Theme-aware colors
       colorPrimary: '#8b5cf6',
-      colorText: isDark ? '#f1f5f9' : '#1e293b',
-      colorTextSecondary: isDark ? '#94a3b8' : '#64748b',
-      colorBackground: isDark ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.95)',
+      colorText: isDark ? '#f1f5f9' : '#0f172a',
+      colorTextSecondary: isDark ? '#94a3b8' : '#475569',
+      colorBackground: isDark ? 'rgba(15, 23, 42, 0.9)' : '#ffffff',
       colorInputBackground: isDark ? '#1e293b' : '#ffffff',
-      colorInputText: isDark ? '#f1f5f9' : '#1e293b',
+      colorInputText: isDark ? '#f1f5f9' : '#0f172a',
       colorDanger: '#ef4444',
       colorSuccess: '#22c55e',
       colorWarning: '#f59e0b',
@@ -155,45 +155,49 @@ export function AuthPage() {
     elements: {
       rootBox: 'w-full',
       card: cn(
-        'w-full shadow-2xl rounded-3xl p-6 transition-all',
+        'w-full shadow-2xl rounded-3xl p-8 transition-all',
         isDark
-          ? 'bg-slate-900/60 backdrop-blur-xl border border-slate-700/50'
-          : 'bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-xl shadow-slate-200/50'
+          ? 'bg-slate-900/80 backdrop-blur-xl border border-slate-700/50'
+          : 'bg-white border border-slate-200 shadow-xl'
       ),
       headerTitle: cn(
-        'text-2xl font-bold tracking-tight mb-1',
-        isDark ? 'text-white' : '!text-slate-900'
+        'text-2xl font-bold tracking-tight mb-2',
+        isDark ? 'text-white' : 'text-slate-900'
       ),
       headerSubtitle: cn(
         'text-base font-medium',
-        isDark ? 'text-slate-400' : '!text-slate-600'
+        isDark ? 'text-slate-400' : 'text-slate-500'
       ),
-      // Clean inputs
+      // Form field labels
       formFieldLabel: cn(
-        'font-semibold text-sm mb-1.5 ml-1',
-        isDark ? 'text-slate-300' : '!text-slate-700'
+        'font-semibold text-sm mb-2',
+        isDark ? 'text-slate-300' : 'text-slate-700'
       ),
+      // Form field inputs - clean styling
       formFieldInput: cn(
-        'w-full rounded-xl shadow-sm transition-all text-base py-3.5 px-4 border-2',
+        'w-full rounded-xl transition-all text-base py-3.5 px-4',
         isDark
-          ? 'bg-slate-800/80 text-white placeholder-slate-500 hover:bg-slate-800 border-slate-600 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20'
-          : '!bg-white !text-slate-900 placeholder-slate-400 hover:bg-slate-50 !border-slate-200 focus:!border-purple-500 focus:ring-4 focus:ring-purple-500/20'
+          ? 'bg-slate-800 text-white placeholder-slate-500 border-2 border-slate-600 focus:border-purple-500'
+          : 'bg-white text-slate-900 placeholder-slate-400 border-2 border-slate-200 focus:border-purple-500'
       ),
       formFieldInputShowPasswordButton: cn(
-        isDark ? 'text-slate-400 hover:text-white' : '!text-slate-500 hover:!text-slate-900'
+        'transition-colors',
+        isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
       ),
+      // OTP Code inputs - individual boxes, no container border
+      otpCodeFieldInputs: 'gap-2 bg-transparent border-none shadow-none p-0',
       otpCodeFieldInput: cn(
-        '!w-12 !h-14 !rounded-xl text-center text-xl font-bold transition-all shadow-sm !border-2',
+        'w-12 h-14 rounded-xl text-center text-xl font-bold transition-all border-2',
         isDark
-          ? 'bg-slate-800 text-white border-slate-500 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20'
-          : '!bg-white !text-slate-900 !border-slate-300 focus:!border-purple-500 focus:ring-4 focus:ring-purple-500/20'
+          ? 'bg-slate-800 text-white border-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30'
+          : 'bg-white text-slate-900 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30'
       ),
-      // Email badge / identity preview - FIXED for light mode
+      // Email badge / identity preview - clean styling
       identityPreview: cn(
-        'rounded-xl px-4 py-3 mb-4',
+        'rounded-2xl px-5 py-3 flex items-center justify-center gap-3',
         isDark
-          ? 'bg-slate-800/80 border border-slate-600'
-          : '!bg-slate-100 !border-2 !border-slate-200'
+          ? 'bg-slate-800 border-2 border-slate-600'
+          : 'bg-slate-50 border-2 border-slate-200'
       ),
       identityPreviewText: cn(
         'text-base font-semibold',
