@@ -192,20 +192,19 @@ export function AuthPage() {
           ? 'bg-slate-800 text-white border-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30'
           : 'bg-white text-slate-900 border-slate-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30'
       ),
-      // Email badge / identity preview - clean styling
-      identityPreview: cn(
-        'rounded-2xl px-5 py-3 flex items-center justify-center gap-3',
-        isDark
-          ? 'bg-slate-800 border-2 border-slate-600'
-          : 'bg-slate-50 border-2 border-slate-200'
-      ),
+      // Email badge / identity preview - NO container styling, only text
+      identityPreview: 'bg-transparent border-none shadow-none p-0 flex items-center gap-3',
       identityPreviewText: cn(
-        'text-base font-semibold',
-        isDark ? 'text-white' : '!text-slate-900'
+        'text-base font-semibold px-5 py-3 rounded-xl border-2',
+        isDark
+          ? 'bg-slate-800 border-slate-600 text-white'
+          : 'bg-slate-50 border-slate-200 text-slate-900'
       ),
       identityPreviewEditButton: cn(
-        'font-semibold ml-3',
-        isDark ? 'text-purple-400 hover:text-purple-300' : '!text-purple-600 hover:!text-purple-700'
+        'font-semibold p-2 rounded-lg transition-colors',
+        isDark 
+          ? 'text-purple-400 hover:text-purple-300 hover:bg-purple-500/10' 
+          : 'text-purple-600 hover:text-purple-700 hover:bg-purple-100'
       ),
       // Alert (verification message)
       alert: cn(

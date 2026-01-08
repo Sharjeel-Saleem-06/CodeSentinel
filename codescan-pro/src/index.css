@@ -1264,33 +1264,51 @@ pre {
 
 /* ==================== FIX: IDENTITY PREVIEW (EMAIL BADGE) ==================== */
 
-/* Clean styling for identity preview container */
-.clerk-auth-wrapper [class*="cl-identityPreview"] {
-  display: flex !important;
+/* CRITICAL: Remove ALL borders and backgrounds from wrapper containers */
+.clerk-auth-wrapper [class*="cl-identityPreview"],
+.clerk-auth-wrapper [class*="cl-identityPreviewEditButtonIcon"],
+.clerk-auth-wrapper [class*="cl-identityPreviewEditButtonContainer"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Style the actual text container */
+.clerk-auth-wrapper [class*="cl-identityPreviewText"] {
+  display: inline-flex !important;
   align-items: center !important;
-  justify-content: center !important;
   padding: 12px 20px !important;
-  border-radius: 16px !important;
-  gap: 12px !important;
-}
-
-/* Light mode identity preview */
-.light-theme .clerk-auth-wrapper [class*="cl-identityPreview"] {
-  background-color: #f8fafc !important;
-  border: 2px solid #e2e8f0 !important;
-}
-
-.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewText"] {
-  color: #0f172a !important;
+  border-radius: 12px !important;
   font-weight: 600 !important;
   font-size: 1rem !important;
 }
 
-.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewEditButton"] {
-  color: #6366f1 !important;
-  padding: 6px !important;
+/* Light mode identity preview text */
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewText"] {
+  background-color: #f1f5f9 !important;
+  border: 2px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Dark mode identity preview text */
+.clerk-auth-wrapper [class*="cl-identityPreviewText"] {
+  background-color: rgba(30, 41, 59, 0.8) !important;
+  border: 2px solid rgba(71, 85, 105, 0.5) !important;
+  color: #f1f5f9 !important;
+}
+
+/* Edit button styling */
+.clerk-auth-wrapper [class*="cl-identityPreviewEditButton"] {
+  padding: 8px !important;
   border-radius: 8px !important;
   transition: all 0.2s ease !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewEditButton"] {
+  color: #6366f1 !important;
 }
 
 .light-theme .clerk-auth-wrapper [class*="cl-identityPreviewEditButton"]:hover {
@@ -1298,19 +1316,12 @@ pre {
   background-color: rgba(99, 102, 241, 0.1) !important;
 }
 
-/* Dark mode identity preview */
-.clerk-auth-wrapper [class*="cl-identityPreview"] {
-  background-color: rgba(30, 41, 59, 0.8) !important;
-  border: 2px solid rgba(71, 85, 105, 0.5) !important;
-}
-
-.clerk-auth-wrapper [class*="cl-identityPreviewText"] {
-  color: #f1f5f9 !important;
-  font-weight: 600 !important;
-}
-
 .clerk-auth-wrapper [class*="cl-identityPreviewEditButton"] {
   color: #a78bfa !important;
+}
+
+.clerk-auth-wrapper [class*="cl-identityPreviewEditButton"]:hover {
+  background-color: rgba(167, 139, 250, 0.1) !important;
 }
 
 /* ==================== FIX: FORM FIELD ROWS ==================== */
