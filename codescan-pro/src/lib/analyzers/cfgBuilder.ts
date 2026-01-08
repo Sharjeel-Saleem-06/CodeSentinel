@@ -1,6 +1,12 @@
 /**
- * Advanced Control Flow Graph Builder v3.0
+ * Advanced Control Flow Graph Builder v4.0
  * Creates professional developer-style flowcharts with proper hierarchy
+ * 
+ * KEY IMPROVEMENT (v4.0):
+ * - Fixed internal flow connections: Loop bodies, condition branches, and 
+ *   all internal logic are now properly connected within their parent function
+ * - Recursive block processing ensures nested structures are correctly linked
+ * - Language-agnostic pattern matching for multi-language support
  * 
  * Features:
  * - Multi-language support (JS/TS, Kotlin, Swift, Python, Java, Go, Rust, etc.)
@@ -10,11 +16,16 @@
  * - Clean hierarchical layout with collapsible groups
  * - Call graph integration
  * - Proper scope handling
+ * - PROPER INTERNAL FLOW: All statements within a function are connected
+ *   in correct execution order (loops contain their bodies, conditions
+ *   have true/false branches properly linked)
  * 
  * Follows standard flowchart conventions:
  * - Classes as container nodes (swimlanes)
  * - Methods/Functions as entry points within containers
- * - Control flow within methods
+ * - Control flow within methods (properly connected)
+ * - Loop bodies connected to loop condition with iterate edge
+ * - Condition branches (true/false) properly separated
  * - Inter-method calls shown as dashed lines
  */
 
@@ -61,15 +72,16 @@ interface FunctionScope {
   depth: number; // Nesting depth
 }
 
-interface ControlBlock {
-  type: 'if' | 'else' | 'loop' | 'try' | 'catch' | 'finally' | 'switch' | 'case' | 'with';
-  nodeId: string;
-  startLine: number;
-  depth: number;
-  exitNodeId?: string;
-  falseNodeId?: string;
-  conditionNodeId?: string;
-}
+// ControlBlock interface - kept for potential future use in advanced block tracking
+// interface ControlBlock {
+//   type: 'if' | 'else' | 'loop' | 'try' | 'catch' | 'finally' | 'switch' | 'case' | 'with';
+//   nodeId: string;
+//   startLine: number;
+//   depth: number;
+//   exitNodeId?: string;
+//   falseNodeId?: string;
+//   conditionNodeId?: string;
+// }
 
 interface LineAnalysis {
   type: CFGNode['type'];
@@ -704,8 +716,53 @@ function shouldSkipLine(trimmedLine: string): boolean {
 }
 
 // ============================================================================
-// Function CFG Builder
+// Function CFG Builder - Enhanced with proper internal flow connections
 // ============================================================================
+
+// BlockContext interface - kept for potential future use in advanced block tracking
+// interface BlockContext {
+//   type: 'if' | 'else' | 'loop' | 'try' | 'catch' | 'finally' | 'switch' | 'case';
+//   nodeId: string;
+//   startLine: number;
+//   endLine: number;
+//   depth: number;
+//   exitNodeId?: string;
+//   mergeNodeId?: string;  // Node where branches merge
+//   loopBackNodeId?: string; // For loops: the condition node to loop back to
+//   branchNodes: string[]; // Nodes at end of each branch
+// }
+
+function findBlockEnd(lines: string[], startLine: number, startIndent: number): number {
+  let depth = 0;
+  let foundStart = false;
+  
+  for (let i = startLine; i < lines.length; i++) {
+    const line = lines[i];
+    for (const char of line) {
+      if (char === '{') {
+        depth++;
+        foundStart = true;
+      }
+      if (char === '}') {
+        depth--;
+        if (foundStart && depth === 0) {
+          return i;
+        }
+      }
+    }
+  }
+  
+  // Fallback: use indentation for Python-style
+  for (let i = startLine + 1; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    if (trimmed && getIndentLevel(line) <= startIndent) {
+      return i - 1;
+    }
+  }
+  
+  return lines.length - 1;
+}
 
 function buildFunctionCFG(ctx: BuilderContext, func: FunctionScope): void {
   // Find parent class node if exists
@@ -720,9 +777,7 @@ function buildFunctionCFG(ctx: BuilderContext, func: FunctionScope): void {
       : 'function';
   
   // Create entry node with rich metadata
-  const entryLabel = func.parentClass 
-    ? `${func.name}(${func.parameters.slice(0, 2).join(', ')}${func.parameters.length > 2 ? '...' : ''})`
-    : `${func.name}(${func.parameters.slice(0, 2).join(', ')}${func.parameters.length > 2 ? '...' : ''})`;
+  const entryLabel = `${func.name}(${func.parameters.slice(0, 2).join(', ')}${func.parameters.length > 2 ? '...' : ''})`;
   
   const entryId = createNode(
     ctx, 
@@ -735,9 +790,9 @@ function buildFunctionCFG(ctx: BuilderContext, func: FunctionScope): void {
       depth: func.depth,
       nodeGroup: func.parentClass || func.name,
       metadata: {
-        isAsync: func.isAsync,
-        isConstructor: func.isConstructor,
-        parameters: func.parameters,
+      isAsync: func.isAsync,
+      isConstructor: func.isConstructor,
+      parameters: func.parameters,
         className: func.parentClass,
         methodName: func.name,
       },
@@ -764,143 +819,375 @@ function buildFunctionCFG(ctx: BuilderContext, func: FunctionScope): void {
   });
   func.exitNodeId = exitId;
   
-  let prevNodeId = entryId;
-  const blockStack: ControlBlock[] = [];
-  const loopStack: string[] = [];
-  const pendingConnections: Array<{ nodeId: string; type: 'false' | 'break' | 'continue' }> = [];
+  // Build internal control flow
+  const result = buildBlockCFG(ctx, func, func.startLine + 1, func.endLine, entryId, exitId, 0);
   
-  // Process lines in this function
-  for (let i = func.startLine + 1; i < func.endLine && i < ctx.lines.length; i++) {
-    const line = ctx.lines[i];
-    const trimmedLine = line.trim();
-    const lineNum = i + 1;
-    
-    if (shouldSkipLine(trimmedLine)) {
-      continue;
+  // Connect last node to exit if not already connected
+  if (result.lastNodeId && result.lastNodeId !== exitId) {
+    // Check if already connected to exit
+    const hasExitEdge = ctx.edges.some(e => e.from === result.lastNodeId && e.to === exitId);
+    if (!hasExitEdge) {
+      addEdge(ctx, result.lastNodeId, exitId);
     }
-    
-    // Check if this is a nested function definition - skip it
-    const isNestedFunction = ctx.functions.some(f => 
-      f !== func && 
-      f.startLine === i && 
-      f.startLine > func.startLine && 
-      f.endLine < func.endLine
-    );
-    if (isNestedFunction) {
-      // Skip to end of nested function
-      const nestedFunc = ctx.functions.find(f => f.startLine === i);
-      if (nestedFunc) {
-        i = nestedFunc.endLine;
-        continue;
-      }
-    }
-    
-    const analysis = analyzeLineType(line, trimmedLine, ctx.language);
-    
-    // Handle block ends
-    if (analysis.isBlockEnd && blockStack.length > 0) {
-      const block = blockStack.pop();
-      if (block?.type === 'loop' && loopStack.length > 0) {
-        const loopNodeId = loopStack.pop();
-        // Connect back to loop condition
-        if (prevNodeId && loopNodeId) {
-          addEdge(ctx, prevNodeId, loopNodeId, undefined, 'iterate');
-        }
-      }
-      
-      // Handle pending break connections
-      const breakConnections = pendingConnections.filter(c => c.type === 'break');
-      breakConnections.forEach(_conn => {
-        // Will be connected to next statement after loop
-      });
-      
-      continue;
-    }
-    
-    // Skip standalone else - handled with if
-    if (analysis.label === 'else') {
-      continue;
-    }
-    
-    // Create node for this line with proper grouping
-    const nodeId = createNode(ctx, analysis.type, analysis.label, lineNum, trimmedLine, {
-      parentId: entryId,
-      depth: func.depth + 1 + blockStack.length,
-      nodeGroup: func.parentClass || func.name,
-      metadata: analysis.isMethodCall ? { methodName: analysis.calledMethod } : undefined,
-    });
-    
-    // Connect from previous node
-    if (prevNodeId) {
-      const prevNode = ctx.nodes.find(n => n.id === prevNodeId);
-      
-      if (prevNode?.type === 'condition') {
-        addEdge(ctx, prevNodeId, nodeId, 'true', 'then');
-        pendingConnections.push({ nodeId: prevNodeId, type: 'false' });
-      } else if (prevNode?.type === 'loop') {
-        addEdge(ctx, prevNodeId, nodeId, 'true', 'body');
-        loopStack.push(prevNodeId);
-      } else {
-        addEdge(ctx, prevNodeId, nodeId);
-      }
-    }
-    
-    // Connect pending false edges
-    const falseConnections = pendingConnections.filter(c => c.type === 'false');
-    falseConnections.forEach(conn => {
-      addEdge(ctx, conn.nodeId, nodeId, 'false', 'else');
-    });
-    pendingConnections.length = 0;
-    
-    // Handle special node types
-    if (analysis.type === 'return' || analysis.type === 'throw') {
+  }
+  
+  // Connect any pending branch ends to exit
+  result.pendingNodes.forEach(nodeId => {
+    if (!ctx.edges.some(e => e.from === nodeId && e.to === exitId)) {
       addEdge(ctx, nodeId, exitId);
-      prevNodeId = '';
-    } else if (analysis.label === 'break' && loopStack.length > 0) {
-      pendingConnections.push({ nodeId, type: 'break' });
-      prevNodeId = '';
-    } else if (analysis.label === 'continue' && loopStack.length > 0) {
-      const loopNode = loopStack[loopStack.length - 1];
-      addEdge(ctx, nodeId, loopNode, undefined);
-      prevNodeId = '';
-    } else {
-      prevNodeId = nodeId;
     }
-    
-    // Track block depth
-    if (analysis.isBlockStart) {
-      blockStack.push({
-        type: analysis.type === 'loop' ? 'loop' : analysis.type === 'condition' ? 'if' : 'try',
-        nodeId,
-        startLine: i,
-        depth: blockStack.length + 1,
-      });
-    }
-    
-    // Track method calls for call graph visualization
-    if (analysis.isMethodCall && analysis.calledMethod) {
-      // Check if called method is in our function list
-      const calledFunc = ctx.functions.find(f => f.name === analysis.calledMethod);
-      if (calledFunc && calledFunc.entryNodeId) {
-        addEdge(ctx, nodeId, calledFunc.entryNodeId, 'call', 'calls');
-      }
-    }
-  }
-  
-  // Connect last node to exit
-  if (prevNodeId && prevNodeId !== exitId) {
-    addEdge(ctx, prevNodeId, exitId);
-  }
-  
-  // Connect remaining pending connections to exit
-  pendingConnections.forEach(conn => {
-    addEdge(ctx, conn.nodeId, exitId, conn.type === 'false' ? 'false' : undefined);
   });
   
   // Ensure entry connects to something
   if (!ctx.edges.some(e => e.from === entryId)) {
     addEdge(ctx, entryId, exitId);
   }
+}
+
+interface BlockCFGResult {
+  lastNodeId: string;
+  pendingNodes: string[]; // Nodes that need to be connected to next statement
+  hasReturn: boolean;
+}
+
+function buildBlockCFG(
+  ctx: BuilderContext, 
+  func: FunctionScope, 
+  startLine: number, 
+  endLine: number, 
+  prevNodeId: string,
+  exitId: string,
+  depth: number
+): BlockCFGResult {
+  let currentPrevId = prevNodeId;
+  const pendingFalseNodes: string[] = []; // Nodes waiting for false/else branch
+  const pendingBreakNodes: string[] = [];
+  const loopStack: { nodeId: string; endLine: number }[] = [];
+  let hasReturn = false;
+  
+  let i = startLine;
+  while (i <= endLine && i < ctx.lines.length) {
+    const line = ctx.lines[i];
+    const trimmedLine = line.trim();
+    const lineNum = i + 1;
+    const lineIndent = getIndentLevel(line);
+    
+    // Skip empty lines, comments, imports, etc.
+    if (shouldSkipLine(trimmedLine)) {
+      i++;
+      continue;
+    }
+    
+    // Skip closing braces
+    if (trimmedLine === '}' || trimmedLine === '};' || trimmedLine === '},') {
+      // Check if we're exiting a loop
+      if (loopStack.length > 0 && i >= loopStack[loopStack.length - 1].endLine) {
+        const loop = loopStack.pop()!;
+        // Connect back to loop condition
+        if (currentPrevId && currentPrevId !== loop.nodeId) {
+          addEdge(ctx, currentPrevId, loop.nodeId, undefined, 'iterate');
+        }
+        // Connect pending break nodes to next statement (will be handled after loop)
+      }
+      i++;
+      continue;
+    }
+    
+    // Check if this is a nested function definition - skip it entirely
+    const nestedFunc = ctx.functions.find(f => 
+      f !== func && 
+      f.startLine === i && 
+      f.startLine > func.startLine && 
+      f.endLine < func.endLine
+    );
+      if (nestedFunc) {
+      i = nestedFunc.endLine + 1;
+        continue;
+    }
+    
+    const analysis = analyzeLineType(line, trimmedLine, ctx.language);
+    
+    // Handle else block - connect from pending false nodes
+    if (trimmedLine.startsWith('else') || trimmedLine === '} else {' || trimmedLine === '} else') {
+      i++;
+      continue; // else is handled by the if block processing
+    }
+    
+    // ==================== LOOP HANDLING ====================
+    if (analysis.type === 'loop') {
+      const loopBlockEnd = findBlockEnd(ctx.lines, i, lineIndent);
+      
+      // Create loop condition node
+      const loopNodeId = createNode(ctx, 'loop', analysis.label, lineNum, trimmedLine, {
+        parentId: func.entryNodeId,
+        depth: func.depth + 1 + depth,
+        nodeGroup: func.parentClass || func.name,
+      });
+      
+      // Connect from previous
+      if (currentPrevId) {
+        addEdge(ctx, currentPrevId, loopNodeId);
+      }
+      
+      // Connect pending false branches to loop
+      pendingFalseNodes.forEach(nodeId => {
+        addEdge(ctx, nodeId, loopNodeId, 'false', 'else');
+      });
+      pendingFalseNodes.length = 0;
+      
+      // Track this loop for break/continue handling
+      loopStack.push({ nodeId: loopNodeId, endLine: loopBlockEnd });
+      
+      // Build loop body
+      const bodyResult = buildBlockCFG(ctx, func, i + 1, loopBlockEnd, loopNodeId, exitId, depth + 1);
+      
+      // Connect loop body start with 'body' label
+      const firstBodyEdge = ctx.edges.find(e => e.from === loopNodeId);
+      if (firstBodyEdge) {
+        firstBodyEdge.condition = 'true';
+        firstBodyEdge.label = 'body';
+      }
+      
+      // Connect end of loop body back to condition
+      if (bodyResult.lastNodeId && bodyResult.lastNodeId !== loopNodeId && !bodyResult.hasReturn) {
+        addEdge(ctx, bodyResult.lastNodeId, loopNodeId, undefined, 'iterate');
+      }
+      
+      // Loop exit goes to next statement (false path)
+      loopStack.pop();
+      currentPrevId = loopNodeId;
+      pendingFalseNodes.push(loopNodeId); // Loop exit is "false" path
+      
+      // Connect any break statements to after loop
+      pendingBreakNodes.forEach(_nodeId => {
+        // Will be connected to next statement after loop exits
+      });
+      
+      i = loopBlockEnd + 1;
+      continue;
+    }
+    
+    // ==================== CONDITION HANDLING ====================
+    if (analysis.type === 'condition' && (trimmedLine.startsWith('if') || /^(?:else\s+if|elif)/.test(trimmedLine))) {
+      const ifBlockEnd = findBlockEnd(ctx.lines, i, lineIndent);
+      
+      // Create condition node
+      const condNodeId = createNode(ctx, 'condition', analysis.label, lineNum, trimmedLine, {
+        parentId: func.entryNodeId,
+        depth: func.depth + 1 + depth,
+        nodeGroup: func.parentClass || func.name,
+      });
+      
+      // Connect from previous
+      if (currentPrevId) {
+        addEdge(ctx, currentPrevId, condNodeId);
+      }
+      
+      // Connect pending false branches
+      pendingFalseNodes.forEach(nodeId => {
+        addEdge(ctx, nodeId, condNodeId, 'false', 'else');
+      });
+      pendingFalseNodes.length = 0;
+      
+      // Build true branch (then block)
+      const thenResult = buildBlockCFG(ctx, func, i + 1, ifBlockEnd, condNodeId, exitId, depth + 1);
+      
+      // Mark the edge to then block as "true"
+      const thenEdge = ctx.edges.find(e => e.from === condNodeId && e.to !== exitId);
+      if (thenEdge) {
+        thenEdge.condition = 'true';
+        thenEdge.label = 'then';
+      }
+      
+      // Check for else block
+      let elseBlockStart = -1;
+      let elseBlockEnd = -1;
+      
+      // Look for else on the same line as closing brace or next line
+      for (let j = ifBlockEnd; j <= Math.min(ifBlockEnd + 1, ctx.lines.length - 1); j++) {
+        const elseLine = ctx.lines[j]?.trim() || '';
+        if (elseLine.includes('else')) {
+          elseBlockStart = j;
+          elseBlockEnd = findBlockEnd(ctx.lines, j, lineIndent);
+          break;
+        }
+      }
+      
+      const branchEndNodes: string[] = [];
+      
+      if (!thenResult.hasReturn && thenResult.lastNodeId) {
+        branchEndNodes.push(thenResult.lastNodeId);
+      }
+      
+      if (elseBlockStart !== -1) {
+        // Build else branch
+        const elseResult = buildBlockCFG(ctx, func, elseBlockStart + 1, elseBlockEnd, condNodeId, exitId, depth + 1);
+        
+        // Mark the edge to else block as "false"
+        const elseEdge = ctx.edges.find(e => e.from === condNodeId && !e.condition);
+        if (elseEdge) {
+          elseEdge.condition = 'false';
+          elseEdge.label = 'else';
+      } else {
+          // Create edge if not exists
+          const elseFirstNode = ctx.nodes.find(n => 
+            n.location?.line && 
+            n.location.line > elseBlockStart && 
+            n.location.line <= elseBlockEnd + 1
+          );
+          if (elseFirstNode) {
+            addEdge(ctx, condNodeId, elseFirstNode.id, 'false', 'else');
+          }
+        }
+        
+        if (!elseResult.hasReturn && elseResult.lastNodeId) {
+          branchEndNodes.push(elseResult.lastNodeId);
+        }
+        
+        i = elseBlockEnd + 1;
+      } else {
+        // No else block - condition's false path goes to next statement
+        pendingFalseNodes.push(condNodeId);
+        i = ifBlockEnd + 1;
+      }
+      
+      // Set current prev to the merge point
+      if (branchEndNodes.length > 0) {
+        currentPrevId = branchEndNodes[0]; // First branch end becomes prev
+        // Other branch ends become pending
+        for (let k = 1; k < branchEndNodes.length; k++) {
+          pendingFalseNodes.push(branchEndNodes[k]);
+        }
+      } else if (thenResult.hasReturn && elseBlockStart === -1) {
+        // Only then branch and it returns, false path continues
+        currentPrevId = '';
+      } else {
+        currentPrevId = '';
+      }
+      
+      continue;
+    }
+    
+    // ==================== RETURN/THROW HANDLING ====================
+    if (analysis.type === 'return' || analysis.type === 'throw') {
+      const nodeId = createNode(ctx, analysis.type, analysis.label, lineNum, trimmedLine, {
+        parentId: func.entryNodeId,
+        depth: func.depth + 1 + depth,
+        nodeGroup: func.parentClass || func.name,
+      });
+      
+      // Connect from previous
+      if (currentPrevId) {
+        addEdge(ctx, currentPrevId, nodeId);
+      }
+      
+      // Connect pending false branches
+      pendingFalseNodes.forEach(pendingId => {
+        addEdge(ctx, pendingId, nodeId, 'false', 'else');
+      });
+      pendingFalseNodes.length = 0;
+      
+      // Connect to exit
+      addEdge(ctx, nodeId, exitId);
+      
+      hasReturn = true;
+      currentPrevId = '';
+      i++;
+      continue;
+    }
+    
+    // ==================== BREAK/CONTINUE HANDLING ====================
+    if (analysis.label.startsWith('break')) {
+      const nodeId = createNode(ctx, 'statement', analysis.label, lineNum, trimmedLine, {
+        parentId: func.entryNodeId,
+        depth: func.depth + 1 + depth,
+        nodeGroup: func.parentClass || func.name,
+      });
+      
+      if (currentPrevId) {
+        addEdge(ctx, currentPrevId, nodeId);
+      }
+      
+      pendingFalseNodes.forEach(pendingId => {
+        addEdge(ctx, pendingId, nodeId, 'false', 'else');
+      });
+      pendingFalseNodes.length = 0;
+      
+      pendingBreakNodes.push(nodeId);
+      currentPrevId = '';
+      i++;
+      continue;
+    }
+    
+    if (analysis.label.startsWith('continue')) {
+      const nodeId = createNode(ctx, 'statement', analysis.label, lineNum, trimmedLine, {
+        parentId: func.entryNodeId,
+        depth: func.depth + 1 + depth,
+        nodeGroup: func.parentClass || func.name,
+      });
+      
+      if (currentPrevId) {
+        addEdge(ctx, currentPrevId, nodeId);
+      }
+      
+      pendingFalseNodes.forEach(pendingId => {
+        addEdge(ctx, pendingId, nodeId, 'false', 'else');
+      });
+      pendingFalseNodes.length = 0;
+      
+      // Connect to current loop condition
+      if (loopStack.length > 0) {
+        addEdge(ctx, nodeId, loopStack[loopStack.length - 1].nodeId, undefined, 'continue');
+      }
+      
+      currentPrevId = '';
+      i++;
+      continue;
+    }
+    
+    // ==================== REGULAR STATEMENT ====================
+    const nodeId = createNode(ctx, analysis.type, analysis.label, lineNum, trimmedLine, {
+      parentId: func.entryNodeId,
+      depth: func.depth + 1 + depth,
+      nodeGroup: func.parentClass || func.name,
+      metadata: analysis.isMethodCall ? { methodName: analysis.calledMethod } : undefined,
+    });
+    
+    // Connect from previous node
+    if (currentPrevId) {
+      addEdge(ctx, currentPrevId, nodeId);
+    }
+    
+    // Connect pending false branches
+    pendingFalseNodes.forEach(pendingId => {
+      addEdge(ctx, pendingId, nodeId, 'false', 'else');
+    });
+    pendingFalseNodes.length = 0;
+    
+    // Connect pending break nodes (they exit to after loop)
+    pendingBreakNodes.forEach(breakId => {
+      addEdge(ctx, breakId, nodeId, undefined, 'break');
+    });
+    pendingBreakNodes.length = 0;
+    
+    currentPrevId = nodeId;
+    
+    // Track method calls for call graph
+    if (analysis.isMethodCall && analysis.calledMethod) {
+      const calledFunc = ctx.functions.find(f => f.name === analysis.calledMethod);
+      if (calledFunc && calledFunc.entryNodeId) {
+        addEdge(ctx, nodeId, calledFunc.entryNodeId, 'call', 'calls', 'call');
+      }
+    }
+    
+    i++;
+  }
+  
+  return {
+    lastNodeId: currentPrevId,
+    pendingNodes: [...pendingFalseNodes, ...pendingBreakNodes],
+    hasReturn,
+  };
 }
 
 // ============================================================================
