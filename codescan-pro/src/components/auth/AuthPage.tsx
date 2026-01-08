@@ -54,34 +54,75 @@ export function AuthPage() {
   const [pageView, setPageView] = useState<PageView>('auth');
   const { isDark } = useTheme();
 
-  // Hide Clerk branding elements after render
+  // Hide Clerk branding elements and social buttons after render
   useEffect(() => {
-    const hideClerkBranding = () => {
-      // Target specific elements by their name attribute
+    const hideClerkElements = () => {
+      // Hide "Secured by" and "Development mode" badges
       document.querySelectorAll('[name="Secured by"], [name="Development mode"]').forEach(el => {
-        if (el instanceof HTMLElement && el.parentElement && el.parentElement.parentElement) {
-          // Hide the grandparent container that holds both the badge and text
-          el.parentElement.parentElement.style.display = 'none';
+        if (el instanceof HTMLElement) {
+          el.style.display = 'none';
+          if (el.parentElement) {
+            el.parentElement.style.display = 'none';
+            if (el.parentElement.parentElement) {
+              el.parentElement.parentElement.style.display = 'none';
+            }
+          }
         }
       });
 
-      // Also hide links to clerk.com
+      // Hide links to clerk.com
       document.querySelectorAll('a[href*="clerk.com"], a[href*="clerk.dev"]').forEach(el => {
-        if (el instanceof HTMLElement && el.parentElement) {
-          el.parentElement.style.display = 'none';
+        if (el instanceof HTMLElement) {
+          el.style.display = 'none';
+          if (el.parentElement) {
+            el.parentElement.style.display = 'none';
+          }
+        }
+      });
+
+      // Hide social buttons (Google, etc.)
+      document.querySelectorAll('[class*="socialButtons"], [class*="cl-socialButtons"], button[class*="Google"]').forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.style.display = 'none';
+        }
+      });
+
+      // Hide any element containing "Continue with Google" text
+      document.querySelectorAll('button').forEach(btn => {
+        if (btn.textContent?.includes('Continue with Google') || btn.textContent?.includes('Google')) {
+          btn.style.display = 'none';
+          if (btn.parentElement) {
+            btn.parentElement.style.display = 'none';
+          }
+        }
+      });
+
+      // Hide divider rows
+      document.querySelectorAll('[class*="dividerRow"], [class*="cl-divider"]').forEach(el => {
+        if (el instanceof HTMLElement) {
+          el.style.display = 'none';
         }
       });
     };
 
     // Run after delays to catch dynamically loaded content
-    const timer1 = setTimeout(hideClerkBranding, 100);
-    const timer2 = setTimeout(hideClerkBranding, 500);
-    const timer3 = setTimeout(hideClerkBranding, 1000);
+    const timer1 = setTimeout(hideClerkElements, 100);
+    const timer2 = setTimeout(hideClerkElements, 300);
+    const timer3 = setTimeout(hideClerkElements, 600);
+    const timer4 = setTimeout(hideClerkElements, 1000);
+    const timer5 = setTimeout(hideClerkElements, 2000);
+
+    // Also run on any DOM changes
+    const observer = new MutationObserver(hideClerkElements);
+    observer.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
+      clearTimeout(timer4);
+      clearTimeout(timer5);
+      observer.disconnect();
     };
   }, [mode]);
 
@@ -95,68 +136,102 @@ export function AuthPage() {
     return <PrivacyPolicy onBack={() => setPageView('auth')} />;
   }
 
-  // Enhanced Clerk appearance with better contrast and readability
+  // Enhanced Clerk appearance with better contrast and readability for BOTH themes
   const clerkAppearance = {
+    variables: {
+      // Light mode friendly colors
+      colorPrimary: '#8b5cf6',
+      colorText: isDark ? '#f1f5f9' : '#1e293b',
+      colorTextSecondary: isDark ? '#94a3b8' : '#64748b',
+      colorBackground: isDark ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.95)',
+      colorInputBackground: isDark ? '#1e293b' : '#ffffff',
+      colorInputText: isDark ? '#f1f5f9' : '#1e293b',
+      colorDanger: '#ef4444',
+      colorSuccess: '#22c55e',
+      colorWarning: '#f59e0b',
+      borderRadius: '0.75rem',
+      fontFamily: 'DM Sans, system-ui, sans-serif',
+    },
     elements: {
       rootBox: 'w-full',
       card: cn(
         'w-full shadow-2xl rounded-3xl p-6 transition-all',
         isDark
-          ? 'bg-slate-900/40 backdrop-blur-md border border-slate-700/50'
-          : 'bg-white/60 backdrop-blur-md border border-white/50 shadow-purple-500/5'
+          ? 'bg-slate-900/60 backdrop-blur-xl border border-slate-700/50'
+          : 'bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-xl shadow-slate-200/50'
       ),
       headerTitle: cn(
         'text-2xl font-bold tracking-tight mb-1',
-        isDark ? 'text-white' : 'text-slate-900'
+        isDark ? 'text-white' : '!text-slate-900'
       ),
       headerSubtitle: cn(
         'text-base font-medium',
-        isDark ? 'text-slate-400' : 'text-slate-500'
+        isDark ? 'text-slate-400' : '!text-slate-600'
       ),
       // Clean inputs
       formFieldLabel: cn(
-        'font-medium text-sm mb-1.5 ml-1',
-        isDark ? 'text-slate-300' : 'text-slate-700'
+        'font-semibold text-sm mb-1.5 ml-1',
+        isDark ? 'text-slate-300' : '!text-slate-700'
       ),
       formFieldInput: cn(
-        'w-full rounded-xl border-0 shadow-sm transition-all text-base py-3.5 px-4',
+        'w-full rounded-xl shadow-sm transition-all text-base py-3.5 px-4 border-2',
         isDark
-          ? 'bg-slate-800/80 text-white placeholder-slate-500 hover:bg-slate-800 ring-1 ring-slate-700 focus:ring-2 focus:ring-purple-500 focus:bg-slate-800'
-          : 'bg-white text-slate-900 placeholder-slate-400 hover:bg-slate-50 ring-1 ring-slate-200 focus:ring-2 focus:ring-purple-500 focus:bg-white'
+          ? 'bg-slate-800/80 text-white placeholder-slate-500 hover:bg-slate-800 border-slate-600 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20'
+          : '!bg-white !text-slate-900 placeholder-slate-400 hover:bg-slate-50 !border-slate-200 focus:!border-purple-500 focus:ring-4 focus:ring-purple-500/20'
+      ),
+      formFieldInputShowPasswordButton: cn(
+        isDark ? 'text-slate-400 hover:text-white' : '!text-slate-500 hover:!text-slate-900'
       ),
       otpCodeFieldInput: cn(
-        '!w-12 !h-12 !rounded-xl text-center text-xl font-bold transition-all shadow-sm !border-2',
+        '!w-12 !h-14 !rounded-xl text-center text-xl font-bold transition-all shadow-sm !border-2',
         isDark
-          ? 'bg-slate-900 text-white border-slate-500 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20'
-          : 'bg-white text-slate-900 border-slate-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20'
+          ? 'bg-slate-800 text-white border-slate-500 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20'
+          : '!bg-white !text-slate-900 !border-slate-300 focus:!border-purple-500 focus:ring-4 focus:ring-purple-500/20'
       ),
-      // Fix: Remove the default styling from the container to avoid double-boxing
-      identityPreview: '!bg-transparent !border-none !shadow-none !p-0',
+      // Email badge / identity preview - FIXED for light mode
+      identityPreview: cn(
+        'rounded-xl px-4 py-3 mb-4',
+        isDark
+          ? 'bg-slate-800/80 border border-slate-600'
+          : '!bg-slate-100 !border-2 !border-slate-200'
+      ),
       identityPreviewText: cn(
-        'text-base font-bold px-4 py-3 rounded-xl border-2 w-full',
-        isDark
-          ? 'bg-slate-900 border-slate-600 text-white'
-          : 'bg-slate-50 border-slate-200 text-slate-900'
+        'text-base font-semibold',
+        isDark ? 'text-white' : '!text-slate-900'
       ),
-      identityPreviewEditButton: 'text-purple-500 hover:text-purple-400 font-bold ml-3',
+      identityPreviewEditButton: cn(
+        'font-semibold ml-3',
+        isDark ? 'text-purple-400 hover:text-purple-300' : '!text-purple-600 hover:!text-purple-700'
+      ),
+      // Alert (verification message)
       alert: cn(
         'rounded-xl p-4 border mb-6 flex items-start gap-3',
         isDark
-          ? 'bg-amber-950/40 border-amber-800 text-amber-100'
-          : 'bg-amber-50 border-amber-200 text-amber-800'
+          ? 'bg-amber-950/40 border-amber-700/50 text-amber-200'
+          : '!bg-amber-50 !border-amber-200 !text-amber-800'
       ),
-      alertText: 'text-sm font-semibold',
+      alertText: cn(
+        'text-sm font-medium',
+        isDark ? 'text-amber-200' : '!text-amber-800'
+      ),
 
-      // Primary button
+      // Primary button - Always purple gradient
       formButtonPrimary:
-        'w-full bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 text-white font-bold shadow-lg shadow-purple-500/25 py-4 text-base rounded-xl transition-all hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02] active:scale-[0.98]',
+        'w-full bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 !text-white font-bold shadow-lg shadow-purple-500/25 py-4 text-base rounded-xl transition-all hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02] active:scale-[0.98]',
 
+      // Footer links
       footerActionLink: cn(
         'font-semibold transition-colors',
-        isDark ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
+        isDark ? 'text-purple-400 hover:text-purple-300' : '!text-purple-600 hover:!text-purple-700'
       ),
       footerActionText: cn(
-        isDark ? 'text-slate-400' : 'text-slate-600'
+        isDark ? 'text-slate-400' : '!text-slate-600'
+      ),
+      
+      // Resend code link
+      formResendCodeLink: cn(
+        'font-semibold',
+        isDark ? 'text-purple-400 hover:text-purple-300' : '!text-purple-600 hover:!text-purple-700'
       ),
 
       // Hide social buttons in Clerk (we use custom ones)
@@ -168,6 +243,20 @@ export function AuthPage() {
 
       footer: '!hidden',
       logoBox: '!hidden',
+      
+      // Internal elements - ensure proper colors
+      formFieldLabelRow: cn(
+        isDark ? 'text-slate-300' : '!text-slate-700'
+      ),
+      formFieldHintText: cn(
+        isDark ? 'text-slate-500' : '!text-slate-500'
+      ),
+      formFieldErrorText: cn(
+        isDark ? 'text-red-400' : '!text-red-600'
+      ),
+      formFieldSuccessText: cn(
+        isDark ? 'text-green-400' : '!text-green-600'
+      ),
     },
     layout: {
       socialButtonsPlacement: 'bottom' as const,

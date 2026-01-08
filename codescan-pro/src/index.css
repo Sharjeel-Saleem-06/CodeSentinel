@@ -965,13 +965,244 @@ pre {
   color: #e2e8f0 !important;
 }
 
-/* Hide Google/Social login buttons */
+/* Hide Google/Social login buttons - AGGRESSIVE HIDING */
 .clerk-auth-wrapper [class*="cl-socialButtons"],
 .clerk-auth-wrapper [class*="cl-socialButtonsBlockButton"],
 .clerk-auth-wrapper [class*="cl-socialButtonsIconButton"],
-.clerk-auth-wrapper [class*="cl-dividerRow"] {
+.clerk-auth-wrapper [class*="cl-dividerRow"],
+.clerk-auth-wrapper button[aria-label*="Google"],
+.clerk-auth-wrapper button[aria-label*="google"],
+.clerk-auth-wrapper [data-localization-key*="socialButtonsBlockButton"],
+.clerk-auth-wrapper [class*="socialButtons"] {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  pointer-events: none !important;
 }
 
+/* Hide Clerk branding - AGGRESSIVE HIDING */
+.clerk-auth-wrapper [name="Secured by"],
+.clerk-auth-wrapper [name="Development mode"],
+.clerk-auth-wrapper a[href*="clerk.com"],
+.clerk-auth-wrapper a[href*="clerk.dev"],
+.clerk-auth-wrapper [class*="cl-footerPages"],
+.clerk-auth-wrapper [class*="cl-internal-footer"],
+.clerk-auth-wrapper [class*="cl-poweredBy"],
+.clerk-auth-wrapper [class*="cl-badge"],
+.clerk-auth-wrapper [class*="powered"],
+.clerk-auth-wrapper [class*="Powered"],
+.clerk-auth-wrapper [aria-label*="Secured"],
+.clerk-auth-wrapper [aria-label*="Development"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* ==================== LIGHT MODE CLERK STYLING ==================== */
+
+/* Light mode - Card background */
+.light-theme .clerk-auth-wrapper [class*="cl-card"] {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Light mode - Header title (Sign in to Code Sentinel) */
+.light-theme .clerk-auth-wrapper [class*="cl-headerTitle"] {
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+/* Light mode - Header subtitle (Welcome back! Please sign in to continue) */
+.light-theme .clerk-auth-wrapper [class*="cl-headerSubtitle"] {
+  color: #64748b !important;
+  font-weight: 500 !important;
+}
+
+/* Light mode - Form field labels (Email address or username) */
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldLabel"] {
+  color: #334155 !important;
+  font-weight: 600 !important;
+}
+
+/* Light mode - Form field inputs */
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldInput"] {
+  background-color: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+  color: #1e293b !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldInput"]:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15) !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldInput"]::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Light mode - OTP Code input boxes */
+.light-theme .clerk-auth-wrapper [class*="cl-otpCodeFieldInput"] {
+  background-color: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-otpCodeFieldInput"]:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15) !important;
+}
+
+/* Light mode - Identity preview (email badge like "onseason10@gmail.com") */
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreview"] {
+  background-color: #f1f5f9 !important;
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewText"] {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewEditButton"] {
+  color: #8b5cf6 !important;
+  font-weight: 600 !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-identityPreviewEditButton"]:hover {
+  color: #7c3aed !important;
+}
+
+/* Light mode - Primary button (Continue) */
+.light-theme .clerk-auth-wrapper [class*="cl-formButtonPrimary"] {
+  background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35) !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formButtonPrimary"]:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%) !important;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45) !important;
+}
+
+/* Light mode - Links (Sign up, Resend code) */
+.light-theme .clerk-auth-wrapper [class*="cl-footerActionLink"] {
+  color: #8b5cf6 !important;
+  font-weight: 600 !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-footerActionLink"]:hover {
+  color: #7c3aed !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formResendCodeLink"] {
+  color: #8b5cf6 !important;
+  font-weight: 600 !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formResendCodeLink"]:hover {
+  color: #7c3aed !important;
+}
+
+/* Light mode - Footer action text (Don't have an account?) */
+.light-theme .clerk-auth-wrapper [class*="cl-footerActionText"] {
+  color: #64748b !important;
+}
+
+/* Light mode - Divider text */
+.light-theme .clerk-auth-wrapper [class*="cl-dividerText"] {
+  color: #64748b !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-dividerLine"] {
+  background-color: #e2e8f0 !important;
+}
+
+/* Light mode - Alert messages (verification info) */
+.light-theme .clerk-auth-wrapper [class*="cl-alert"] {
+  background-color: rgba(251, 191, 36, 0.1) !important;
+  border: 1px solid rgba(251, 191, 36, 0.3) !important;
+  border-radius: 12px !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-alertText"] {
+  color: #92400e !important;
+  font-weight: 500 !important;
+}
+
+/* Light mode - Show password button */
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldInputShowPasswordButton"] {
+  color: #64748b !important;
+}
+
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldInputShowPasswordButton"]:hover {
+  color: #1e293b !important;
+}
+
+/* Light mode - Error messages */
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldError"],
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldErrorText"] {
+  color: #dc2626 !important;
+}
+
+/* Light mode - Success messages */
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldSuccess"],
+.light-theme .clerk-auth-wrapper [class*="cl-formFieldSuccessText"] {
+  color: #16a34a !important;
+}
+
+/* Light mode - "Check your email" and similar headers */
+.light-theme .clerk-auth-wrapper h1,
+.light-theme .clerk-auth-wrapper h2,
+.light-theme .clerk-auth-wrapper h3 {
+  color: #1e293b !important;
+}
+
+/* Light mode - Secondary text */
+.light-theme .clerk-auth-wrapper p {
+  color: #64748b !important;
+}
+
+/* Light mode - Internal container backgrounds */
+.light-theme .clerk-auth-wrapper [class*="cl-internal"] {
+  background-color: transparent !important;
+}
+
+/* Light mode - Main form container */
+.light-theme .clerk-auth-wrapper [class*="cl-main"] {
+  background-color: transparent !important;
+}
+
+/* Light mode - Root box */
+.light-theme .clerk-auth-wrapper [class*="cl-rootBox"] {
+  background-color: transparent !important;
+}
+
+/* Light mode - Form container */
+.light-theme .clerk-auth-wrapper form {
+  background-color: transparent !important;
+}
+
+/* Light mode - All text should be dark */
+.light-theme .clerk-auth-wrapper [class*="cl-"] {
+  --clerk-text-primary: #1e293b !important;
+  --clerk-text-secondary: #64748b !important;
+}
+
+/* Light mode - Specific text elements that might be missed */
+.light-theme .clerk-auth-wrapper span:not([class*="cl-"]) {
+  color: inherit !important;
+}
 
 /* End of Clerk Styling */
