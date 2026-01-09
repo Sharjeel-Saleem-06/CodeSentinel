@@ -214,15 +214,15 @@ function CFGNodeComponent({ data, selected }: NodeProps) {
     >
       {/* Target Handle (Top) - hide for class nodes */}
       {!isClassNode && (
-        <Handle
-          type="target"
-          position={Position.Top}
-          className={cn(
-            '!w-3 !h-3 !border-2 transition-all duration-200',
-            isDark ? '!bg-slate-700 !border-slate-500' : '!bg-gray-300 !border-gray-400',
-            isHovered && '!bg-cyan-500 !border-cyan-400 !scale-125'
-          )}
-        />
+      <Handle
+        type="target"
+        position={Position.Top}
+        className={cn(
+          '!w-3 !h-3 !border-2 transition-all duration-200',
+          isDark ? '!bg-slate-700 !border-slate-500' : '!bg-gray-300 !border-gray-400',
+          isHovered && '!bg-cyan-500 !border-cyan-400 !scale-125'
+        )}
+      />
       )}
 
       {/* Node Content */}

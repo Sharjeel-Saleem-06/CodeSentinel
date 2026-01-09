@@ -977,7 +977,7 @@ function buildBlockCFG(
         depth: func.depth + 1 + depth,
         nodeGroup: func.parentClass || func.name,
       });
-      
+    
       // Connect from previous
       if (currentPrevId) {
         addEdge(ctx, currentPrevId, condNodeId);

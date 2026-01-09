@@ -104,7 +104,6 @@ Set these in Netlify Dashboard → Site Settings → Environment Variables:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk public key | ✅ Yes |
 | `VITE_GROQ_API_KEYS` | Groq API keys (comma-separated) | ✅ Yes |
 
 ### Setting Environment Variables
@@ -174,7 +173,6 @@ If deployment fails, check build logs:
 ## 🎉 Post-Deployment Checklist
 
 - [ ] Site loads correctly
-- [ ] Authentication works (Clerk)
 - [ ] AI features work (Groq API)
 - [ ] All routes accessible
 - [ ] Mobile responsive

@@ -1,2 +1,9 @@
-# SPA Redirects
+# Netlify Redirects for SPA
+# This file ensures client-side routing works correctly
+
+# Redirect all routes to index.html for React Router
 /*    /index.html   200
+
+# API proxy example (uncomment if needed)
+# /api/*  https://your-api.com/:splat  200
+

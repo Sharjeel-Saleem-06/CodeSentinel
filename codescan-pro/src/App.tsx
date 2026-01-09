@@ -5,11 +5,11 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Play, 
-  Code2, 
-  Shield, 
-  BarChart3, 
+import {
+  Play,
+  Code2,
+  Shield,
+  BarChart3,
   GitBranch,
   Sparkles,
   FileCode,
@@ -27,7 +27,6 @@ import {
   Moon
 } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
-import { SignedIn, SignedOut, SignInButton, useAuth } from '@clerk/clerk-react';
 import { CodeEditor } from './components/editor/CodeEditor';
 import { IssuesList } from './components/analysis/IssuesList';
 import { MetricsPanel } from './components/analysis/MetricsPanel';
@@ -35,7 +34,7 @@ import { SecurityPanel } from './components/analysis/SecurityPanel';
 import { AIPanel } from './components/analysis/AIPanel';
 import { ControlFlowGraphView } from './components/visualization/ControlFlowGraph';
 import { CustomRulesPanel } from './components/analysis/CustomRulesPanel';
-import { UserMenu } from './components/auth/UserMenu';
+
 import { Button } from './components/ui/Button';
 import { Card, CardContent } from './components/ui/Card';
 import { Tabs } from './components/ui/Tabs';
@@ -61,80 +60,13 @@ const languageOptions = [
   { value: 'scala', label: 'Scala' },
 ];
 
-// Auth Section Component - handles loading states and fallbacks
-function AuthSection() {
-  const { isLoaded } = useAuth();
-  const [timedOut, setTimedOut] = useState(false);
 
-  // Timeout after 5 seconds if Clerk hasn't loaded
-  useEffect(() => {
-    if (!isLoaded) {
-      const timer = setTimeout(() => {
-        setTimedOut(true);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoaded]);
-
-  // Show loading state while Clerk is initializing (max 5 seconds)
-  if (!isLoaded && !timedOut) {
-    return (
-      <motion.button
-        className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white text-sm font-medium opacity-70 cursor-wait"
-        disabled
-      >
-        <span className="flex items-center gap-2">
-          <motion.span
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-          />
-          Loading...
-        </span>
-      </motion.button>
-    );
-  }
-
-  // If timed out or not loaded, show a fallback sign in button
-  if (timedOut && !isLoaded) {
-    return (
-      <motion.button
-        className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white text-sm font-medium hover:from-purple-500 hover:to-fuchsia-500 transition-all shadow-lg shadow-purple-500/25"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => window.location.reload()}
-        title="Click to retry authentication"
-      >
-        Sign In
-      </motion.button>
-    );
-  }
-
-  return (
-    <>
-      <SignedIn>
-        <UserMenu />
-      </SignedIn>
-      <SignedOut>
-        <SignInButton mode="modal">
-          <motion.button
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white text-sm font-medium hover:from-purple-500 hover:to-fuchsia-500 transition-all shadow-lg shadow-purple-500/25"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            Sign In
-          </motion.button>
-        </SignInButton>
-      </SignedOut>
-    </>
-  );
-}
 
 function App() {
-  const { 
-    sourceCode, 
+  const {
+    sourceCode,
     setSourceCode,
-    language, 
+    language,
     setLanguage,
     status,
     setStatus,
@@ -152,7 +84,7 @@ function App() {
   // Run analysis
   const handleAnalyze = useCallback(async () => {
     if (!sourceCode.trim()) return;
-    
+
     setIsAnalyzing(true);
     setStatus('analyzing');
 
@@ -186,7 +118,7 @@ function App() {
     reader.onload = (event) => {
       const content = event.target?.result as string;
       setSourceCode(content);
-      
+
       // Auto-detect language from file extension - comprehensive mapping
       const ext = file.name.split('.').pop()?.toLowerCase();
       const langMap: Record<string, Language> = {
@@ -283,7 +215,7 @@ function App() {
   // Export results
   const handleExportResults = useCallback(() => {
     if (!result) return;
-    
+
     const exportData = {
       timestamp: result.timestamp,
       language: result.language,
@@ -292,7 +224,7 @@ function App() {
       issues: result.issues,
       summary: getAnalysisSummary(result),
     };
-    
+
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -307,37 +239,37 @@ function App() {
 
   // Tab configuration
   const tabs = [
-    { 
-      id: 'issues', 
-      label: 'Issues', 
+    {
+      id: 'issues',
+      label: 'Issues',
       icon: <AlertTriangle className="w-4 h-4" />,
-      badge: summary?.totalIssues || 0 
+      badge: summary?.totalIssues || 0
     },
-    { 
-      id: 'metrics', 
-      label: 'Metrics', 
-      icon: <BarChart3 className="w-4 h-4" /> 
+    {
+      id: 'metrics',
+      label: 'Metrics',
+      icon: <BarChart3 className="w-4 h-4" />
     },
-    { 
-      id: 'security', 
-      label: 'Security', 
+    {
+      id: 'security',
+      label: 'Security',
       icon: <Shield className="w-4 h-4" />,
       badge: result?.security.issues.length || 0
     },
-    { 
-      id: 'cfg', 
-      label: 'Flow', 
-      icon: <GitBranch className="w-4 h-4" /> 
+    {
+      id: 'cfg',
+      label: 'Flow',
+      icon: <GitBranch className="w-4 h-4" />
     },
-    { 
-      id: 'rules', 
-      label: 'Rules', 
-      icon: <BookOpen className="w-4 h-4" /> 
+    {
+      id: 'rules',
+      label: 'Rules',
+      icon: <BookOpen className="w-4 h-4" />
     },
-    { 
-      id: 'ai', 
-      label: 'AI', 
-      icon: <Sparkles className="w-4 h-4" /> 
+    {
+      id: 'ai',
+      label: 'AI',
+      icon: <Sparkles className="w-4 h-4" />
     },
   ];
 
@@ -363,7 +295,7 @@ function App() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <motion.div 
+              <motion.div
                 className="relative"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -371,13 +303,13 @@ function App() {
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyber-500 to-neon-purple flex items-center justify-center shadow-lg shadow-cyber-500/25">
                   <Code2 className="w-6 h-6 text-obsidian-950" />
                 </div>
-                <motion.div 
+                <motion.div
                   className="absolute -top-1 -right-1 w-3 h-3 bg-neon-green rounded-full"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ repeat: Infinity, duration: 2 }}
                 />
               </motion.div>
-      <div>
+              <div>
                 <h1 className="text-xl font-bold gradient-text">CodeSentinel</h1>
                 <p className="text-xs text-obsidian-500">Professional Static Analysis</p>
               </div>
@@ -438,7 +370,7 @@ function App() {
                 onChange={(val) => setLanguage(val as Language)}
                 className="w-36"
               />
-              
+
               <Button
                 onClick={handleAnalyze}
                 isLoading={isAnalyzing}
@@ -448,9 +380,7 @@ function App() {
                 {isAnalyzing ? 'Analyzing...' : 'Analyze'}
               </Button>
 
-              {/* Auth Section */}
-              <div className="h-6 w-px bg-obsidian-700" />
-              <AuthSection />
+
             </div>
           </div>
         </div>
@@ -469,7 +399,7 @@ function App() {
                 <span className="text-xs text-obsidian-500 bg-obsidian-800 px-2 py-0.5 rounded">
                   {language}
                 </span>
-      </div>
+              </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-obsidian-500">
                   {sourceCode.split('\n').length} lines • {sourceCode.length} chars
@@ -488,21 +418,21 @@ function App() {
                   title="Clear code"
                 >
                   <Trash2 className="w-4 h-4" />
-        </button>
+                </button>
               </div>
             </div>
 
             {/* Editor */}
             <div className="flex-1 min-h-0">
-              <CodeEditor 
-                issues={result?.issues || []} 
+              <CodeEditor
+                issues={result?.issues || []}
                 onAnalyze={handleAnalyze}
               />
             </div>
 
             {/* Quick Stats */}
             {result && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="grid grid-cols-4 gap-2"
@@ -521,8 +451,8 @@ function App() {
                   </div>
                   <p className={`text-xl font-bold ${getSeverityColor(summary?.securityRisk || 0)}`}>
                     {summary?.securityRisk || 0}
-        </p>
-      </div>
+                  </p>
+                </div>
                 <div className="bg-obsidian-900/60 rounded-lg p-2.5 border border-obsidian-800/50">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <Zap className="w-3.5 h-3.5 text-neon-yellow" />
@@ -552,7 +482,7 @@ function App() {
                 activeTab={activeTab}
                 onTabChange={(tab) => setActiveTab(tab as typeof activeTab)}
               />
-              
+
               {result && (
                 <button
                   onClick={handleExportResults}
@@ -628,8 +558,8 @@ function App() {
                         </div>
                       )}
                       {activeTab === 'rules' && (
-                        <CustomRulesPanel 
-                          language={language} 
+                        <CustomRulesPanel
+                          language={language}
                           onRulesChange={handleAnalyze}
                         />
                       )}
