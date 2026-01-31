@@ -1,0 +1,61 @@
+name: Build and Deploy to Netlify
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: codescan-pro/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./codescan-pro
+        run: npm ci
+
+      - name: Build project
+        working-directory: ./codescan-pro
+        env:
+          # Groq API Keys
+          VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY }}
+          VITE_GROQ_API_KEY_1: ${{ secrets.VITE_GROQ_API_KEY_1 }}
+          VITE_GROQ_API_KEY_2: ${{ secrets.VITE_GROQ_API_KEY_2 }}
+          VITE_GROQ_API_KEY_3: ${{ secrets.VITE_GROQ_API_KEY_3 }}
+          VITE_GROQ_API_KEY_4: ${{ secrets.VITE_GROQ_API_KEY_4 }}
+          VITE_GROQ_API_KEY_5: ${{ secrets.VITE_GROQ_API_KEY_5 }}
+          VITE_GROQ_API_KEY_6: ${{ secrets.VITE_GROQ_API_KEY_6 }}
+          VITE_GROQ_API_KEY_7: ${{ secrets.VITE_GROQ_API_KEY_7 }}
+          VITE_GROQ_API_KEY_8: ${{ secrets.VITE_GROQ_API_KEY_8 }}
+          VITE_GROQ_API_KEY_9: ${{ secrets.VITE_GROQ_API_KEY_9 }}
+          VITE_GROQ_API_KEY_10: ${{ secrets.VITE_GROQ_API_KEY_10 }}
+          # Fallback AI Providers
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+          VITE_HUGGINGFACE_API_KEY: ${{ secrets.VITE_HUGGINGFACE_API_KEY }}
+          VITE_TOGETHER_API_KEY: ${{ secrets.VITE_TOGETHER_API_KEY }}
+        run: npm run build
+
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@master
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        with:
+          args: deploy --dir=codescan-pro/dist --prod
+          secrets: |
+            NETLIFY_AUTH_TOKEN
+            NETLIFY_SITE_ID
