@@ -1,9 +1,11 @@
 /**
  * Security Panel Component
  * Displays security scan results with OWASP coverage
+ * Enhanced with detailed issue cards and developer-friendly presentation
  */
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, 
   AlertTriangle, 
@@ -14,10 +16,17 @@ import {
   Database,
   Globe,
   Server,
-  FileWarning
+  FileWarning,
+  ChevronDown,
+  ChevronUp,
+  Code,
+  FileCode,
+  Lightbulb,
+  Bug,
+  Zap
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
-import type { SecurityScanResult } from '../../types/analysis';
+import type { SecurityScanResult, CodeIssue } from '../../types/analysis';
 
 interface SecurityPanelProps {
   security: SecurityScanResult;
@@ -111,6 +120,146 @@ function getRiskLabel(score: number): string {
   if (score >= 25) return 'Medium';
   if (score > 0) return 'Low';
   return 'Secure';
+}
+
+function getSeverityConfig(severity: string) {
+  switch (severity) {
+    case 'critical':
+      return { color: 'text-red-400', bg: 'bg-red-500/20', border: 'border-red-500/30', icon: Bug };
+    case 'high':
+      return { color: 'text-orange-400', bg: 'bg-orange-500/20', border: 'border-orange-500/30', icon: AlertTriangle };
+    case 'medium':
+      return { color: 'text-amber-400', bg: 'bg-amber-500/20', border: 'border-amber-500/30', icon: Zap };
+    case 'low':
+    case 'info':
+    default:
+      return { color: 'text-blue-400', bg: 'bg-blue-500/20', border: 'border-blue-500/30', icon: FileWarning };
+  }
+}
+
+// Security Issue Card Component
+function SecurityIssueCard({ issue, index }: { issue: CodeIssue; index: number }) {
+  const [expanded, setExpanded] = useState(false);
+  const severityStr = issue.severity === 'high' ? 'high' : issue.severity === 'medium' ? 'medium' : 'low';
+  const config = getSeverityConfig(severityStr);
+  const Icon = config.icon;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.05 }}
+      className={cn(
+        "rounded-xl border overflow-hidden",
+        config.border,
+        "bg-obsidian-800/30"
+      )}
+    >
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full p-4 flex items-start gap-4 hover:bg-obsidian-700/30 transition-colors text-left"
+      >
+        <div className={cn("p-2 rounded-lg mt-0.5", config.bg)}>
+          <Icon className={cn("w-5 h-5", config.color)} />
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <h4 className="font-semibold text-obsidian-100">{issue.title || 'Security Issue'}</h4>
+            <span className={cn("px-2 py-0.5 rounded-full text-xs font-medium uppercase", config.bg, config.color)}>
+              {issue.severity}
+            </span>
+            {issue.category && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-mono bg-obsidian-700/50 text-obsidian-300">
+                {issue.category}
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-obsidian-400 line-clamp-2">{issue.description}</p>
+          {issue.location && (
+            <div className="flex items-center gap-2 mt-2 text-xs text-obsidian-500">
+              <FileCode className="w-3 h-3" />
+              <span>Line {issue.location.line}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          {expanded ? (
+            <ChevronUp className="w-5 h-5 text-obsidian-400" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-obsidian-400" />
+          )}
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="border-t border-obsidian-700/50"
+          >
+            <div className="p-4 space-y-4">
+              {/* Description */}
+              <div className="space-y-2">
+                <h5 className="text-sm font-semibold text-red-400 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" />
+                  Why It's a Problem
+                </h5>
+                <p className="text-sm text-obsidian-300 pl-6">
+                  {issue.description || 'This issue can impact the security or quality of your application.'}
+                </p>
+              </div>
+
+              {/* Category */}
+              {issue.category && (
+                <div className="space-y-2">
+                  <h5 className="text-sm font-semibold text-orange-400 flex items-center gap-2">
+                    <Bug className="w-4 h-4" />
+                    Category
+                  </h5>
+                  <p className="text-sm text-obsidian-300 pl-6 capitalize">{issue.category}</p>
+                </div>
+              )}
+
+              {/* Code Snippet */}
+              {issue.codeSnippet && (
+                <div className="space-y-2">
+                  <h5 className="text-sm font-semibold text-obsidian-300 flex items-center gap-2">
+                    <Code className="w-4 h-4" />
+                    Code
+                  </h5>
+                  <pre className="bg-obsidian-900/50 rounded-lg p-3 text-xs font-mono text-red-300 overflow-x-auto pl-6">
+                    {issue.codeSnippet}
+                  </pre>
+                </div>
+              )}
+
+              {/* Suggestion */}
+              {issue.suggestion && (
+                <div className="space-y-2">
+                  <h5 className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4" />
+                    How to Fix
+                  </h5>
+                  <p className="text-sm text-obsidian-300 pl-6">{issue.suggestion}</p>
+                </div>
+              )}
+
+              {/* Rule ID */}
+              {issue.ruleId && (
+                <div className="pl-6">
+                  <span className="text-xs text-obsidian-500">Rule: {issue.ruleId}</span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
 }
 
 export function SecurityPanel({ security }: SecurityPanelProps) {
@@ -293,6 +442,31 @@ export function SecurityPanel({ security }: SecurityPanelProps) {
         </div>
       </motion.div>
 
+      {/* Detailed Security Issues */}
+      {security.issues.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="bg-obsidian-800/50 rounded-xl p-6 border border-obsidian-700/50"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-obsidian-100 flex items-center gap-2">
+              <Bug className="w-5 h-5 text-neon-red" />
+              Security Issues Found
+            </h3>
+            <span className="text-sm text-obsidian-400">
+              {security.issues.length} issue{security.issues.length !== 1 ? 's' : ''} detected
+            </span>
+          </div>
+          <div className="space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
+            {security.issues.map((issue, index) => (
+              <SecurityIssueCard key={issue.id || index} issue={issue} index={index} />
+            ))}
+          </div>
+        </motion.div>
+      )}
+
       {/* Recommendations */}
       {security.recommendations.length > 0 && (
         <motion.div
@@ -302,8 +476,8 @@ export function SecurityPanel({ security }: SecurityPanelProps) {
           className="bg-obsidian-800/50 rounded-xl p-6 border border-obsidian-700/50"
         >
           <h3 className="text-lg font-semibold text-obsidian-100 mb-4 flex items-center gap-2">
-            <span className="text-xl">💡</span>
-            Recommendations
+            <Lightbulb className="w-5 h-5 text-amber-400" />
+            Security Recommendations
           </h3>
           <ul className="space-y-3">
             {security.recommendations.map((rec, index) => (
@@ -312,10 +486,12 @@ export function SecurityPanel({ security }: SecurityPanelProps) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 + index * 0.1 }}
-                className="flex items-start gap-3 text-sm text-obsidian-300"
+                className="flex items-start gap-3 p-3 rounded-lg bg-obsidian-900/30 text-sm text-obsidian-300"
               >
-                <span className="text-cyber-500 mt-0.5">→</span>
-                {rec}
+                <span className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-medium text-xs flex-shrink-0">
+                  {index + 1}
+                </span>
+                <span>{rec}</span>
               </motion.li>
             ))}
           </ul>

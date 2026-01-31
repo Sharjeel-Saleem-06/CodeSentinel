@@ -779,6 +779,229 @@ export function MetricsPanel({ metrics }: MetricsPanelProps) {
           explanation={METRIC_EXPLANATIONS.duplicateCode}
         />
       </div>
+
+      {/* Actionable Insights */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="bg-obsidian-800/50 rounded-xl p-6 border border-obsidian-700/50"
+      >
+        <h3 className="text-lg font-semibold text-obsidian-100 mb-4 flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-cyber-500" />
+          Actionable Insights
+        </h3>
+        <div className="space-y-3">
+          {/* Generate insights based on metrics */}
+          {metrics.cyclomaticComplexity > 15 && (
+            <InsightCard
+              type="warning"
+              title="High Cyclomatic Complexity"
+              description={`Your code has a cyclomatic complexity of ${metrics.cyclomaticComplexity}. Consider breaking down complex functions into smaller, more focused ones.`}
+              action="Look for functions with many if/else or switch statements and extract them into separate functions."
+            />
+          )}
+          {metrics.cognitiveComplexity > 20 && (
+            <InsightCard
+              type="warning"
+              title="High Cognitive Complexity"
+              description={`Cognitive complexity of ${metrics.cognitiveComplexity} indicates your code may be hard to understand. Simplify nested structures.`}
+              action="Use early returns, avoid deep nesting, and break complex logic into named helper functions."
+            />
+          )}
+          {metrics.maxNestingDepth > 4 && (
+            <InsightCard
+              type="warning"
+              title="Deep Nesting Detected"
+              description={`Maximum nesting depth of ${metrics.maxNestingDepth} levels makes code harder to follow.`}
+              action="Use guard clauses for early returns, extract nested logic into functions, or restructure conditionals."
+            />
+          )}
+          {metrics.duplicateCodePercentage > 10 && (
+            <InsightCard
+              type="warning"
+              title="Code Duplication"
+              description={`${metrics.duplicateCodePercentage}% of your code is duplicated. This increases maintenance burden.`}
+              action="Extract duplicated code into reusable functions, utilities, or components."
+            />
+          )}
+          {metrics.averageFunctionLength > 30 && (
+            <InsightCard
+              type="info"
+              title="Long Functions"
+              description={`Average function length is ${metrics.averageFunctionLength.toFixed(0)} lines. Shorter functions are easier to test and maintain.`}
+              action="Aim for functions under 20 lines. Extract helper functions for distinct operations."
+            />
+          )}
+          {metrics.maintainabilityIndex >= 80 && metrics.cyclomaticComplexity <= 10 && metrics.cognitiveComplexity <= 15 && (
+            <InsightCard
+              type="success"
+              title="Well-Structured Code"
+              description="Your code metrics indicate good maintainability and reasonable complexity."
+              action="Keep following these patterns! Consider documenting your approach for team members."
+            />
+          )}
+          {healthScore < 40 && (
+            <InsightCard
+              type="critical"
+              title="Code Health Needs Attention"
+              description={`Overall health score of ${healthScore} suggests significant room for improvement.`}
+              action="Start by addressing the highest impact metrics: reduce complexity, then improve structure."
+            />
+          )}
+          {/* Default insight if nothing specific */}
+          {healthScore >= 40 && healthScore < 80 && metrics.cyclomaticComplexity <= 15 && metrics.cognitiveComplexity <= 20 && (
+            <InsightCard
+              type="info"
+              title="Good Progress"
+              description="Your code is moderately maintainable. Focus on the metrics with lower grades to improve further."
+              action="Check the detailed metrics above for specific areas to optimize."
+            />
+          )}
+        </div>
+      </motion.div>
+
+      {/* Quick Reference Guide */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="bg-obsidian-800/50 rounded-xl p-6 border border-obsidian-700/50"
+      >
+        <h3 className="text-lg font-semibold text-obsidian-100 mb-4 flex items-center gap-2">
+          <Award className="w-5 h-5 text-amber-400" />
+          Quick Reference Guide
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="p-3 bg-obsidian-900/30 rounded-lg">
+            <h4 className="text-sm font-semibold text-obsidian-200 mb-2">Ideal Values</h4>
+            <ul className="text-xs text-obsidian-400 space-y-1">
+              <li className="flex justify-between">
+                <span>Cyclomatic Complexity</span>
+                <span className="text-neon-green">&lt; 10</span>
+              </li>
+              <li className="flex justify-between">
+                <span>Cognitive Complexity</span>
+                <span className="text-neon-green">&lt; 15</span>
+              </li>
+              <li className="flex justify-between">
+                <span>Max Nesting</span>
+                <span className="text-neon-green">&lt; 4</span>
+              </li>
+              <li className="flex justify-between">
+                <span>Function Length</span>
+                <span className="text-neon-green">&lt; 20 lines</span>
+              </li>
+            </ul>
+          </div>
+          <div className="p-3 bg-obsidian-900/30 rounded-lg">
+            <h4 className="text-sm font-semibold text-obsidian-200 mb-2">Grade Scale</h4>
+            <ul className="text-xs space-y-1">
+              <li className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-neon-green/20 flex items-center justify-center text-neon-green font-bold">A</span>
+                <span className="text-obsidian-400">Excellent (90-100)</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-neon-blue/20 flex items-center justify-center text-neon-blue font-bold">B</span>
+                <span className="text-obsidian-400">Good (70-89)</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-neon-yellow/20 flex items-center justify-center text-neon-yellow font-bold">C</span>
+                <span className="text-obsidian-400">Moderate (50-69)</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-neon-red/20 flex items-center justify-center text-neon-red font-bold">F</span>
+                <span className="text-obsidian-400">Needs Work (&lt;50)</span>
+              </li>
+            </ul>
+          </div>
+          <div className="p-3 bg-obsidian-900/30 rounded-lg">
+            <h4 className="text-sm font-semibold text-obsidian-200 mb-2">Your Summary</h4>
+            <ul className="text-xs text-obsidian-400 space-y-1">
+              <li className="flex justify-between">
+                <span>Health Score</span>
+                <span style={{ color: healthScore >= 70 ? '#00ffd5' : healthScore >= 40 ? '#f59e0b' : '#f43f5e' }} className="font-bold">
+                  {healthScore}/100
+                </span>
+              </li>
+              <li className="flex justify-between">
+                <span>Total Lines</span>
+                <span className="text-obsidian-200">{metrics.totalLines}</span>
+              </li>
+              <li className="flex justify-between">
+                <span>Functions</span>
+                <span className="text-obsidian-200">{metrics.functionCount}</span>
+              </li>
+              <li className="flex justify-between">
+                <span>Classes</span>
+                <span className="text-obsidian-200">{metrics.classCount}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// Insight Card Component
+function InsightCard({ 
+  type, 
+  title, 
+  description, 
+  action 
+}: { 
+  type: 'critical' | 'warning' | 'info' | 'success';
+  title: string;
+  description: string;
+  action: string;
+}) {
+  const config = {
+    critical: { 
+      bg: 'bg-red-500/10', 
+      border: 'border-red-500/30', 
+      icon: XCircle, 
+      iconColor: 'text-red-400',
+      titleColor: 'text-red-400'
+    },
+    warning: { 
+      bg: 'bg-amber-500/10', 
+      border: 'border-amber-500/30', 
+      icon: AlertTriangle, 
+      iconColor: 'text-amber-400',
+      titleColor: 'text-amber-400'
+    },
+    info: { 
+      bg: 'bg-blue-500/10', 
+      border: 'border-blue-500/30', 
+      icon: Info, 
+      iconColor: 'text-blue-400',
+      titleColor: 'text-blue-400'
+    },
+    success: { 
+      bg: 'bg-emerald-500/10', 
+      border: 'border-emerald-500/30', 
+      icon: CheckCircle, 
+      iconColor: 'text-emerald-400',
+      titleColor: 'text-emerald-400'
+    },
+  };
+
+  const { bg, border, icon: Icon, iconColor, titleColor } = config[type];
+
+  return (
+    <div className={cn('p-4 rounded-lg border', bg, border)}>
+      <div className="flex items-start gap-3">
+        <Icon className={cn('w-5 h-5 mt-0.5 flex-shrink-0', iconColor)} />
+        <div>
+          <h4 className={cn('font-semibold text-sm mb-1', titleColor)}>{title}</h4>
+          <p className="text-sm text-obsidian-300 mb-2">{description}</p>
+          <p className="text-xs text-obsidian-400 flex items-start gap-1">
+            <span className="text-cyber-500 font-semibold">Action:</span>
+            {action}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

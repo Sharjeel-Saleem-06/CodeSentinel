@@ -71,7 +71,26 @@ const CATEGORY_ICONS: Record<string, typeof Shield> = {
   style: Code,
   'best-practice': CheckCircle,
   custom: Tag,
+  architecture: Shield,
+  memory: Zap,
+  concurrency: RefreshCw,
 };
+
+// Pattern testing helper
+function testPatternAgainstCode(pattern: string, flags: string, testCode: string): { matches: number; examples: string[] } {
+  try {
+    const regex = new RegExp(pattern, flags || 'g');
+    const matches: string[] = [];
+    let match;
+    while ((match = regex.exec(testCode)) !== null) {
+      matches.push(match[0]);
+      if (!flags.includes('g')) break;
+    }
+    return { matches: matches.length, examples: matches.slice(0, 5) };
+  } catch {
+    return { matches: 0, examples: [] };
+  }
+}
 
 // Supported languages: JavaScript/TypeScript (web), Kotlin (Android), Swift (iOS)
 const ALL_LANGUAGES: Language[] = ['javascript', 'typescript', 'kotlin', 'swift'];
@@ -233,6 +252,9 @@ export function CustomRulesPanel({ language, onRulesChange }: CustomRulesPanelPr
   const [patternError, setPatternError] = useState<string | null>(null);
   const [showImportExport, setShowImportExport] = useState(false);
   const [importJson, setImportJson] = useState('');
+  const [testCode, setTestCode] = useState('');
+  const [testResults, setTestResults] = useState<{ matches: number; examples: string[] } | null>(null);
+  const [showTestPanel, setShowTestPanel] = useState(false);
 
   useEffect(() => {
     setRules(loadCustomRules());
@@ -1034,6 +1056,9 @@ export function CustomRulesPanel({ language, onRulesChange }: CustomRulesPanelPr
                       <option value="performance">Performance</option>
                       <option value="style">Style</option>
                       <option value="best-practice">Best Practice</option>
+                      <option value="architecture">Architecture</option>
+                      <option value="memory">Memory</option>
+                      <option value="concurrency">Concurrency</option>
                       <option value="custom">Custom</option>
                     </select>
                   </div>
@@ -1064,6 +1089,107 @@ export function CustomRulesPanel({ language, onRulesChange }: CustomRulesPanelPr
                       ))}
                     </div>
                   </div>
+                </div>
+
+                {/* Rule Test Panel */}
+                <div className={cn(
+                  "rounded-xl border overflow-hidden",
+                  isDark 
+                    ? "bg-slate-800/30 border-slate-700/50" 
+                    : "bg-gray-50 border-gray-200"
+                )}>
+                  <button
+                    onClick={() => setShowTestPanel(!showTestPanel)}
+                    className="w-full p-3 flex items-center justify-between hover:bg-slate-700/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Code className="w-4 h-4 text-emerald-400" />
+                      <span className="font-medium text-sm text-white">Test Your Rule</span>
+                      <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
+                        Verify Pattern
+                      </span>
+                    </div>
+                    {showTestPanel ? (
+                      <ChevronUp className="w-4 h-4 text-slate-400" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                    )}
+                  </button>
+                  
+                  <AnimatePresence>
+                    {showTestPanel && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="border-t border-slate-700/50 p-3"
+                      >
+                        <p className="text-xs text-slate-400 mb-2">
+                          Paste sample code below to test if your pattern detects what you expect:
+                        </p>
+                        <textarea
+                          value={testCode}
+                          onChange={(e) => {
+                            setTestCode(e.target.value);
+                            if (newRule.pattern && e.target.value) {
+                              const results = testPatternAgainstCode(
+                                newRule.pattern, 
+                                newRule.patternFlags || 'g', 
+                                e.target.value
+                              );
+                              setTestResults(results);
+                            } else {
+                              setTestResults(null);
+                            }
+                          }}
+                          placeholder="// Paste your code here to test the pattern..."
+                          rows={4}
+                          className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 font-mono resize-none"
+                        />
+                        
+                        {testResults && (
+                          <div className={cn(
+                            "mt-3 p-3 rounded-lg",
+                            testResults.matches > 0 
+                              ? "bg-emerald-900/20 border border-emerald-500/30"
+                              : "bg-amber-900/20 border border-amber-500/30"
+                          )}>
+                            <div className="flex items-center gap-2 mb-2">
+                              {testResults.matches > 0 ? (
+                                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                              ) : (
+                                <Search className="w-4 h-4 text-amber-400" />
+                              )}
+                              <span className={cn(
+                                "text-sm font-medium",
+                                testResults.matches > 0 ? "text-emerald-400" : "text-amber-400"
+                              )}>
+                                {testResults.matches > 0 
+                                  ? `Found ${testResults.matches} match${testResults.matches > 1 ? 'es' : ''}`
+                                  : 'No matches found'
+                                }
+                              </span>
+                            </div>
+                            {testResults.examples.length > 0 && (
+                              <div className="space-y-1">
+                                <p className="text-xs text-slate-400">Matched:</p>
+                                {testResults.examples.map((ex, i) => (
+                                  <code key={i} className="block text-xs bg-slate-800/50 px-2 py-1 rounded text-emerald-300 font-mono">
+                                    {ex.length > 80 ? ex.slice(0, 80) + '...' : ex}
+                                  </code>
+                                ))}
+                              </div>
+                            )}
+                            {testResults.matches === 0 && newRule.pattern && (
+                              <p className="text-xs text-amber-400/80 mt-1">
+                                Tip: Check if your pattern is correct, or try different sample code that should match.
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
 
