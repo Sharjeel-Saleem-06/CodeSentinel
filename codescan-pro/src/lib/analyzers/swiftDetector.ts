@@ -1,7 +1,15 @@
 /**
- * Swift/iOS Best Practices Detection System
+ * Swift/iOS Best Practices Detection System v2.0
  * Based on: Swift API Design Guidelines, Apple Human Interface Guidelines, SwiftUI Best Practices
- * Updated: 2024 Standards (iOS 17+, Swift 5.9+)
+ * Updated: 2024 Standards (iOS 17+, Swift 5.9+, SwiftUI 5+)
+ * 
+ * Categories:
+ * - Memory Management: ARC, retain cycles, weak references
+ * - Concurrency: Actors, async/await, Sendable
+ * - SwiftUI: State management, side effects, performance
+ * - Architecture: MVVM, Coordinator, dependency injection
+ * - Security: Keychain, hardcoded secrets, certificate pinning
+ * - Performance: Image loading, Core Data, string handling
  */
 
 import type { CodeIssue, SecurityFinding } from '../../types/analysis';
@@ -10,7 +18,7 @@ export interface SwiftDetectionRule {
   id: string;
   name: string;
   description: string;
-  category: 'security' | 'performance' | 'best-practice' | 'style' | 'swiftui' | 'memory' | 'concurrency';
+  category: 'security' | 'performance' | 'best-practice' | 'style' | 'swiftui' | 'memory' | 'concurrency' | 'architecture';
   severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
   pattern: RegExp;
   message: string;
@@ -95,6 +103,18 @@ export const SWIFT_RULES: SwiftDetectionRule[] = [
     references: ['NotificationCenter Best Practices', 'Memory Leaks'],
     autoFixable: false,
   },
+  {
+    id: 'SW-MEM007',
+    name: 'Closure Capture List Missing',
+    description: 'Detects closures capturing self without explicit capture list',
+    category: 'memory',
+    severity: 'medium',
+    pattern: /\.(?:then|sink|receive|subscribe)\s*\{\s*(?!\[)self\./g,
+    message: 'Closure captures self implicitly. May cause retain cycle.',
+    suggestion: 'Add capture list: { [weak self] in guard let self = self else { return } ... }',
+    references: ['Closure Capture', 'Combine'],
+    autoFixable: false,
+  },
 
   // ============ CONCURRENCY RULES (Swift Concurrency) ============
   {
@@ -155,6 +175,92 @@ export const SWIFT_RULES: SwiftDetectionRule[] = [
     message: 'Types passed across concurrency boundaries should conform to Sendable.',
     suggestion: 'Mark type as Sendable or use @unchecked Sendable with proper synchronization.',
     references: ['Sendable Protocol', 'Swift Concurrency'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-CONC006',
+    name: 'Actor Reentrancy Issue',
+    description: 'Detects potential actor reentrancy problems',
+    category: 'concurrency',
+    severity: 'medium',
+    pattern: /actor\s+\w+[^}]*\{[^}]*await[^}]*self\.\w+\s*=[^}]*await/g,
+    message: 'Actor state modified after await. May cause unexpected behavior due to reentrancy.',
+    suggestion: 'Capture state before await, or use transaction pattern.',
+    references: ['Actor Reentrancy', 'Swift Actors'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-CONC007',
+    name: 'Task Cancellation Not Checked',
+    description: 'Detects long-running tasks without cancellation check',
+    category: 'concurrency',
+    severity: 'medium',
+    pattern: /Task\s*\{[^}]{100,}(?!Task\.isCancelled|checkCancellation)/g,
+    message: 'Long-running Task without cancellation check.',
+    suggestion: 'Check Task.isCancelled or use try Task.checkCancellation() periodically.',
+    references: ['Task Cancellation', 'Structured Concurrency'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-CONC008',
+    name: 'Async Let Not Awaited',
+    description: 'Detects async let results not being awaited',
+    category: 'concurrency',
+    severity: 'high',
+    pattern: /async\s+let\s+(\w+)\s*=[^}]*(?!await\s+\1)/g,
+    message: 'async let result must be awaited before use.',
+    suggestion: 'await async let result before accessing: let value = await result',
+    references: ['Structured Concurrency', 'async let'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-CONC009',
+    name: 'Global Actor Isolation Violation',
+    description: 'Detects global actor isolation issues',
+    category: 'concurrency',
+    severity: 'high',
+    pattern: /@MainActor\s+class[^}]*nonisolated\s+func[^}]*self\.\w+/g,
+    message: 'nonisolated function accessing actor-isolated state.',
+    suggestion: 'Remove nonisolated or don\'t access actor-isolated state.',
+    references: ['Actor Isolation', 'MainActor'],
+    autoFixable: false,
+  },
+
+  // ============ ACTOR RULES ============
+  {
+    id: 'SW-ACTOR001',
+    name: 'Actor Isolation Violation',
+    description: 'Detects potential actor isolation violations',
+    category: 'concurrency',
+    severity: 'high',
+    pattern: /actor\s+\w+[^}]*\{[^}]*nonisolated\s+func[^}]*self\./g,
+    message: 'nonisolated function accessing actor-isolated state may cause data races.',
+    suggestion: 'Access actor state only from isolated context, or use await for async access.',
+    references: ['Swift Actors', 'Actor Isolation'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-ACTOR002',
+    name: 'Missing @MainActor on ViewModel',
+    description: 'Detects ViewModel without MainActor annotation',
+    category: 'concurrency',
+    severity: 'medium',
+    pattern: /class\s+\w*ViewModel\s*:\s*ObservableObject(?!\s*@MainActor)/g,
+    message: 'ViewModels with @Published properties should be @MainActor for thread safety.',
+    suggestion: 'Add @MainActor annotation: @MainActor class MyViewModel: ObservableObject',
+    references: ['MainActor', 'SwiftUI Thread Safety'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-ACTOR003',
+    name: 'Async Let Without Await',
+    description: 'Detects async let without proper await',
+    category: 'concurrency',
+    severity: 'high',
+    pattern: /async\s+let\s+(\w+)\s*=[^}]*(?!await\s+\w)/g,
+    message: 'async let result must be awaited before use.',
+    suggestion: 'await async let result before accessing: let value = await result',
+    references: ['Structured Concurrency', 'async let'],
     autoFixable: false,
   },
 
@@ -243,6 +349,140 @@ export const SWIFT_RULES: SwiftDetectionRule[] = [
     references: ['SwiftUI Navigation', 'iOS 16 Migration'],
     autoFixable: false,
   },
+  {
+    id: 'SW-UI008',
+    name: 'Missing @Observable Macro',
+    description: 'Detects ObservableObject that could use @Observable',
+    category: 'swiftui',
+    severity: 'info',
+    pattern: /class\s+\w+\s*:\s*ObservableObject(?![^}]*@Observable)/g,
+    message: 'Consider using @Observable macro (iOS 17+) for simpler observation.',
+    suggestion: 'Replace ObservableObject with @Observable macro: @Observable class MyModel',
+    references: ['@Observable', 'Swift 5.9 Observation'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-UI009',
+    name: 'StateObject Without Private',
+    description: 'Detects @StateObject without private modifier',
+    category: 'swiftui',
+    severity: 'low',
+    pattern: /@StateObject\s+(?!private\s+)var\s+\w+/g,
+    message: '@StateObject should typically be private to the view.',
+    suggestion: 'Mark as private: @StateObject private var viewModel',
+    references: ['SwiftUI Best Practices', 'State Ownership'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-UI010',
+    name: 'Task Without Cancel Handling',
+    description: 'Detects Task in view without cancellation',
+    category: 'swiftui',
+    severity: 'medium',
+    pattern: /\.task\s*\{(?![^}]*Task\.check|isCancelled)/g,
+    message: 'Long-running tasks should check for cancellation.',
+    suggestion: 'Use try Task.checkCancellation() or check Task.isCancelled in loops.',
+    references: ['Task Cancellation', 'SwiftUI Task'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-UI011',
+    name: 'BindableValue Missing',
+    description: 'Detects Binding creation that could use @Bindable',
+    category: 'swiftui',
+    severity: 'info',
+    pattern: /Binding\s*\(\s*get:\s*\{[^}]*\}\s*,\s*set:\s*\{/g,
+    message: 'Consider using @Bindable (iOS 17+) instead of custom Binding creation.',
+    suggestion: 'Use @Bindable var model for automatic binding with @Observable objects.',
+    references: ['@Bindable', 'SwiftUI iOS 17'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-UI012',
+    name: 'onChange Deprecated API',
+    description: 'Detects deprecated onChange API',
+    category: 'swiftui',
+    severity: 'low',
+    pattern: /\.onChange\s*\(\s*of:\s*\w+\s*\)\s*\{\s*\w+\s*in/g,
+    message: 'This onChange signature is deprecated in iOS 17.',
+    suggestion: 'Use .onChange(of:) { oldValue, newValue in } or just { } for simple cases.',
+    references: ['SwiftUI onChange', 'iOS 17 Migration'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-UI013',
+    name: 'Animation Without withAnimation',
+    description: 'Detects state changes without animation wrapper',
+    category: 'swiftui',
+    severity: 'info',
+    pattern: /self\.\w+\s*=\s*(?!.*withAnimation)/g,
+    message: 'State changes may need withAnimation for smooth transitions.',
+    suggestion: 'Wrap in withAnimation { } for animated state changes.',
+    references: ['SwiftUI Animation'],
+    autoFixable: false,
+  },
+
+  // ============ ARCHITECTURE RULES ============
+  {
+    id: 'SW-ARCH001',
+    name: 'Network Call in View',
+    description: 'Detects direct network calls in SwiftUI views',
+    category: 'architecture',
+    severity: 'high',
+    pattern: /struct\s+\w+\s*:\s*View\s*\{[^}]*(?:URLSession|URLRequest|Alamofire|Moya)/gi,
+    message: 'Network calls should not be in View layer. Violates MVVM.',
+    suggestion: 'Move network calls to ViewModel or Repository layer.',
+    references: ['MVVM Pattern', 'SwiftUI Architecture'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-ARCH002',
+    name: 'CoreData in View',
+    description: 'Detects CoreData operations directly in views',
+    category: 'architecture',
+    severity: 'medium',
+    pattern: /struct\s+\w+\s*:\s*View\s*\{[^}]*(?:@FetchRequest|NSManagedObject|viewContext\.)/gi,
+    message: 'Direct CoreData access in View couples UI to persistence layer.',
+    suggestion: 'Use Repository pattern and expose data through ViewModel.',
+    references: ['Clean Architecture', 'CoreData Best Practices'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-ARCH003',
+    name: 'UserDefaults in View',
+    description: 'Detects UserDefaults usage directly in views',
+    category: 'architecture',
+    severity: 'low',
+    pattern: /struct\s+\w+\s*:\s*View\s*\{[^}]*UserDefaults/g,
+    message: 'UserDefaults should be accessed through a settings/storage layer.',
+    suggestion: 'Create a Settings class or use @AppStorage property wrapper.',
+    references: ['SwiftUI AppStorage', 'Settings Pattern'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-ARCH004',
+    name: 'ViewModel Without Protocol',
+    description: 'Detects ViewModel without abstraction',
+    category: 'architecture',
+    severity: 'info',
+    pattern: /class\s+\w*ViewModel\s*:\s*(?!.*Protocol)ObservableObject/g,
+    message: 'ViewModel without protocol makes testing harder.',
+    suggestion: 'Define protocol for ViewModel: protocol MyViewModelProtocol { ... }',
+    references: ['Dependency Injection', 'Testability'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-ARCH005',
+    name: 'Massive ViewController',
+    description: 'Detects large UIViewController classes',
+    category: 'architecture',
+    severity: 'medium',
+    pattern: /class\s+\w+ViewController\s*:[^{]*\{(?:[^{}]*|\{[^{}]*\}){80,}/g,
+    message: 'View Controller is too large. Consider splitting responsibilities.',
+    suggestion: 'Use MVVM/Coordinator pattern. Extract logic to ViewModels.',
+    references: ['iOS Architecture', 'MVVM Pattern', 'Clean Architecture'],
+    autoFixable: false,
+  },
 
   // ============ BEST PRACTICE RULES ============
   {
@@ -271,18 +511,6 @@ export const SWIFT_RULES: SwiftDetectionRule[] = [
   },
   {
     id: 'SW-BP003',
-    name: 'Massive View Controller',
-    description: 'Detects large UIViewController classes',
-    category: 'best-practice',
-    severity: 'medium',
-    pattern: /class\s+\w+ViewController\s*:[^{]*\{(?:[^{}]*|\{[^{}]*\}){80,}/g,
-    message: 'View Controller is too large. Consider splitting responsibilities.',
-    suggestion: 'Use MVVM/Coordinator pattern. Extract logic to ViewModels.',
-    references: ['iOS Architecture', 'MVVM Pattern', 'Clean Architecture'],
-    autoFixable: false,
-  },
-  {
-    id: 'SW-BP004',
     name: 'UserDefaults for Sensitive Data',
     description: 'Detects sensitive data in UserDefaults',
     category: 'security',
@@ -294,7 +522,7 @@ export const SWIFT_RULES: SwiftDetectionRule[] = [
     autoFixable: false,
   },
   {
-    id: 'SW-BP005',
+    id: 'SW-BP004',
     name: 'Print in Production',
     description: 'Detects print statements',
     category: 'best-practice',
@@ -306,7 +534,7 @@ export const SWIFT_RULES: SwiftDetectionRule[] = [
     autoFixable: false,
   },
   {
-    id: 'SW-BP006',
+    id: 'SW-BP005',
     name: 'Magic Numbers',
     description: 'Detects hardcoded numbers',
     category: 'style',
@@ -315,6 +543,18 @@ export const SWIFT_RULES: SwiftDetectionRule[] = [
     message: 'Avoid hardcoded numbers in UI. Use constants or design system.',
     suggestion: 'Define constants: static let padding: CGFloat = 16',
     references: ['Swift Style Guide', 'Design Systems'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-BP006',
+    name: 'Empty Catch Block',
+    description: 'Detects empty catch blocks',
+    category: 'best-practice',
+    severity: 'high',
+    pattern: /catch\s*(?:\w+)?\s*\{\s*\}/g,
+    message: 'Empty catch block silently swallows errors.',
+    suggestion: 'Log errors or handle them appropriately.',
+    references: ['Error Handling', 'Swift'],
     autoFixable: false,
   },
 
@@ -490,6 +730,30 @@ export const SWIFT_RULES: SwiftDetectionRule[] = [
     references: ['Core Data Concurrency', 'Performance'],
     autoFixable: false,
   },
+  {
+    id: 'SW-PERF005',
+    name: 'AsyncImage Without Placeholder',
+    description: 'Detects AsyncImage without placeholder',
+    category: 'performance',
+    severity: 'low',
+    pattern: /AsyncImage\s*\(\s*url:[^)]*\)(?!\s*\{)/g,
+    message: 'AsyncImage without placeholder shows blank during loading.',
+    suggestion: 'Provide placeholder: AsyncImage(url:) { phase in ... }',
+    references: ['SwiftUI AsyncImage', 'UX Best Practices'],
+    autoFixable: false,
+  },
+  {
+    id: 'SW-PERF006',
+    name: 'Expensive Computed Property',
+    description: 'Detects heavy computation in computed properties',
+    category: 'performance',
+    severity: 'medium',
+    pattern: /var\s+\w+\s*:\s*\w+\s*\{[^}]*(?:filter|map|sort|reduce)\s*\{/g,
+    message: 'Expensive operations in computed property run on every access.',
+    suggestion: 'Cache result in stored property or use lazy.',
+    references: ['Swift Performance'],
+    autoFixable: false,
+  },
 ];
 
 /**
@@ -523,7 +787,7 @@ export function runSwiftDetection(code: string): { issues: CodeIssue[]; security
           endColumn: column + match[0].length,
           file: 'input',
         },
-        category: rule.category as any,
+        category: rule.category as CodeIssue['category'],
         suggestion: rule.suggestion,
         autoFixable: rule.autoFixable,
         references: rule.references,
@@ -551,4 +815,3 @@ export function runSwiftDetection(code: string): { issues: CodeIssue[]; security
 
   return { issues, securityFindings };
 }
-

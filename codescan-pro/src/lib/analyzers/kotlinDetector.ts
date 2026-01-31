@@ -1,7 +1,16 @@
 /**
- * Kotlin Best Practices Detection System
+ * Kotlin Best Practices Detection System v2.0
  * Based on: Kotlin Official Style Guide, Android Best Practices, Jetpack Guidelines
- * Updated: 2024 Standards
+ * Updated: 2024 Standards (Kotlin 2.0+, Compose 1.6+, Coroutines 1.8+)
+ * 
+ * Categories:
+ * - Null Safety: Force unwrap, platform types, lateinit
+ * - Coroutines: GlobalScope, exception handling, Flow lifecycle
+ * - Android: Memory leaks, lifecycle, View Binding
+ * - Jetpack Compose: State management, side effects, performance
+ * - Architecture: MVVM, Clean Architecture, UseCase patterns
+ * - Security: Hardcoded secrets, insecure storage, logging
+ * - Performance: String operations, collections, bitmap handling
  */
 
 import type { CodeIssue, SecurityFinding } from '../../types/analysis';
@@ -10,7 +19,7 @@ export interface KotlinDetectionRule {
   id: string;
   name: string;
   description: string;
-  category: 'security' | 'performance' | 'best-practice' | 'style' | 'android' | 'coroutines' | 'null-safety';
+  category: 'security' | 'performance' | 'best-practice' | 'style' | 'android' | 'coroutines' | 'null-safety' | 'compose' | 'architecture';
   severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
   pattern: RegExp;
   message: string;
@@ -57,6 +66,30 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
     message: 'lateinit properties should be checked with ::property.isInitialized before access.',
     suggestion: 'Use lazy initialization or check isInitialized: if (::property.isInitialized) { ... }',
     references: ['Kotlin lateinit', 'Android ViewModel Best Practices'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-NULL004',
+    name: 'Unsafe Cast (as)',
+    description: 'Detects unsafe type casts',
+    category: 'null-safety',
+    severity: 'medium',
+    pattern: /as\s+(?![\?])\w+/g,
+    message: 'Unsafe cast (as) can throw ClassCastException at runtime.',
+    suggestion: 'Use safe cast (as?) with null check: val result = value as? Type',
+    references: ['Kotlin Type Casts', 'Safe Casting'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-NULL005',
+    name: 'Nullable Receiver Without Safe Call',
+    description: 'Detects method calls on potentially null values',
+    category: 'null-safety',
+    severity: 'high',
+    pattern: /(?:getOrNull|firstOrNull|lastOrNull|singleOrNull)\s*\(\s*\)\s*\./g,
+    message: 'Calling methods on nullable results without safe call operator.',
+    suggestion: 'Use safe call: list.firstOrNull()?.property or Elvis operator.',
+    references: ['Kotlin Null Safety'],
     autoFixable: false,
   },
 
@@ -121,6 +154,54 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
     references: ['Android Flow Best Practices', 'Lifecycle-Aware Components'],
     autoFixable: false,
   },
+  {
+    id: 'KT-COR006',
+    name: 'Async Without Await',
+    description: 'Detects async blocks without awaiting result',
+    category: 'coroutines',
+    severity: 'medium',
+    pattern: /async\s*\{[^}]*\}(?!\.await)/g,
+    message: 'async block result not awaited. The result Deferred should be awaited.',
+    suggestion: 'Either await the result or use launch if you don\'t need the result.',
+    references: ['Kotlin async/await', 'Coroutines'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-COR007',
+    name: 'SupervisorJob Missing',
+    description: 'Detects coroutine scopes without SupervisorJob',
+    category: 'coroutines',
+    severity: 'medium',
+    pattern: /CoroutineScope\s*\(\s*Dispatchers\.\w+\s*\)/g,
+    message: 'CoroutineScope without SupervisorJob. Child failures will cancel all siblings.',
+    suggestion: 'Use CoroutineScope(SupervisorJob() + Dispatchers.Main) for independent child jobs.',
+    references: ['SupervisorJob', 'Coroutine Scope'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-COR008',
+    name: 'Channel Without Closing',
+    description: 'Detects Channel creation without proper closing',
+    category: 'coroutines',
+    severity: 'medium',
+    pattern: /Channel\s*<[^>]+>\s*\(/g,
+    message: 'Channels should be closed when no longer needed to prevent resource leaks.',
+    suggestion: 'Use channel.close() in finally block or use produce { } builder.',
+    references: ['Kotlin Channels', 'Resource Management'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-COR009',
+    name: 'StateFlow Without Initial Value',
+    description: 'Detects MutableStateFlow with potential null issues',
+    category: 'coroutines',
+    severity: 'low',
+    pattern: /MutableStateFlow\s*<[^>]*>\s*\(\s*null\s*\)/g,
+    message: 'StateFlow initialized with null. Consider using a sealed class for states.',
+    suggestion: 'Use sealed class UiState { object Loading, data class Success, data class Error }',
+    references: ['StateFlow', 'UiState Pattern'],
+    autoFixable: false,
+  },
 
   // ============ ANDROID SPECIFIC RULES ============
   {
@@ -183,13 +264,61 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
     references: ['Android Lifecycle', 'Memory Management'],
     autoFixable: false,
   },
+  {
+    id: 'KT-AND006',
+    name: 'Fragment ViewBinding Leak',
+    description: 'Detects Fragment ViewBinding not cleared in onDestroyView',
+    category: 'android',
+    severity: 'high',
+    pattern: /private\s+(?:lateinit\s+)?var\s+_?binding\s*:\s*\w+Binding(?!\s*=\s*null)/g,
+    message: 'Fragment ViewBinding should be nullified in onDestroyView to prevent leaks.',
+    suggestion: 'Set _binding = null in onDestroyView().',
+    references: ['ViewBinding in Fragments', 'Memory Leaks'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-AND007',
+    name: 'Hardcoded String',
+    description: 'Detects hardcoded strings in UI',
+    category: 'android',
+    severity: 'low',
+    pattern: /(?:text|hint|contentDescription)\s*=\s*"[^"]{3,}"/g,
+    message: 'Hardcoded strings in UI. Use string resources for localization.',
+    suggestion: 'Move strings to res/values/strings.xml and use @string/resource_name.',
+    references: ['Android Localization', 'String Resources'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-AND008',
+    name: 'Context Held in ViewModel',
+    description: 'Detects Context reference in ViewModel',
+    category: 'android',
+    severity: 'critical',
+    pattern: /class\s+\w*ViewModel[^{]*\{[^}]*(?:private\s+)?(?:val|var)\s+\w*[Cc]ontext/g,
+    message: 'ViewModel should not hold Context reference. Causes memory leaks.',
+    suggestion: 'Use AndroidViewModel for Application context, or inject resources.',
+    references: ['ViewModel', 'Memory Management'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-AND009',
+    name: 'SharedPreferences on Main Thread',
+    description: 'Detects blocking SharedPreferences operations',
+    category: 'android',
+    severity: 'medium',
+    pattern: /getSharedPreferences[^}]*\.(?:getString|getInt|getBoolean|edit\(\)\.(?:putString|putInt|commit))/g,
+    message: 'SharedPreferences operations are synchronous and may block main thread.',
+    suggestion: 'Use DataStore or commit() in background thread, or apply() instead of commit().',
+    references: ['DataStore', 'SharedPreferences'],
+    autoFixable: false,
+  },
 
   // ============ JETPACK COMPOSE RULES ============
   {
     id: 'KT-COMP001',
     name: 'State in Composable Parameter',
     description: 'Detects state hoisting issues',
-    category: 'android',
+    category: 'compose',
     severity: 'medium',
     pattern: /@Composable\s+fun\s+\w+\s*\([^)]*MutableState/g,
     message: 'Pass state value and callback instead of MutableState.',
@@ -201,7 +330,7 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
     id: 'KT-COMP002',
     name: 'remember Without Key',
     description: 'Detects remember without proper keys',
-    category: 'android',
+    category: 'compose',
     severity: 'low',
     pattern: /remember\s*\{[^}]*\}(?!\s*,)/g,
     message: 'Consider adding keys to remember for proper recomposition.',
@@ -213,7 +342,7 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
     id: 'KT-COMP003',
     name: 'Side Effect Without Key',
     description: 'Detects LaunchedEffect/DisposableEffect without keys',
-    category: 'android',
+    category: 'compose',
     severity: 'high',
     pattern: /(?:LaunchedEffect|DisposableEffect)\s*\(\s*(?:Unit|true)\s*\)/g,
     message: 'LaunchedEffect/DisposableEffect with Unit runs only once. Ensure this is intended.',
@@ -245,6 +374,140 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
     references: ['Compose Stability', 'Performance Optimization'],
     autoFixable: false,
   },
+  {
+    id: 'KT-COMP006',
+    name: 'Mutable State Without Remember',
+    description: 'Detects mutableStateOf without remember',
+    category: 'compose',
+    severity: 'high',
+    pattern: /(?<!remember\s*\{[^}]*)mutableStateOf\s*\(/g,
+    message: 'mutableStateOf outside remember will reset on every recomposition.',
+    suggestion: 'Wrap with remember { mutableStateOf(...) } or move state to ViewModel.',
+    references: ['Compose State', 'remember'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-COMP007',
+    name: 'State Not Survived Configuration Change',
+    description: 'Detects state that won\'t survive configuration changes',
+    category: 'compose',
+    severity: 'medium',
+    pattern: /remember\s*\{\s*mutableStateOf(?!.*rememberSaveable)/g,
+    message: 'State in remember will be lost on configuration changes (rotation).',
+    suggestion: 'Use rememberSaveable for UI state that should survive config changes, or hoist to ViewModel.',
+    references: ['rememberSaveable', 'Configuration Changes', 'ViewModel'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-COMP008',
+    name: 'derivedStateOf Misuse',
+    description: 'Detects potential derivedStateOf misuse',
+    category: 'performance',
+    severity: 'medium',
+    pattern: /derivedStateOf\s*\{[^}]*(?:fetch|load|api|network|database)/gi,
+    message: 'derivedStateOf should derive from other State objects, not perform I/O.',
+    suggestion: 'Use LaunchedEffect for async operations, derivedStateOf for computed values.',
+    references: ['derivedStateOf', 'Compose Side Effects'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-COMP009',
+    name: 'Composable Returning Non-Unit',
+    description: 'Detects Composable functions with return values',
+    category: 'compose',
+    severity: 'medium',
+    pattern: /@Composable\s+fun\s+\w+\s*\([^)]*\)\s*:\s*(?!Unit)/g,
+    message: 'Composable functions should typically return Unit.',
+    suggestion: 'Use state hoisting instead of returning values from Composables.',
+    references: ['Compose Guidelines', 'State Hoisting'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-COMP010',
+    name: 'SideEffect Instead of LaunchedEffect',
+    description: 'Detects SideEffect for async operations',
+    category: 'compose',
+    severity: 'medium',
+    pattern: /SideEffect\s*\{[^}]*(?:suspend|await|coroutine|async|launch)/gi,
+    message: 'SideEffect runs on every recomposition. Use LaunchedEffect for async work.',
+    suggestion: 'Use LaunchedEffect(key) { } for async operations.',
+    references: ['SideEffect', 'LaunchedEffect'],
+    autoFixable: false,
+  },
+
+  // ============ ARCHITECTURE RULES ============
+  {
+    id: 'KT-ARCH001',
+    name: 'ViewModel Accessing Android Context',
+    description: 'Detects ViewModel holding Context reference',
+    category: 'architecture',
+    severity: 'critical',
+    pattern: /class\s+\w+ViewModel[^{]*\{[^}]*(?:Context|Activity|Fragment)(?![^}]*(?:Application|AndroidViewModel))/gi,
+    message: 'ViewModel should not hold references to Context, Activity, or Fragment.',
+    suggestion: 'Use AndroidViewModel for Application context, or pass context through use case parameters.',
+    references: ['Android ViewModel', 'Memory Leaks', 'Clean Architecture'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-ARCH002',
+    name: 'Repository in Activity/Fragment',
+    description: 'Detects direct repository access in UI layer',
+    category: 'architecture',
+    severity: 'high',
+    pattern: /class\s+\w+(?:Activity|Fragment)[^{]*\{[^}]*(?:Repository|DataSource|Dao)\s*[=:]/gi,
+    message: 'UI layer should not access Repository directly. Violates MVVM/Clean Architecture.',
+    suggestion: 'Access data through ViewModel. ViewModel should use UseCases or Repository.',
+    references: ['Clean Architecture', 'MVVM Pattern', 'Android Architecture'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-ARCH003',
+    name: 'Business Logic in Composable',
+    description: 'Detects business logic inside Composable functions',
+    category: 'architecture',
+    severity: 'medium',
+    pattern: /@Composable\s+fun[^{]*\{[^}]*(?:Repository|UseCase|DataSource|Api\w+|Retrofit)/gi,
+    message: 'Composable functions should not contain business logic or data access.',
+    suggestion: 'Move business logic to ViewModel. Composables should only render UI.',
+    references: ['Jetpack Compose', 'MVVM', 'Separation of Concerns'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-ARCH004',
+    name: 'Missing UseCase Layer',
+    description: 'Detects ViewModel directly using Repository',
+    category: 'architecture',
+    severity: 'low',
+    pattern: /class\s+\w+ViewModel[^{]*(?:@Inject[^{]*)?constructor\s*\([^)]*Repository[^)]*\)/gi,
+    message: 'Consider using UseCase/Interactor layer between ViewModel and Repository.',
+    suggestion: 'Create UseCase classes for business logic. Helps with testability and single responsibility.',
+    references: ['Clean Architecture', 'UseCase Pattern', 'Android Architecture'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-ARCH005',
+    name: 'Network Call in ViewModel Init',
+    description: 'Detects network calls in ViewModel init block',
+    category: 'architecture',
+    severity: 'medium',
+    pattern: /class\s+\w*ViewModel[^}]*init\s*\{[^}]*(?:fetch|load|api|network|http)/gi,
+    message: 'Network calls in init block can cause issues with testing and lifecycle.',
+    suggestion: 'Expose a load() function and call it from UI when ready.',
+    references: ['ViewModel Best Practices', 'Testability'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-ARCH006',
+    name: 'UI Logic in ViewModel',
+    description: 'Detects UI-specific logic in ViewModel',
+    category: 'architecture',
+    severity: 'medium',
+    pattern: /class\s+\w*ViewModel[^}]*(?:Toast|Snackbar|Dialog|Navigation|navigate)/gi,
+    message: 'ViewModel should not contain UI-specific logic (Toast, Navigation).',
+    suggestion: 'Use SingleLiveEvent, Channels, or state-based navigation.',
+    references: ['ViewModel', 'Clean Architecture'],
+    autoFixable: false,
+  },
 
   // ============ BEST PRACTICE RULES ============
   {
@@ -274,14 +537,14 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
   },
   {
     id: 'KT-BP003',
-    name: 'Large Class',
-    description: 'Detects classes that are too large',
+    name: 'Empty Catch Block',
+    description: 'Detects empty catch blocks',
     category: 'best-practice',
-    severity: 'low',
-    pattern: /class\s+\w+[^{]*\{(?:[^{}]*|\{[^{}]*\}){100,}/g,
-    message: 'Class is very large. Consider splitting into smaller, focused classes.',
-    suggestion: 'Apply Single Responsibility Principle. Extract related functionality.',
-    references: ['SOLID Principles', 'Clean Architecture'],
+    severity: 'high',
+    pattern: /catch\s*\([^)]+\)\s*\{\s*\}/g,
+    message: 'Empty catch block silently swallows exceptions.',
+    suggestion: 'Log the exception or rethrow. Never silently ignore errors.',
+    references: ['Exception Handling', 'Error Logging'],
     autoFixable: false,
   },
   {
@@ -311,6 +574,18 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
       const varName = match[1];
       return code.replace(new RegExp(`${varName}\\s*!=\\s*null\\s*&&\\s*${varName}\\.`, 'g'), `${varName}?.`);
     },
+  },
+  {
+    id: 'KT-BP006',
+    name: 'Object Expression Instead of Lambda',
+    description: 'Detects object expressions that could be lambdas',
+    category: 'style',
+    severity: 'info',
+    pattern: /object\s*:\s*\w+\s*\{[^}]*override\s+fun\s+\w+\s*\([^)]*\)/g,
+    message: 'Single-method object expression can be replaced with lambda (SAM conversion).',
+    suggestion: 'Use lambda: setOnClickListener { handleClick() }',
+    references: ['SAM Conversions', 'Kotlin Lambda'],
+    autoFixable: false,
   },
 
   // ============ SECURITY RULES ============
@@ -434,6 +709,18 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
     references: ['OWASP Mobile Top 10', 'CWE-798', 'AWS Security'],
     autoFixable: false,
   },
+  {
+    id: 'KT-SEC011',
+    name: 'Certificate Pinning Missing',
+    description: 'Detects OkHttp without certificate pinning',
+    category: 'security',
+    severity: 'medium',
+    pattern: /OkHttpClient\s*(?:\(\)|\.Builder\s*\(\))(?![^}]*certificatePinner)/g,
+    message: 'OkHttpClient without certificate pinning. Vulnerable to MITM attacks.',
+    suggestion: 'Implement certificate pinning: .certificatePinner(CertificatePinner.Builder()...)',
+    references: ['Certificate Pinning', 'OWASP Mobile'],
+    autoFixable: false,
+  },
 
   // ============ PERFORMANCE RULES ============
   {
@@ -472,6 +759,30 @@ export const KOTLIN_RULES: KotlinDetectionRule[] = [
     references: ['Android Image Loading', 'Memory Management'],
     autoFixable: false,
   },
+  {
+    id: 'KT-PERF004',
+    name: 'Inefficient Regex Creation',
+    description: 'Detects regex created inside loops',
+    category: 'performance',
+    severity: 'medium',
+    pattern: /(?:for|while)\s*\([^)]+\)\s*\{[^}]*(?:Regex|toRegex)\s*\(/g,
+    message: 'Regex compiled inside loop. This is inefficient.',
+    suggestion: 'Compile regex outside the loop and reuse: val regex = "pattern".toRegex()',
+    references: ['Regex Performance', 'Kotlin'],
+    autoFixable: false,
+  },
+  {
+    id: 'KT-PERF005',
+    name: 'Boxing Overhead',
+    description: 'Detects potential boxing overhead with primitives',
+    category: 'performance',
+    severity: 'low',
+    pattern: /List<(?:Int|Long|Double|Float|Boolean)>/g,
+    message: 'Using boxed primitives in collections. Consider specialized arrays for performance.',
+    suggestion: 'Use IntArray, LongArray, etc. for primitive collections in performance-critical code.',
+    references: ['Kotlin Arrays', 'Boxing'],
+    autoFixable: false,
+  },
 ];
 
 /**
@@ -505,7 +816,7 @@ export function runKotlinDetection(code: string): { issues: CodeIssue[]; securit
           endColumn: column + match[0].length,
           file: 'input',
         },
-        category: rule.category as any,
+        category: rule.category as CodeIssue['category'],
         suggestion: rule.suggestion,
         autoFixable: rule.autoFixable,
         references: rule.references,
@@ -533,4 +844,3 @@ export function runKotlinDetection(code: string): { issues: CodeIssue[]; securit
 
   return { issues, securityFindings };
 }
-
