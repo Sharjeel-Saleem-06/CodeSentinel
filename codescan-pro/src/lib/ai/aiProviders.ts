@@ -448,12 +448,29 @@ export class MultiProviderAI {
   }
   
   /**
-   * Generate a cache key from messages
+   * Generate a cache key from messages (Unicode-safe)
    */
   private getCacheKey(messages: AIMessage[], options?: AIOptions): string {
     const content = messages.map(m => `${m.role}:${m.content}`).join('|');
     const optStr = options ? JSON.stringify(options) : '';
-    return btoa(content + optStr).substring(0, 64);
+    // Use Unicode-safe base64 encoding
+    try {
+      const combined = content + optStr;
+      // Convert to UTF-8 bytes, then encode
+      const bytes = new TextEncoder().encode(combined);
+      const binary = String.fromCharCode(...bytes.slice(0, 500)); // Limit to avoid memory issues
+      return btoa(binary).substring(0, 64);
+    } catch {
+      // Fallback: use simple hash
+      const str = content + optStr;
+      let hash = 0;
+      for (let i = 0; i < Math.min(str.length, 1000); i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return `cache_${Math.abs(hash).toString(36)}`;
+    }
   }
   
   /**

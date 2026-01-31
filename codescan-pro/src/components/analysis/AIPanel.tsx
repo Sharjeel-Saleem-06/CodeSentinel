@@ -343,14 +343,12 @@ export function AIPanel({ result, sourceCode }: AIPanelProps) {
 
     const isSwift = result.language === 'swift';
     const isKotlin = result.language === 'kotlin';
-    const isPython = result.language === 'python';
     const isJS = result.language === 'javascript' || result.language === 'typescript';
     
-    // Platform context for the review
+    // Platform context for the review (focused on supported languages)
     const platformContext = isSwift ? 'iOS (SwiftUI)' : 
                            isKotlin ? 'Android (Kotlin)' : 
-                           isPython ? 'Python Backend' : 
-                           isJS ? 'JavaScript/TypeScript' : 'General';
+                           isJS ? 'JavaScript/TypeScript (React)' : 'General';
 
     const architectPrompt = `You are a Principal Software Architect specializing in ${platformContext} with 10–15 years of production experience, responsible for blocking PRs that can cause crashes, security vulnerabilities, memory leaks, or long-term maintenance failure.
 
@@ -378,13 +376,6 @@ ${isKotlin ? `
 - Coroutine scope management
 - Lifecycle-aware components
 - Compose recomposition issues
-` : ''}
-${isPython ? `
-**Python Focus:**
-- Exception handling patterns
-- Resource management (with statements)
-- Type safety concerns
-- Async/await patterns
 ` : ''}
 ${isJS ? `
 **JavaScript/TypeScript Focus:**
@@ -787,6 +778,9 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                       components={{
                         code({ node, inline, className, children, ...props }: any) {
                           const match = /language-(\w+)/.exec(className || '');
+                          const codeContent = children ? String(children).replace(/\n$/, '') : '';
+                          if (!codeContent || codeContent === 'undefined') return null;
+                          
                           return !inline && match ? (
                             <div className="relative group my-4">
                               <div className={cn(
@@ -806,7 +800,7 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                                 }}
                                 {...props}
                               >
-                                {String(children).replace(/\n$/, '')}
+                                {codeContent}
                               </SyntaxHighlighter>
                             </div>
                           ) : (
@@ -850,6 +844,44 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                           )}>
                             {children}
                           </blockquote>
+                        ),
+                        // Table rendering
+                        table: ({ children }) => (
+                          <div className="overflow-x-auto my-4 rounded-lg border border-obsidian-700">
+                            <table className="min-w-full divide-y divide-obsidian-700">
+                              {children}
+                            </table>
+                          </div>
+                        ),
+                        thead: ({ children }) => (
+                          <thead className={cn(
+                            isDark ? "bg-obsidian-800" : "bg-gray-100"
+                          )}>
+                            {children}
+                          </thead>
+                        ),
+                        tbody: ({ children }) => (
+                          <tbody className="divide-y divide-obsidian-700/50">
+                            {children}
+                          </tbody>
+                        ),
+                        tr: ({ children }) => (
+                          <tr className={cn(
+                            "transition-colors",
+                            isDark ? "hover:bg-obsidian-800/50" : "hover:bg-gray-50"
+                          )}>
+                            {children}
+                          </tr>
+                        ),
+                        th: ({ children }) => (
+                          <th className="px-4 py-2 text-left text-xs font-semibold text-obsidian-300 uppercase tracking-wider">
+                            {children}
+                          </th>
+                        ),
+                        td: ({ children }) => (
+                          <td className="px-4 py-2 text-sm text-obsidian-300 whitespace-nowrap">
+                            {children}
+                          </td>
                         ),
                       }}
                     >
@@ -927,6 +959,9 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                       components={{
                         code({ node, inline, className, children, ...props }: any) {
                           const match = /language-(\w+)/.exec(className || '');
+                          const codeContent = children ? String(children).replace(/\n$/, '') : '';
+                          if (!codeContent || codeContent === 'undefined') return null;
+                          
                           return !inline && match ? (
                             <div className="relative group my-4">
                               <div className={cn(
@@ -946,7 +981,7 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                                 }}
                                 {...props}
                               >
-                                {String(children).replace(/\n$/, '')}
+                                {codeContent}
                               </SyntaxHighlighter>
                             </div>
                           ) : (
@@ -987,6 +1022,35 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                           )}>
                             {children}
                           </blockquote>
+                        ),
+                        // Table rendering
+                        table: ({ children }) => (
+                          <div className="overflow-x-auto my-4 rounded-lg border border-obsidian-700">
+                            <table className="min-w-full divide-y divide-obsidian-700">
+                              {children}
+                            </table>
+                          </div>
+                        ),
+                        thead: ({ children }) => (
+                          <thead className={cn(isDark ? "bg-obsidian-800" : "bg-gray-100")}>
+                            {children}
+                          </thead>
+                        ),
+                        tbody: ({ children }) => (
+                          <tbody className="divide-y divide-obsidian-700/50">{children}</tbody>
+                        ),
+                        tr: ({ children }) => (
+                          <tr className={cn("transition-colors", isDark ? "hover:bg-obsidian-800/50" : "hover:bg-gray-50")}>
+                            {children}
+                          </tr>
+                        ),
+                        th: ({ children }) => (
+                          <th className="px-4 py-2 text-left text-xs font-semibold text-obsidian-300 uppercase tracking-wider">
+                            {children}
+                          </th>
+                        ),
+                        td: ({ children }) => (
+                          <td className="px-4 py-2 text-sm text-obsidian-300 whitespace-nowrap">{children}</td>
                         ),
                       }}
                     >
@@ -1322,6 +1386,9 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                       components={{
                         code({ node, inline, className, children, ...props }: any) {
                           const match = /language-(\w+)/.exec(className || '');
+                          const codeContent = children ? String(children).replace(/\n$/, '') : '';
+                          if (!codeContent || codeContent === 'undefined') return null;
+                          
                           return !inline && match ? (
                             <div className="relative group my-4">
                               <SyntaxHighlighter
@@ -1335,7 +1402,7 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                                 }}
                                 {...props}
                               >
-                                {String(children).replace(/\n$/, '')}
+                                {codeContent}
                               </SyntaxHighlighter>
                             </div>
                           ) : (
@@ -1366,20 +1433,112 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                             </div>
                           );
                         },
+                        // Table rendering for structured data
+                        table: ({ children }) => (
+                          <div className="overflow-x-auto my-4 rounded-lg border border-obsidian-700">
+                            <table className="min-w-full divide-y divide-obsidian-700">
+                              {children}
+                            </table>
+                          </div>
+                        ),
+                        thead: ({ children }) => (
+                          <thead className={cn(isDark ? "bg-obsidian-800" : "bg-gray-100")}>
+                            {children}
+                          </thead>
+                        ),
+                        tbody: ({ children }) => (
+                          <tbody className="divide-y divide-obsidian-700/50">{children}</tbody>
+                        ),
+                        tr: ({ children }) => (
+                          <tr className={cn("transition-colors", isDark ? "hover:bg-obsidian-800/50" : "hover:bg-gray-50")}>
+                            {children}
+                          </tr>
+                        ),
+                        th: ({ children }) => (
+                          <th className="px-4 py-2 text-left text-xs font-semibold text-obsidian-300 uppercase tracking-wider">
+                            {children}
+                          </th>
+                        ),
+                        td: ({ children }) => (
+                          <td className="px-4 py-2 text-sm text-obsidian-300">{children}</td>
+                        ),
+                        // Enhanced headings
+                        h1: ({ children }) => (
+                          <h1 className="flex items-center gap-2 text-xl font-bold text-neon-red border-b border-obsidian-700 pb-2 mb-4">
+                            <Shield className="w-5 h-5" />
+                            {children}
+                          </h1>
+                        ),
+                        h2: ({ children }) => (
+                          <h2 className="flex items-center gap-2 text-lg font-semibold text-neon-orange mt-6 mb-3">
+                            <AlertTriangle className="w-4 h-4" />
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({ children }) => (
+                          <h3 className="text-base font-medium text-obsidian-200 mt-4 mb-2">
+                            {children}
+                          </h3>
+                        ),
+                        // Lists
+                        ul: ({ children }) => (
+                          <ul className="space-y-2 my-3 ml-2">{children}</ul>
+                        ),
+                        li: ({ children }) => (
+                          <li className="flex items-start gap-2 text-obsidian-300">
+                            <span className="w-1.5 h-1.5 rounded-full bg-neon-red mt-2 flex-shrink-0" />
+                            <span className="flex-1">{children}</span>
+                          </li>
+                        ),
                         // Enhanced strong text for labels with structured card-like display
                         strong({ children }) {
                           const text = String(children);
                           
-                          // Platform label
-                          if (text.startsWith('Platform:')) {
-                            const value = text.replace('Platform:', '').trim();
+                          // Overall Assessment
+                          if (text.startsWith('Overall Assessment:')) {
+                            const value = text.replace('Overall Assessment:', '').trim();
+                            const assessmentColors: Record<string, string> = {
+                              'pass': 'bg-green-500/20 text-green-400',
+                              'pass with concerns': 'bg-yellow-500/20 text-yellow-400',
+                              'needs work': 'bg-red-500/20 text-red-400',
+                            };
+                            const colorClass = assessmentColors[value.toLowerCase()] || 'bg-obsidian-700 text-obsidian-300';
                             return (
-                              <div className={cn(
-                                "flex items-center gap-2 px-3 py-2 rounded-lg mb-2",
-                                isDark ? "bg-slate-800/50" : "bg-gray-100"
-                              )}>
-                                <span className="text-xs font-medium text-obsidian-400">Platform</span>
-                                <span className="px-2 py-0.5 rounded bg-cyber-500/20 text-cyber-500 text-xs font-semibold">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-xs font-medium text-obsidian-400">Overall Assessment</span>
+                                <span className={cn("px-3 py-1 rounded-full text-sm font-bold", colorClass)}>
+                                  {value}
+                                </span>
+                              </div>
+                            );
+                          }
+                          
+                          // Risk Level
+                          if (text.startsWith('Risk Level:')) {
+                            const value = text.replace('Risk Level:', '').trim();
+                            const riskColors: Record<string, string> = {
+                              'low': 'bg-green-500/20 text-green-400',
+                              'medium': 'bg-yellow-500/20 text-yellow-400',
+                              'high': 'bg-red-500/20 text-red-400',
+                            };
+                            const colorClass = riskColors[value.toLowerCase()] || 'bg-obsidian-700 text-obsidian-300';
+                            return (
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-xs font-medium text-obsidian-400">Risk Level</span>
+                                <span className={cn("px-3 py-1 rounded-full text-sm font-bold", colorClass)}>
+                                  {value}
+                                </span>
+                              </div>
+                            );
+                          }
+                          
+                          // Issues Found
+                          if (text.startsWith('Issues Found:')) {
+                            const value = text.replace('Issues Found:', '').trim();
+                            return (
+                              <div className="flex items-center gap-2 mb-4">
+                                <span className="text-xs font-medium text-obsidian-400">Issues Found</span>
+                                <span className="px-3 py-1 rounded-full bg-obsidian-700 text-obsidian-200 text-sm font-medium">
                                   {value}
                                 </span>
                               </div>
@@ -1387,105 +1546,86 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                           }
                           
                           // Severity label
-                          if (text.startsWith('Severity:')) {
-                            const value = text.replace('Severity:', '').trim().toLowerCase();
-                            const severityColors = {
-                              high: 'bg-red-500/20 text-red-400 border-red-500/30',
-                              medium: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-                              low: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+                          if (text.startsWith('Severity')) {
+                            const value = text.replace('Severity', '').replace(/[:|]/g, '').trim().toLowerCase();
+                            const severityColors: Record<string, string> = {
+                              'high': 'bg-red-500/20 text-red-400 border-red-500/30',
+                              'medium': 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+                              'low': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
                             };
-                            const colorClass = severityColors[value as keyof typeof severityColors] || severityColors.medium;
+                            const normalizedValue = value.includes('high') ? 'high' : value.includes('medium') ? 'medium' : 'low';
+                            const colorClass = severityColors[normalizedValue] || severityColors.medium;
                             return (
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xs font-medium text-obsidian-400">Severity</span>
-                                <span className={cn("px-2 py-0.5 rounded border text-xs font-bold uppercase", colorClass)}>
-                                  {value}
-                                </span>
-                              </div>
+                              <span className={cn("px-2 py-0.5 rounded border text-xs font-bold uppercase", colorClass)}>
+                                {value || 'Medium'}
+                              </span>
                             );
                           }
                           
                           // Category label
-                          if (text.startsWith('Category:')) {
-                            const value = text.replace('Category:', '').trim();
+                          if (text.startsWith('Category')) {
+                            const value = text.replace('Category', '').replace(/[:|]/g, '').trim();
                             return (
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xs font-medium text-obsidian-400">Category</span>
-                                <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 text-xs font-medium">
-                                  {value}
-                                </span>
-                              </div>
+                              <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 text-xs font-medium">
+                                {value}
+                              </span>
                             );
                           }
                           
-                          // Issue Summary - Make it prominent
-                          if (text.startsWith('Issue Summary:') || text.startsWith('Issue:')) {
-                            const value = text.replace(/^(Issue Summary:|Issue:)/, '').trim();
+                          // Location
+                          if (text.startsWith('Location')) {
+                            const value = text.replace('Location', '').replace(/[:|]/g, '').trim();
                             return (
-                              <div className={cn(
-                                "p-3 rounded-lg border-l-4 border-red-500 mb-3",
-                                isDark ? "bg-red-900/10" : "bg-red-50"
-                              )}>
-                                <span className="text-xs font-medium text-obsidian-400 block mb-1">Issue Summary</span>
-                                <span className="text-sm font-semibold text-obsidian-100">{value}</span>
-                              </div>
-                            );
-                          }
-                          
-                          // Why Risky
-                          if (text.startsWith('Why Risky:') || text.startsWith('Why:')) {
-                            const value = text.replace(/^(Why Risky:|Why:)/, '').trim();
-                            return (
-                              <div className={cn(
-                                "p-3 rounded-lg mb-3",
-                                isDark ? "bg-orange-900/10 border border-orange-500/20" : "bg-orange-50 border border-orange-200"
-                              )}>
-                                <span className="text-xs font-medium text-orange-400 block mb-1 flex items-center gap-1">
-                                  <AlertTriangle className="w-3 h-3" />
-                                  Why This is Risky
-                                </span>
-                                <span className="text-sm text-obsidian-300">{value}</span>
-                              </div>
-                            );
-                          }
-                          
-                          // Correct Best Practice
-                          if (text.startsWith('Correct Best Practice:') || text.startsWith('Best Practice:')) {
-                            const value = text.replace(/^(Correct Best Practice:|Best Practice:)/, '').trim();
-                            return (
-                              <div className={cn(
-                                "p-3 rounded-lg mb-3",
-                                isDark ? "bg-green-900/10 border border-green-500/20" : "bg-green-50 border border-green-200"
-                              )}>
-                                <span className="text-xs font-medium text-green-400 block mb-1 flex items-center gap-1">
-                                  <CheckCircle className="w-3 h-3" />
-                                  Correct Best Practice
-                                </span>
-                                <span className="text-sm text-obsidian-300">{value}</span>
-                              </div>
+                              <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 text-xs font-medium font-mono">
+                                {value}
+                              </span>
                             );
                           }
                           
                           // Would Block PR
-                          if (text.startsWith('Would Block PR:')) {
-                            const value = text.replace('Would Block PR:', '').trim().toLowerCase();
+                          if (text.startsWith('Would Block PR')) {
+                            const value = text.replace('Would Block PR', '').replace(/[:|]/g, '').trim().toLowerCase();
                             const isYes = value.includes('yes');
                             return (
-                              <div className="flex items-center gap-2 mb-4">
-                                <span className="text-xs font-medium text-obsidian-400">Would Block PR</span>
-                                <span className={cn(
-                                  "px-2 py-0.5 rounded text-xs font-bold",
-                                  isYes 
-                                    ? "bg-red-500/20 text-red-400" 
-                                    : "bg-green-500/20 text-green-400"
-                                )}>
-                                  {isYes ? '🚫 YES' : '✅ NO'}
-                                </span>
-                              </div>
+                              <span className={cn(
+                                "px-2 py-0.5 rounded text-xs font-bold",
+                                isYes 
+                                  ? "bg-red-500/20 text-red-400" 
+                                  : "bg-green-500/20 text-green-400"
+                              )}>
+                                {isYes ? 'YES' : 'NO'}
+                              </span>
                             );
                           }
                           
-                          return <strong className="text-obsidian-100">{children}</strong>;
+                          // What's Wrong
+                          if (text.startsWith("What's Wrong:") || text.startsWith("What's Wrong")) {
+                            return (
+                              <span className="text-sm font-semibold text-red-400 block mt-3 mb-1">
+                                What&apos;s Wrong:
+                              </span>
+                            );
+                          }
+                          
+                          // Why It Matters
+                          if (text.startsWith("Why It Matters:") || text.startsWith("Why It Matters")) {
+                            return (
+                              <span className="text-sm font-semibold text-orange-400 block mt-3 mb-1">
+                                Why It Matters:
+                              </span>
+                            );
+                          }
+                          
+                          // Recommended Fix
+                          if (text.startsWith("Recommended Fix:") || text.startsWith("Recommended Fix")) {
+                            return (
+                              <span className="text-sm font-semibold text-green-400 block mt-3 mb-1">
+                                Recommended Fix:
+                              </span>
+                            );
+                          }
+                          
+                          return <strong className="text-obsidian-100 font-semibold">{children}</strong>;
                         },
                       }}
                     >
@@ -1577,22 +1717,48 @@ Now provide your Principal Architect review. Be thorough but pragmatic.`;
                           components={{
                             code({ node, inline, className, children, ...props }: any) {
                               const match = /language-(\w+)/.exec(className || '');
+                              const codeContent = children ? String(children).replace(/\n$/, '') : '';
+                              if (!codeContent || codeContent === 'undefined') return null;
+                              
                               return !inline && match ? (
                                 <SyntaxHighlighter
                                   style={isDark ? oneDark : oneLight}
                                   language={match[1]}
                                   PreTag="div"
-                                  customStyle={{ fontSize: '12px' }}
+                                  customStyle={{ fontSize: '12px', borderRadius: '8px' }}
                                   {...props}
                                 >
-                                  {String(children).replace(/\n$/, '')}
+                                  {codeContent}
                                 </SyntaxHighlighter>
                               ) : (
-                                <code className={cn(className, message.role === 'user' && 'bg-cyber-600')} {...props}>
+                                <code className={cn(className, "px-1 py-0.5 rounded text-xs", message.role === 'user' ? 'bg-cyber-600' : 'bg-obsidian-700')} {...props}>
                                   {children}
                                 </code>
                               );
                             },
+                            // Table rendering for chat
+                            table: ({ children }) => (
+                              <div className="overflow-x-auto my-2 rounded-lg border border-obsidian-600">
+                                <table className="min-w-full divide-y divide-obsidian-600 text-xs">
+                                  {children}
+                                </table>
+                              </div>
+                            ),
+                            thead: ({ children }) => (
+                              <thead className="bg-obsidian-700">{children}</thead>
+                            ),
+                            tbody: ({ children }) => (
+                              <tbody className="divide-y divide-obsidian-600/50">{children}</tbody>
+                            ),
+                            tr: ({ children }) => (
+                              <tr className="hover:bg-obsidian-700/50">{children}</tr>
+                            ),
+                            th: ({ children }) => (
+                              <th className="px-2 py-1 text-left text-xs font-semibold text-obsidian-300">{children}</th>
+                            ),
+                            td: ({ children }) => (
+                              <td className="px-2 py-1 text-xs text-obsidian-300">{children}</td>
+                            ),
                           }}
                         >
                           {message.content}

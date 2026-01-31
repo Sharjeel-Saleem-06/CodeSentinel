@@ -73,10 +73,8 @@ const CATEGORY_ICONS: Record<string, typeof Shield> = {
   custom: Tag,
 };
 
-const ALL_LANGUAGES: Language[] = [
-  'javascript', 'typescript', 'kotlin', 'swift', 'python', 
-  'java', 'cpp', 'go', 'rust', 'dart', 'csharp', 'php', 'ruby', 'scala'
-];
+// Supported languages: JavaScript/TypeScript (web), Kotlin (Android), Swift (iOS)
+const ALL_LANGUAGES: Language[] = ['javascript', 'typescript', 'kotlin', 'swift'];
 
 // Platform-specific rule templates for quick creation - Kotlin and iOS focused
 const RULE_TEMPLATES = {
@@ -197,16 +195,13 @@ const RULE_TEMPLATES = {
 };
 
 // Platform configuration for display
+// Supported platforms: JavaScript, TypeScript, Kotlin, Swift
 const PLATFORM_CONFIG: Record<RulePlatform, { label: string; color: string; icon: string }> = {
   general: { label: 'General', color: 'text-slate-400 bg-slate-500/20', icon: '🌐' },
   kotlin: { label: 'Kotlin/Android', color: 'text-orange-400 bg-orange-500/20', icon: '🤖' },
   swift: { label: 'Swift/iOS', color: 'text-blue-400 bg-blue-500/20', icon: '🍎' },
   javascript: { label: 'JavaScript', color: 'text-yellow-400 bg-yellow-500/20', icon: '📜' },
   typescript: { label: 'TypeScript', color: 'text-blue-400 bg-blue-500/20', icon: '🔷' },
-  python: { label: 'Python', color: 'text-green-400 bg-green-500/20', icon: '🐍' },
-  java: { label: 'Java', color: 'text-red-400 bg-red-500/20', icon: '☕' },
-  go: { label: 'Go', color: 'text-cyan-400 bg-cyan-500/20', icon: '🐹' },
-  rust: { label: 'Rust', color: 'text-orange-400 bg-orange-500/20', icon: '🦀' },
 };
 
 export function CustomRulesPanel({ language, onRulesChange }: CustomRulesPanelProps) {
@@ -556,8 +551,9 @@ export function CustomRulesPanel({ language, onRulesChange }: CustomRulesPanelPr
           >
             All Platforms
           </button>
-          {(['general', 'kotlin', 'swift', 'javascript', 'typescript', 'python'] as RulePlatform[]).map(platform => {
+          {(['general', 'kotlin', 'swift', 'javascript', 'typescript'] as RulePlatform[]).map(platform => {
             const config = PLATFORM_CONFIG[platform];
+            if (!config) return null; // Skip undefined platforms
             const count = rulesByPlatform[platform]?.length || 0;
             return (
               <button
