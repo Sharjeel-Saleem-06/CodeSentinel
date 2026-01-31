@@ -477,8 +477,374 @@ export const DETECTION_RULES: DetectionRule[] = [
 ];
 
 /**
+ * LANGUAGE-SPECIFIC RULE CONFIGURATION
+ * Maps which rules are ALLOWED for each language
+ * This prevents JS rules being applied to Kotlin/Python etc.
+ */
+const LANGUAGE_RULE_CONFIG: Record<string, {
+  allowedRules: string[];
+  skipRules: string[];
+  description: string;
+}> = {
+  // JavaScript: Allow all JS-specific rules
+  javascript: {
+    allowedRules: ['*'], // All rules allowed
+    skipRules: ['TS001', 'TS002', 'TS003'], // Skip TypeScript-only rules
+    description: 'JavaScript with all standard rules'
+  },
+  
+  // TypeScript: Allow all rules
+  typescript: {
+    allowedRules: ['*'],
+    skipRules: [],
+    description: 'TypeScript with all rules including TS-specific'
+  },
+  
+  // Kotlin: Only allow Kotlin-specific and universal security rules
+  // CRITICAL: DO NOT apply JavaScript rules like === vs ==
+  kotlin: {
+    allowedRules: [
+      // Security rules that are universal
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005', 
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      // Empty catch is valid in all languages
+      'BP009',
+      // Unhandled errors
+      'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      // CRITICAL: These are JavaScript-specific and WRONG for Kotlin
+      'BP001', // === vs == - Kotlin has different semantics!
+      'BP002', // var - Kotlin has val/var which is correct
+      'BP003', // let vs const - doesn't exist in Kotlin
+      'BP004', // template literals - Kotlin has string templates
+      'BP005', // optional chaining - Kotlin has ?. which is idiomatic
+      'BP006', // nullish coalescing - Kotlin has ?: elvis operator
+      'BP007', // async/await - Kotlin uses coroutines
+      'BP008', // console.log - Kotlin uses Log.d() which is valid
+      'BP010', // magic numbers - Android UI values are normal
+      'SEC006', // innerHTML - doesn't exist in Kotlin
+      'SEC007', // document.write - doesn't exist in Kotlin
+      'SEC009', // SSRF with fetch - Kotlin uses different APIs
+      'PERF001', // Array methods in loop - different in Kotlin
+      'PERF002', // Sync file ops - different APIs
+      'PERF003', // Object spread - different in Kotlin
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005', // React doesn't exist in Kotlin
+      'TS001', 'TS002', 'TS003' // TypeScript rules
+    ],
+    description: 'Kotlin with Kotlin-specific rules only'
+  },
+  
+  // Swift: Only allow Swift-specific and universal security rules
+  swift: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'BP009', 'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP010',
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'Swift with Swift-specific rules only'
+  },
+  
+  // Python: Only allow Python-appropriate rules
+  // CRITICAL: Python has no === operator!
+  python: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'BP009', 'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', // === doesn't exist in Python!
+      'BP002', // var doesn't exist in Python
+      'BP003', // let/const don't exist in Python
+      'BP004', // template literals - Python has f-strings
+      'BP005', // optional chaining - Python has different patterns
+      'BP006', // ?? operator doesn't exist in Python
+      'BP007', // async/await syntax is different
+      'BP008', // print() is valid in Python CLI apps!
+      'BP010', // magic numbers context varies
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'Python with Python-appropriate rules only'
+  },
+  
+  // Java
+  java: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'BP009', 'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP010',
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'Java with Java-appropriate rules only'
+  },
+  
+  // Go
+  go: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'BP009', 'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP010',
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'Go with Go-appropriate rules only'
+  },
+  
+  // Rust
+  rust: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP009', 'BP010',
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'Rust with Rust-appropriate rules only'
+  },
+  
+  // C++
+  cpp: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP009', 'BP010',
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'C++ with C++-appropriate rules only'
+  },
+  
+  // C#
+  csharp: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'BP009', 'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP010',
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'C# with C#-appropriate rules only'
+  },
+  
+  // PHP
+  php: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005', 'SEC006',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'BP009', 'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP010',
+      'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'PHP with PHP-appropriate rules only'
+  },
+  
+  // Ruby
+  ruby: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP009', 'BP010',
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'Ruby with Ruby-appropriate rules only'
+  },
+
+  // Dart
+  dart: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'BP009', 'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP010',
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'Dart with Dart-appropriate rules only'
+  },
+  
+  // Scala
+  scala: {
+    allowedRules: [
+      'SEC001', 'SEC002', 'SEC003', 'SEC004', 'SEC005',
+      'SEC008', 'SEC011', 'SEC012', 'SEC013',
+      'ERR001', 'ERR002'
+    ],
+    skipRules: [
+      'BP001', 'BP002', 'BP003', 'BP004', 'BP005', 'BP006', 'BP007', 'BP008', 'BP009', 'BP010',
+      'SEC006', 'SEC007', 'SEC009', 'SEC010',
+      'PERF001', 'PERF002', 'PERF003',
+      'REACT001', 'REACT002', 'REACT003', 'REACT004', 'REACT005',
+      'TS001', 'TS002', 'TS003'
+    ],
+    description: 'Scala with Scala-appropriate rules only'
+  }
+};
+
+/**
+ * Check if a rule should be applied for a given language
+ */
+function shouldApplyRule(ruleId: string, language: string): boolean {
+  const config = LANGUAGE_RULE_CONFIG[language];
+  
+  // If no config, default to JS/TS rules only for unknown languages
+  if (!config) {
+    return true; // Allow all for unknown languages
+  }
+  
+  // If rule is in skip list, don't apply
+  if (config.skipRules.includes(ruleId)) {
+    return false;
+  }
+  
+  // If allowed rules is '*', allow unless skipped
+  if (config.allowedRules.includes('*')) {
+    return true;
+  }
+  
+  // Only allow if in allowed list
+  return config.allowedRules.includes(ruleId);
+}
+
+/**
+ * Context-aware false positive filtering
+ * Reduces false positives by understanding code context
+ */
+function isLikelyFalsePositive(
+  rule: DetectionRule,
+  match: RegExpMatchArray,
+  code: string,
+  language: string
+): boolean {
+  const matchedText = match[0];
+  const beforeMatch = code.substring(0, match.index);
+  const lineStart = beforeMatch.lastIndexOf('\n') + 1;
+  const lineContent = code.substring(lineStart, code.indexOf('\n', match.index!) || code.length);
+  
+  // SEC002: Hardcoded Password - Check for false positives
+  if (rule.id === 'SEC002') {
+    // False positive: password variable receiving user input
+    if (/getpass|input|prompt|readline|stdin|Scanner|readLine/i.test(lineContent)) {
+      return true;
+    }
+    // False positive: password field in UI
+    if (/TextField|EditText|UITextField|PasswordField|inputType/i.test(lineContent)) {
+      return true;
+    }
+    // False positive: validation/check function
+    if (/validate|check|verify|compare|hash|encrypt/i.test(lineContent)) {
+      return true;
+    }
+  }
+  
+  // BP010: Magic Numbers - Context-aware filtering
+  if (rule.id === 'BP010') {
+    const number = parseInt(matchedText);
+    
+    // HTTP status codes (100-599)
+    if (number >= 100 && number <= 599) {
+      return true;
+    }
+    
+    // Common port numbers
+    if ([80, 443, 3000, 3001, 5000, 5173, 8000, 8080, 8443, 9000].includes(number)) {
+      return true;
+    }
+    
+    // Android/iOS UI context
+    if (language === 'kotlin' || language === 'swift' || language === 'dart') {
+      // Padding, margins, sizes, etc.
+      if (/padding|margin|size|width|height|radius|dp|sp|px|pt/i.test(lineContent)) {
+        return true;
+      }
+      // Resource IDs
+      if (/R\.|\.id\.|resource|@dimen|@string/i.test(lineContent)) {
+        return true;
+      }
+    }
+    
+    // Array indices and common loop bounds
+    if (number <= 10) {
+      return true;
+    }
+    
+    // Time values (seconds, milliseconds)
+    if (/timeout|delay|interval|duration|seconds|milliseconds|ms\b/i.test(lineContent)) {
+      return true;
+    }
+  }
+  
+  // BP008: Console statements - Context-aware filtering
+  if (rule.id === 'BP008') {
+    // CLI applications use print/console as primary output
+    if (language === 'python') {
+      // Python: Check if it's a main script (not a module)
+      if (/if\s+__name__\s*==\s*['"]__main__['"]|argparse|click|typer/i.test(code)) {
+        return true; // It's a CLI app
+      }
+    }
+  }
+  
+  return false;
+}
+
+/**
  * Runs all detection rules against the code
  * Includes language-specific rules for Kotlin, Swift, and more
+ * 
+ * CRITICAL: This function now properly filters rules by language
+ * JavaScript rules will NOT be applied to Kotlin, Python, etc.
  */
 export function runAdvancedDetection(
   code: string,
@@ -500,24 +866,11 @@ export function runAdvancedDetection(
     securityFindings.push(...swiftResults.securityFindings);
   }
 
-  // Run general detection rules
+  // Run general detection rules with PROPER LANGUAGE FILTERING
   for (const rule of DETECTION_RULES) {
-    // Skip React rules for non-JS/TS
-    if (rule.id.startsWith('REACT') && !['javascript', 'typescript'].includes(language)) {
-      continue;
-    }
-
-    // Skip TS rules for non-TypeScript
-    if (rule.id.startsWith('TS') && language !== 'typescript') {
-      continue;
-    }
-
-    // Skip JS/TS specific rules for other languages
-    if (['kotlin', 'swift', 'python', 'java', 'go', 'rust'].includes(language)) {
-      // Skip rules that are very JS/TS specific
-      if (['BP002', 'BP003', 'BP004', 'BP005', 'BP006'].includes(rule.id)) {
-        continue;
-      }
+    // CRITICAL: Check if rule should be applied for this language
+    if (!shouldApplyRule(rule.id, language)) {
+      continue; // Skip this rule for this language
     }
 
     if (rule.pattern instanceof RegExp) {
@@ -525,6 +878,11 @@ export function runAdvancedDetection(
       let match;
 
       while ((match = regex.exec(code)) !== null) {
+        // CRITICAL: Check for false positives before adding issue
+        if (isLikelyFalsePositive(rule, match, code, language)) {
+          continue; // Skip this match - it's likely a false positive
+        }
+        
         // Find line number
         const beforeMatch = code.substring(0, match.index);
         const lineNumber = beforeMatch.split('\n').length;

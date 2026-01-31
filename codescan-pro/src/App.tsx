@@ -24,7 +24,9 @@ import {
   Check,
   BookOpen,
   Sun,
-  Moon
+  Moon,
+  AlertCircle,
+  Info
 } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { CodeEditor } from './components/editor/CodeEditor';
@@ -80,13 +82,72 @@ function App() {
   const { toggleTheme, isDark } = useTheme();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showValidationError, setShowValidationError] = useState<string | null>(null);
+  const [showLanguageWarning, setShowLanguageWarning] = useState(false);
 
-  // Run analysis
+  // Validate code before analysis
+  const validateCode = useCallback((code: string): { valid: boolean; error?: string } => {
+    if (!code || !code.trim()) {
+      return { valid: false, error: 'Please enter some code to analyze' };
+    }
+    
+    if (code.trim().length < 10) {
+      return { valid: false, error: 'Code is too short. Please enter at least 10 characters' };
+    }
+    
+    // Check if code looks like actual code (has some programming constructs)
+    const codePatterns = [
+      /function\s*\w*\s*\(/,           // function declarations
+      /const|let|var|val\s+\w+/,       // variable declarations
+      /if\s*\(|for\s*\(|while\s*\(/,   // control structures
+      /class\s+\w+/,                   // class declarations
+      /def\s+\w+|fun\s+\w+|func\s+\w+/, // function definitions
+      /import\s+|from\s+.*import/,     // imports
+      /return\s+|=>|->|print|console/, // common code patterns
+      /\{[\s\S]*\}/,                   // code blocks
+      /[=<>!]+/,                       // operators
+    ];
+    
+    const hasCodePattern = codePatterns.some(pattern => pattern.test(code));
+    if (!hasCodePattern && code.length < 100) {
+      return { valid: false, error: 'This doesn\'t look like code. Please paste valid source code' };
+    }
+    
+    return { valid: true };
+  }, []);
+
+  // Run analysis with validation
   const handleAnalyze = useCallback(async () => {
-    if (!sourceCode.trim()) return;
+    // Validate code first
+    const validation = validateCode(sourceCode);
+    if (!validation.valid) {
+      setShowValidationError(validation.error || 'Invalid code');
+      setTimeout(() => setShowValidationError(null), 4000);
+      return;
+    }
+
+    // Show language warning if still on default and code doesn't look like JavaScript
+    const jsPatterns = /\bfunction\b|const |let |var |=>|console\./;
+    const pythonPatterns = /\bdef\b|\bimport\b.*\bfrom\b|\bprint\s*\(|if\s+.*:|for\s+.*\s+in\s+/;
+    const kotlinPatterns = /\bfun\b|\bval\b|\bvar\b.*:|\bclass\b.*\{|\.kt$/;
+    const swiftPatterns = /\bfunc\b|\blet\b|\bvar\b.*:|\bclass\b.*\{|\.swift$/;
+    
+    if (language === 'javascript') {
+      if (pythonPatterns.test(sourceCode) && !jsPatterns.test(sourceCode)) {
+        setShowLanguageWarning(true);
+        setTimeout(() => setShowLanguageWarning(false), 3000);
+      } else if (kotlinPatterns.test(sourceCode) && !jsPatterns.test(sourceCode)) {
+        setShowLanguageWarning(true);
+        setTimeout(() => setShowLanguageWarning(false), 3000);
+      } else if (swiftPatterns.test(sourceCode) && !jsPatterns.test(sourceCode)) {
+        setShowLanguageWarning(true);
+        setTimeout(() => setShowLanguageWarning(false), 3000);
+      }
+    }
 
     setIsAnalyzing(true);
     setStatus('analyzing');
+    setShowValidationError(null);
 
     try {
       const analysisResult = await analyzeCode(sourceCode, {
@@ -94,13 +155,18 @@ function App() {
         language,
       });
       setResult(analysisResult);
+      
+      // AUTO-SWITCH to Issues tab after successful analysis
+      setActiveTab('issues');
     } catch (error) {
       console.error('Analysis failed:', error);
       setStatus('error');
+      setShowValidationError('Analysis failed. Please try again.');
+      setTimeout(() => setShowValidationError(null), 4000);
     } finally {
       setIsAnalyzing(false);
     }
-  }, [sourceCode, language, options, setStatus, setResult]);
+  }, [sourceCode, language, options, setStatus, setResult, setActiveTab, validateCode]);
 
   // Auto-analyze on mount with default code
   useEffect(() => {
@@ -602,6 +668,50 @@ function App() {
           </div>
         </div>
       </main>
+
+      {/* Validation Error Toast */}
+      <AnimatePresence>
+        {showValidationError && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            className="fixed bottom-20 left-1/2 z-50 flex items-center gap-3 px-6 py-4 rounded-xl bg-neon-red/90 text-white shadow-2xl shadow-neon-red/25 backdrop-blur-sm border border-neon-red/50"
+          >
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <span className="font-medium">{showValidationError}</span>
+            <button
+              onClick={() => setShowValidationError(null)}
+              className="ml-2 p-1 rounded-lg hover:bg-white/20 transition-colors"
+            >
+              <span className="sr-only">Dismiss</span>
+              ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Language Warning Toast */}
+      <AnimatePresence>
+        {showLanguageWarning && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 50, x: '-50%' }}
+            className="fixed bottom-20 left-1/2 z-50 flex items-center gap-3 px-6 py-4 rounded-xl bg-neon-yellow/90 text-obsidian-950 shadow-2xl shadow-neon-yellow/25 backdrop-blur-sm border border-neon-yellow/50"
+          >
+            <Info className="w-5 h-5 flex-shrink-0" />
+            <span className="font-medium">Tip: Select the correct language for more accurate analysis</span>
+            <button
+              onClick={() => setShowLanguageWarning(false)}
+              className="ml-2 p-1 rounded-lg hover:bg-black/10 transition-colors"
+            >
+              <span className="sr-only">Dismiss</span>
+              ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer */}
       <footer className="fixed bottom-0 left-0 right-0 py-2 px-6 glass border-t border-obsidian-800/50">

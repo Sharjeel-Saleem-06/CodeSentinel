@@ -430,58 +430,79 @@ function ControlFlowGraphInner({ cfg }: ControlFlowGraphProps) {
 
     // Create edges with enhanced styling for clarity and hierarchy
     const rawEdges: Edge[] = cfg.edges.map((edge, index) => {
-      const isTrue = edge.condition === 'true' || edge.label === 'then' || edge.label === 'body';
-      const isFalse = edge.condition === 'false' || edge.label === 'else';
-      const isException = edge.condition === 'exception';
-      const isBreak = edge.label === 'break' || edge.label === 'continue';
-      const isLoop = edge.label === 'loop' || edge.label === 'iterate';
+      const isTrue = edge.condition === 'true' || edge.label === 'then' || edge.label === 'body' || edge.label === 'yes';
+      const isFalse = edge.condition === 'false' || edge.label === 'else' || edge.label === 'no';
+      const isException = edge.condition === 'exception' || edge.label === 'error' || edge.label === 'catch';
+      const isBreak = edge.label === 'break' || edge.label === 'exit loop';
+      const isContinue = edge.label === 'continue' || edge.label === 'next iteration';
+      const isLoop = edge.label === 'loop' || edge.label === 'iterate' || edge.label === 'loop back';
       const isCall = edge.condition === 'call' || edge.edgeType === 'call';
       const isHierarchy = edge.condition === 'contains' || edge.edgeType === 'hierarchy';
       const isInheritance = edge.condition === 'inherits' || edge.edgeType === 'inheritance';
+      const isAsync = edge.label?.includes('suspend') || edge.label?.includes('resume') || edge.label?.includes('await');
       
-      // Color coding for different edge types
-      let strokeColor = isDark ? '#06b6d4' : '#0891b2'; // cyan
+      // Color coding for different edge types - enhanced visibility
+      let strokeColor = isDark ? '#06b6d4' : '#0891b2'; // cyan - default flow
       let animated = false;
       let strokeDasharray = '';
       let strokeWidth = 2;
+      let edgeLabel = edge.label || edge.condition;
       
       if (isTrue) {
-        strokeColor = '#10b981'; // emerald - always good for "true/yes"
+        strokeColor = '#10b981'; // emerald - "true/yes" path
         animated = true;
         strokeWidth = 3;
+        edgeLabel = edgeLabel || '✅ yes';
       } else if (isFalse) {
-        strokeColor = '#ef4444'; // red - always clear for "false/no"
+        strokeColor = '#ef4444'; // red - "false/no" path
         strokeWidth = 2;
+        edgeLabel = edgeLabel || '❌ no';
       } else if (isException) {
-        strokeColor = '#f97316'; // orange
+        strokeColor = '#f97316'; // orange - error path
         strokeDasharray = '8,4';
         strokeWidth = 2;
+        edgeLabel = edgeLabel || '💥 error';
       } else if (isBreak) {
-        strokeColor = '#8b5cf6'; // violet
+        strokeColor = '#8b5cf6'; // violet - exit loop
         strokeDasharray = '4,4';
+        edgeLabel = '⛔ break';
+      } else if (isContinue) {
+        strokeColor = '#14b8a6'; // teal - continue
+        strokeDasharray = '4,4';
+        edgeLabel = '⏭️ next';
       } else if (isLoop) {
-        strokeColor = '#a855f7'; // purple
+        strokeColor = '#a855f7'; // purple - loop back
         strokeDasharray = '6,3';
         animated = true;
+        edgeLabel = '🔄 repeat';
+      } else if (isAsync) {
+        strokeColor = '#f59e0b'; // amber - async
+        strokeDasharray = '4,8';
+        animated = true;
+        strokeWidth = 2;
+        edgeLabel = edgeLabel || '⏸️→⏯️';
       } else if (isCall) {
         strokeColor = '#f59e0b'; // amber for function calls
         strokeDasharray = '5,5';
         strokeWidth = 2;
+        edgeLabel = '📞 call';
       } else if (isHierarchy) {
         strokeColor = '#8b5cf6'; // purple for hierarchy (class -> method)
         strokeDasharray = '3,3';
         strokeWidth = 2;
+        edgeLabel = '';
       } else if (isInheritance) {
         strokeColor = '#ec4899'; // pink for inheritance
         strokeDasharray = '10,5';
         strokeWidth = 2;
+        edgeLabel = 'extends';
       }
       
       return {
         id: `edge-${index}-${edge.from}-${edge.to}`,
         source: edge.from,
         target: edge.to,
-        label: showLabels ? (edge.label || edge.condition) : undefined,
+        label: showLabels && edgeLabel ? edgeLabel : undefined,
         type: 'smoothstep',
         animated,
         // Use pathOptions for better edge routing

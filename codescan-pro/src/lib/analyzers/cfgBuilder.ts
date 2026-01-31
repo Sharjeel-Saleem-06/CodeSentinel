@@ -1,32 +1,28 @@
 /**
- * Advanced Control Flow Graph Builder v4.0
+ * Advanced Control Flow Graph Builder v5.0
  * Creates professional developer-style flowcharts with proper hierarchy
  * 
- * KEY IMPROVEMENT (v4.0):
- * - Fixed internal flow connections: Loop bodies, condition branches, and 
- *   all internal logic are now properly connected within their parent function
- * - Recursive block processing ensures nested structures are correctly linked
- * - Language-agnostic pattern matching for multi-language support
+ * KEY IMPROVEMENTS (v5.0):
+ * - Enhanced execution flow visualization showing WHERE flow goes
+ * - Proper loop representation with back-edges and iteration paths
+ * - Async/await visualization with suspension points (⏸️ suspend → ⏯️ resume)
+ * - Error handling flow paths (try/catch/finally)
+ * - Smart simplification based on complexity
+ * - Better conditional branching (true/false paths clearly marked)
+ * - Early return detection and visualization
+ * - Improved node labels and descriptions
  * 
- * Features:
- * - Multi-language support (JS/TS, Kotlin, Swift, Python, Java, Go, Rust, etc.)
- * - Class and method hierarchy visualization
- * - Nested function/method detection with proper grouping
- * - Professional flowchart standards (swimlanes, hierarchy)
- * - Clean hierarchical layout with collapsible groups
- * - Call graph integration
- * - Proper scope handling
- * - PROPER INTERNAL FLOW: All statements within a function are connected
- *   in correct execution order (loops contain their bodies, conditions
- *   have true/false branches properly linked)
+ * Based on FLOWCHART_GENERATION_PLAN.md:
+ * - Control Flow Graph (CFG) based approach
+ * - All execution paths clearly visible
+ * - Professional flowchart standards
  * 
  * Follows standard flowchart conventions:
- * - Classes as container nodes (swimlanes)
- * - Methods/Functions as entry points within containers
- * - Control flow within methods (properly connected)
- * - Loop bodies connected to loop condition with iterate edge
- * - Condition branches (true/false) properly separated
- * - Inter-method calls shown as dashed lines
+ * - Diamond shapes for decisions
+ * - Rounded rectangles for start/end
+ * - Rectangles for statements
+ * - Clear edge labels (yes/no, true/false)
+ * - Color-coded paths (success=green, error=red)
  */
 
 import type { ControlFlowGraph, CFGNode, CFGEdge, CFGClassInfo, CFGFunctionInfo } from '../../types/analysis';
@@ -213,33 +209,35 @@ function analyzeLineType(_line: string, trimmedLine: string, language: string): 
     type = 'condition';
     const condition = trimmedLine.match(/[\(\{:]\s*([^)\}:]+)/)?.[1] || 
                       trimmedLine.match(/if\s+(.+?)[\s{:]/)?.[1] || '';
-    label = `if (${condition.substring(0, 30).trim()}${condition.length > 30 ? '...' : ''})`;
+    // Make it a question format
+    const cleanCondition = condition.trim().substring(0, 25);
+    label = `❓ ${cleanCondition}${condition.length > 25 ? '...' : ''}?`;
     isBlockStart = true;
   }
-  // Guard statements (Swift)
+  // Guard statements (Swift) - early return pattern
   else if (/^guard\s+/.test(trimmedLine)) {
     type = 'condition';
     const condition = trimmedLine.match(/guard\s+(.+?)\s+else/)?.[1] || '';
-    label = `guard ${condition.substring(0, 25)}${condition.length > 25 ? '...' : ''}`;
+    label = `🛡️ guard: ${condition.substring(0, 20)}${condition.length > 20 ? '...' : ''}?`;
     isBlockStart = true;
   }
-  // When expression (Kotlin)
+  // When expression (Kotlin) - switch-like
   else if (/^when\s*[\(\{]/.test(trimmedLine)) {
     type = 'condition';
     const expr = trimmedLine.match(/when\s*\(([^)]+)\)/)?.[1] || '';
-    label = `when (${expr.substring(0, 25)}${expr.length > 25 ? '...' : ''})`;
+    label = `🔀 when: ${expr.substring(0, 20)}${expr.length > 20 ? '...' : ''}`;
     isBlockStart = true;
   }
   // Else block
   else if (/^else\s*[\{:]?$/.test(trimmedLine)) {
     type = 'condition';
-    label = 'else';
+    label = '↪️ else (otherwise)';
     isBlockStart = true;
   }
   // Ternary/conditional expression
   else if (/\?\s*.+\s*:\s*.+/.test(trimmedLine) && !trimmedLine.startsWith('?')) {
     type = 'condition';
-    label = 'conditional expression';
+    label = '❓ conditional expression';
   }
 
   // ==================== Loop Statements ====================
@@ -249,11 +247,12 @@ function analyzeLineType(_line: string, trimmedLine: string, language: string): 
     type = 'loop';
     const parts = trimmedLine.match(/for\s*\(([^;]*);([^;]*);([^)]*)\)/);
     if (parts) {
-      label = `for (${parts[2]?.trim().substring(0, 20) || '...'}${parts[2]?.length > 20 ? '...' : ''})`;
+      const condition = parts[2]?.trim() || '...';
+      label = `🔄 for (${condition.substring(0, 18)}${condition.length > 18 ? '...' : ''})`;
     } else {
       // For-in / for-of
       const match = trimmedLine.match(/for\s*\(([^)]+)\)/);
-      label = `for (${match?.[1]?.substring(0, 25) || '...'}${(match?.[1]?.length ?? 0) > 25 ? '...' : ''})`;
+      label = `🔄 for each: ${match?.[1]?.substring(0, 20) || '...'}`;
     }
     isBlockStart = true;
   }
@@ -261,74 +260,80 @@ function analyzeLineType(_line: string, trimmedLine: string, language: string): 
   else if (/^for\s+\w+\s+in\s+/.test(trimmedLine)) {
     type = 'loop';
     const match = trimmedLine.match(/for\s+(\w+)\s+in\s+([^:\{]+)/);
-    label = `for ${match?.[1]} in ${match?.[2]?.substring(0, 15) || '...'}`;
+    const item = match?.[1] || 'item';
+    const collection = match?.[2]?.trim().substring(0, 12) || '...';
+    label = `🔄 for ${item} in ${collection}`;
     isBlockStart = true;
   }
   // While loops
   else if (/^while\s*[\(\{]/.test(trimmedLine) || /^while\s+/.test(trimmedLine)) {
     type = 'loop';
     const condition = trimmedLine.match(/while\s*[\(\{]?\s*([^)\}:]+)/)?.[1] || '';
-    label = `while (${condition.substring(0, 20)}${condition.length > 20 ? '...' : ''})`;
+    label = `🔄 while: ${condition.substring(0, 18)}${condition.length > 18 ? '...' : ''}?`;
     isBlockStart = true;
   }
   // Do-while loops
   else if (/^do\s*\{?$/.test(trimmedLine)) {
     type = 'loop';
-    label = 'do';
+    label = '🔄 do (execute at least once)';
     isBlockStart = true;
   }
   // Repeat-while (Swift)
   else if (/^repeat\s*\{?$/.test(trimmedLine)) {
     type = 'loop';
-    label = 'repeat';
+    label = '🔄 repeat (execute at least once)';
     isBlockStart = true;
   }
   // forEach / map / filter / etc.
   else if (/\.(forEach|map|filter|reduce|flatMap|compactMap|some|every|find|findIndex)\s*[\(\{]/.test(trimmedLine)) {
     type = 'loop';
     const method = trimmedLine.match(/\.(\w+)\s*[\(\{]/)?.[1] || '';
-    label = `.${method}(...)`;
+    label = `🔄 .${method}() iteration`;
     isMethodCall = true;
     calledMethod = method;
   }
   // Loop (Rust)
   else if (/^loop\s*\{/.test(trimmedLine)) {
     type = 'loop';
-    label = 'loop';
+    label = '🔄 loop (infinite until break)';
     isBlockStart = true;
   }
 
   // ==================== Control Flow ====================
   
-  // Return statements
+  // Return statements - exit point
   else if (/^return\b/.test(trimmedLine)) {
     type = 'return';
-    const returnVal = trimmedLine.replace(/^return\s*/, '').replace(/[;]$/, '');
-    label = returnVal ? `return ${returnVal.substring(0, 30)}${returnVal.length > 30 ? '...' : ''}` : 'return';
+    const returnVal = trimmedLine.replace(/^return\s*/, '').replace(/[;]$/, '').trim();
+    if (returnVal) {
+      label = `🔙 return: ${returnVal.substring(0, 25)}${returnVal.length > 25 ? '...' : ''}`;
+    } else {
+      label = '🔙 return (exit)';
+    }
   }
-  // Throw statements
+  // Throw statements - error exit
   else if (/^throw\b/.test(trimmedLine)) {
     type = 'throw';
     const throwVal = trimmedLine.replace(/^throw\s*/, '').replace(/[;]$/, '');
-    label = `throw ${throwVal.substring(0, 25)}${throwVal.length > 25 ? '...' : ''}`;
+    label = `💥 throw: ${throwVal.substring(0, 20)}${throwVal.length > 20 ? '...' : ''}`;
   }
-  // Yield statements (generators)
+  // Yield statements (generators) - suspension point
   else if (/^yield\b/.test(trimmedLine)) {
     type = 'return';
     const yieldVal = trimmedLine.replace(/^yield\s*/, '').replace(/[;]$/, '');
-    label = `yield ${yieldVal.substring(0, 25)}${yieldVal.length > 25 ? '...' : ''}`;
+    label = `⏸️ yield: ${yieldVal.substring(0, 20)}${yieldVal.length > 20 ? '...' : ''}`;
   }
-  // Break statements
+  // Break statements - exit loop
   else if (/^break\b/.test(trimmedLine)) {
     type = 'statement';
     const breakLabel = trimmedLine.match(/break\s+(\w+)/)?.[1];
-    label = breakLabel ? `break ${breakLabel}` : 'break';
+    label = breakLabel ? `⛔ break → ${breakLabel}` : '⛔ break (exit loop)';
   }
-  // Continue statements
+  // Continue statements - skip to next iteration
   else if (/^continue\b/.test(trimmedLine)) {
     type = 'statement';
     const continueLabel = trimmedLine.match(/continue\s+(\w+)/)?.[1];
-    label = continueLabel ? `continue ${continueLabel}` : 'continue';
+    label = continueLabel ? `⏭️ continue → ${continueLabel}` : '⏭️ continue (next iteration)';
   }
 
   // ==================== Exception Handling ====================
@@ -336,20 +341,21 @@ function analyzeLineType(_line: string, trimmedLine: string, language: string): 
   // Try blocks
   else if (/^try\s*[\{\:]?$/.test(trimmedLine) || /^try\s*\{/.test(trimmedLine)) {
     type = 'statement';
-    label = 'try';
+    label = '🔒 try';
     isBlockStart = true;
   }
-  // Catch blocks
+  // Catch blocks - error handling path
   else if (/^catch\s*[\(\{]/.test(trimmedLine) || /^except\s*/.test(trimmedLine)) {
     type = 'condition';
     const param = trimmedLine.match(/[\(\{]\s*([^)\}]+)/)?.[1] || 'error';
-    label = `catch (${param.substring(0, 15)}${param.length > 15 ? '...' : ''})`;
+    const exceptionType = param.includes(':') ? param.split(':')[1]?.trim() : param;
+    label = `🔴 catch (${exceptionType?.substring(0, 12) || 'error'}${(exceptionType?.length || 0) > 12 ? '...' : ''})`;
     isBlockStart = true;
   }
-  // Finally blocks
+  // Finally blocks - always runs
   else if (/^finally\s*[\{\:]?$/.test(trimmedLine) || /^defer\s*\{/.test(trimmedLine)) {
     type = 'statement';
-    label = language === 'swift' || language === 'go' ? 'defer' : 'finally';
+    label = language === 'swift' || language === 'go' ? '🧹 defer (cleanup)' : '🧹 finally (cleanup)';
     isBlockStart = true;
   }
 
@@ -359,28 +365,29 @@ function analyzeLineType(_line: string, trimmedLine: string, language: string): 
   else if (/^switch\s*[\(\{]/.test(trimmedLine) || /^match\s+/.test(trimmedLine)) {
     type = 'condition';
     const expr = trimmedLine.match(/(?:switch|match)\s*[\(\{]?\s*([^)\}:\{]+)/)?.[1] || '';
-    label = `switch (${expr.substring(0, 20)}${expr.length > 20 ? '...' : ''})`;
+    label = `🔀 switch: ${expr.substring(0, 18)}${expr.length > 18 ? '...' : ''}`;
     isBlockStart = true;
   }
   // Case statements
   else if (/^case\s+/.test(trimmedLine) || /^is\s+/.test(trimmedLine)) {
     type = 'condition';
     const caseVal = trimmedLine.match(/(?:case|is)\s+([^:]+)/)?.[1] || '';
-    label = `case ${caseVal.substring(0, 20)}${caseVal.length > 20 ? '...' : ''}`;
+    label = `📌 case: ${caseVal.substring(0, 18)}${caseVal.length > 18 ? '...' : ''}`;
   }
   // Default case
   else if (/^default\s*:/.test(trimmedLine) || /^else\s*->/.test(trimmedLine)) {
     type = 'condition';
-    label = 'default';
+    label = '📌 default (fallback)';
   }
 
   // ==================== Async/Await ====================
   
-  // Await expressions
+  // Await expressions - mark as suspension point
   else if (/^(?:const|let|var|val)?\s*\w*\s*=?\s*await\b/.test(trimmedLine)) {
-    type = 'statement';
+    type = 'statement'; // Will be styled as suspension point
     const match = trimmedLine.match(/await\s+([^;]+)/);
-    label = `await ${match?.[1]?.substring(0, 25) || '...'}`;
+    const awaitExpr = match?.[1]?.substring(0, 25) || '...';
+    label = `⏸️ await ${awaitExpr}`;
     isMethodCall = true;
     calledMethod = match?.[1]?.match(/(\w+)\s*\(/)?.[1];
   }
@@ -388,9 +395,15 @@ function analyzeLineType(_line: string, trimmedLine: string, language: string): 
   else if (/^async\s+let\s+/.test(trimmedLine)) {
     type = 'statement';
     const varName = trimmedLine.match(/async\s+let\s+(\w+)/)?.[1] || '';
-    label = `async let ${varName}`;
+    label = `⏸️ async let ${varName}`;
     isDeclaration = true;
     declarationName = varName;
+  }
+  // Kotlin suspend function call
+  else if (/\.await\(\)|suspendCoroutine|withContext/.test(trimmedLine)) {
+    type = 'statement';
+    label = `⏸️ ${trimmedLine.substring(0, 30)}...`;
+    isMethodCall = true;
   }
 
   // ==================== Variable Declarations ====================

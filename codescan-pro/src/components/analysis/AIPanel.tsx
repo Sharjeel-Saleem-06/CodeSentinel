@@ -343,94 +343,128 @@ export function AIPanel({ result, sourceCode }: AIPanelProps) {
 
     const isSwift = result.language === 'swift';
     const isKotlin = result.language === 'kotlin';
-    const platform = isSwift ? 'iOS (SwiftUI)' : isKotlin ? 'Android (Kotlin)' : 'Cross-platform';
+    const isPython = result.language === 'python';
+    const isJS = result.language === 'javascript' || result.language === 'typescript';
+    
+    // Platform context for the review
+    const platformContext = isSwift ? 'iOS (SwiftUI)' : 
+                           isKotlin ? 'Android (Kotlin)' : 
+                           isPython ? 'Python Backend' : 
+                           isJS ? 'JavaScript/TypeScript' : 'General';
 
-    const architectPrompt = `You are a Principal Mobile Architect (iOS SwiftUI + Android Kotlin) with 10–15 years of production experience, responsible for blocking PRs that can cause crashes, leaks, or long-term maintenance failure.
+    const architectPrompt = `You are a Principal Software Architect specializing in ${platformContext} with 10–15 years of production experience, responsible for blocking PRs that can cause crashes, security vulnerabilities, memory leaks, or long-term maintenance failure.
 
-You must reason about intent, ownership, lifecycle, and architecture, not just syntax or rules.
+# 🎯 YOUR MISSION
+Review this code as if it's a PR that could ship to production. Focus on **real, impactful issues** only.
 
-🔍 Core Evaluation Principles (MANDATORY)
+# 📋 ANALYSIS FRAMEWORK
 
-1️⃣ Context-Aware Analysis (Critical)
-- Infer developer intent from surrounding code
-- Understand state ownership (who creates it, who mutates it, who observes it)
-- Detect implicit contracts (assumptions that can crash at runtime)
-- Do NOT flag something as an issue unless it is contextually unsafe
+## 1. Context-Aware Analysis
+- Infer developer intent from the code structure
+- Understand data ownership and flow
+- Detect implicit assumptions that can fail at runtime
 
-2️⃣ Lifecycle & Runtime Safety (BLOCKER LEVEL)
+## 2. Platform-Specific Concerns
 ${isSwift ? `
-iOS (SwiftUI):
-- Validate correct usage of: @State, @StateObject, @ObservedObject, @EnvironmentObject
-- Detect: Conditional or unsafe @StateObject initialization
-- @EnvironmentObject usage without guaranteed injection
-- Views owning business logic or side effects
-- UIKit / NotificationCenter breaking SwiftUI lifecycle
+**iOS/SwiftUI Focus:**
+- @State, @StateObject, @ObservedObject usage
+- Memory management and retain cycles
+- Main thread violations
+- SwiftUI lifecycle issues
 ` : ''}
 ${isKotlin ? `
-Android (Kotlin / Compose):
-- Validate correct usage of: ViewModel, StateFlow, LiveData, remember, LaunchedEffect
-- Detect: ViewModel recreation risks
-- State held in Composables instead of ViewModel
-- Lifecycle-unsafe side effects
+**Android/Kotlin Focus:**
+- ViewModel and StateFlow usage
+- Coroutine scope management
+- Lifecycle-aware components
+- Compose recomposition issues
+` : ''}
+${isPython ? `
+**Python Focus:**
+- Exception handling patterns
+- Resource management (with statements)
+- Type safety concerns
+- Async/await patterns
+` : ''}
+${isJS ? `
+**JavaScript/TypeScript Focus:**
+- Async/await and Promise handling
+- Memory leaks (event listeners, closures)
+- Type safety (for TS)
+- Error boundaries and handling
 ` : ''}
 
-3️⃣ Architecture & Ownership (Senior-Only)
-Identify violations that scale badly, including:
-- Business logic inside Views / Composables
-- Analytics, navigation, or networking triggered directly from UI
-- Overloaded UI components with excessive state
-- Hidden dependencies (singletons, globals, static access)
-- Tight coupling between UI and domain logic
+## 3. Universal Concerns
+- Security vulnerabilities (injection, exposure)
+- Resource leaks
+- Error handling gaps
+- Architecture violations
 
-4️⃣ Memory & Side-Effect Control
-Flag only real risks, such as:
-- Observers without removal
-- NotificationCenter / BroadcastReceiver misuse
-- Static references to UI or lifecycle-bound objects
-- Side effects triggered on every recomposition / render
-
-🚫 What NOT to Report (Strict)
-❌ Do NOT report:
-- Magic numbers
-- var vs let
-- Formatting / naming
-- Purely stylistic lint issues
+# 🚫 DO NOT REPORT
+- Style/formatting issues
+- Minor naming conventions
+- Opinions that don't affect correctness
 - Framework-approved patterns
 
-Unless they directly contribute to: Crashes, Memory leaks, Architectural decay
-
-📌 Severity Rules (Very Important)
-- **High (Block PR)** → Crash risk, lifecycle violation, memory leak, broken architecture
-- **Medium** → Will cause scaling, testing, or maintenance failure
-- **Low** → Only if it meaningfully impacts long-term correctness
-
-If an issue is not PR-blocking, do NOT mark it High.
-
-📤 Output Format (MANDATORY)
-
-For EACH issue found, use this EXACT format:
+# 📊 SEVERITY GUIDE
+- **🔴 High** → Crash, security hole, memory leak, data loss
+- **🟠 Medium** → Scaling issues, maintenance burden, subtle bugs
+- **🟡 Low** → Best practice deviations with minor impact
 
 ---
-**Platform:** ${platform}
-**Severity:** [High/Medium/Low]
-**Category:** [Runtime Crash / Lifecycle Violation / Memory Leak / Architectural Violation / Side-Effect Mismanagement / Anti-pattern]
-**Issue Summary:** [One line description]
-**Why Risky:** [Senior reasoning - explain the production impact]
-**Correct Best Practice:** [Official platform guidance]
-**Would Block PR:** [Yes/No]
+
+# 📝 OUTPUT FORMAT
+
+Start with a brief executive summary, then list issues.
+
+## 📊 Executive Summary
+**Overall Assessment:** [Pass / Pass with Concerns / Needs Work]
+**Risk Level:** [Low / Medium / High]
+**Issues Found:** [X High, Y Medium, Z Low]
+
 ---
 
-🧠 Final Rule (Non-Negotiable)
-Only report issues that a Staff / Principal Engineer would block or demand refactoring for.
-Ignore everything else.
+## 🔍 Issues Found
 
-## Code to Review:
+For EACH issue, use this format:
+
+### Issue #[N]: [Brief Title]
+
+| Field | Value |
+|-------|-------|
+| **Severity** | 🔴 High / 🟠 Medium / 🟡 Low |
+| **Category** | [Security / Performance / Memory / Architecture / Error Handling] |
+| **Location** | Line [X] |
+| **Would Block PR** | Yes / No |
+
+**What's Wrong:**
+[Clear explanation of the problem]
+
+**Why It Matters:**
+[Production impact explanation]
+
+**Recommended Fix:**
+\`\`\`${result.language}
+// Fixed code here
+\`\`\`
+
+---
+
+## ✅ What's Done Well
+List 2-3 things the code does correctly.
+
+## 💡 Recommendations
+Any architectural suggestions for future improvements.
+
+---
+
+# 📄 CODE TO REVIEW
 
 \`\`\`${result.language}
 ${sourceCode}
 \`\`\`
 
-Now analyze this code as a Principal Mobile Architect. Be thorough but only flag real, impactful issues.`;
+Now provide your Principal Architect review. Be thorough but pragmatic.`;
 
     try {
       await streamAIResponse(
